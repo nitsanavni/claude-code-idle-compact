@@ -1,6 +1,6 @@
 {
   "name": "idle-compact",
-  "version": "0.5.1",
+  "version": "0.6.0",
   "description": "Compacts the session after an idle period, before the prompt cache expires; tunable live",
   "userConfig": {
     "enabled": { "type": "boolean", "title": "Enabled", "description": "Master switch" },
