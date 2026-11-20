@@ -24,7 +24,7 @@
   --on-hue: #ffffff;  /* glyphs inside a marble */
 
   --sans:  Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
-  --serif: var(--sans);   /* kept for older generators: everything is Inter now */
+  --serif: "Source Serif 4", "Iowan Old Style", Georgia, "Times New Roman", serif;  /* titles */
   --mono:  "JetBrains Mono", ui-monospace, "SF Mono", Menlo, Consolas, monospace;
 
   --radius: 16px;
@@ -77,7 +77,7 @@ body {
 
 /* type */
 .eyebrow { font: 600 12px/1 var(--sans); letter-spacing: .08em; text-transform: uppercase; color: var(--h, var(--ink-3)); margin: 0 0 calc(var(--space) * 2); }
-h1 { font: 650 clamp(28px, 4vw, 36px)/1.15 var(--sans); letter-spacing: -.02em; margin: 0 0 calc(var(--space) * 2); text-wrap: balance; }
+h1 { font: 650 clamp(28px, 4vw, 36px)/1.15 var(--serif); letter-spacing: -.01em; margin: 0 0 calc(var(--space) * 2); text-wrap: balance; }
 .lede { font: 400 18px/1.6 var(--sans); color: var(--ink-2); max-width: var(--measure); margin: 0 0 calc(var(--space) * 5); text-wrap: pretty; }
 .note { font-size: 14px; color: var(--ink-2); max-width: var(--measure); margin: calc(var(--space) * 4) 0 0; }
 

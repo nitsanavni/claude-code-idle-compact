@@ -24,7 +24,7 @@
   --on-hue: #ffffff;  /* glyphs inside a marble */
 
   --sans:  Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
-  --serif: var(--sans);   /* kept for older generators: everything is Inter now */
+  --serif: "Source Serif 4", "Iowan Old Style", Georgia, "Times New Roman", serif;  /* titles */
   --mono:  "JetBrains Mono", ui-monospace, "SF Mono", Menlo, Consolas, monospace;
 
   --radius: 16px;
