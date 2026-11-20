@@ -1,3 +1,4 @@
+// Nullables pattern: See the Nullables skill: https://github.com/lexler/skill-factory/blob/main/testing/nullables/SKILL.md, and James Shore, "Testing Without Mocks": https://www.jamesshore.com/v2/projects/nullables/testing-without-mocks
 import { expect, mock, test } from 'claude-code/testing'
 
 // Thin integration test: the real hooks module, loaded by the engine's own

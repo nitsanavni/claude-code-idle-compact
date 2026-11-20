@@ -1,3 +1,4 @@
+// Nullables pattern: See the Nullables skill: https://github.com/lexler/skill-factory/blob/main/testing/nullables/SKILL.md, and James Shore, "Testing Without Mocks": https://www.jamesshore.com/v2/projects/nullables/testing-without-mocks
 import { describe, expect, test } from 'claude-code/testing'
 import { applyChange, DEFAULTS, fromLegacy, merge, parseProjectFile, pick, resolve, PROJECT_FILE } from '../hooks/config'
 import { IdleCompact } from '../hooks/core'

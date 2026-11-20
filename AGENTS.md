@@ -38,6 +38,7 @@ test/                            unit tests (core, config) and a thin integratio
 - Push small and often, straight to `main`. No PRs, no branches. Run `git pull --rebase origin main` before every push.
 - Fix forward. Don't revert.
 - Write tests first. Use Nullables (James Shore, "Testing Without Mocks"), not mocks: each wrapper in `infra.ts` has `create()` for production and `createNull()` with configurable responses and output tracking. Tests are sociable: the real core runs over nulled infrastructure.
+  See the Nullables skill: https://github.com/lexler/skill-factory/blob/main/testing/nullables/SKILL.md, and James Shore, "Testing Without Mocks": https://www.jamesshore.com/v2/projects/nullables/testing-without-mocks
 - Keep logic out of `register.ts` and out of the wrappers. Any decision the mod makes belongs in `core.ts` or `config.ts`, where tests can reach it.
 - Use sub-agents for independent work, such as research or a separate file.
 - Bump `version` in `.claude-plugin/plugin.json` for a release. Installed copies only update when it changes.
