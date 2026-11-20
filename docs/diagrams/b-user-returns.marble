@@ -1,0 +1,16 @@
+# (b) The user returns before 20 min: turn.start cancels the timer; the next turn end re-arms it.
+title:   Coming back early cancels the timer
+caption: The user returns after nine minutes. The new turn.start cancels the pending timer, so nothing is compacted mid-thought. When that turn completes, a fresh 20-minute timer is armed.
+note:    1 column = 1 minute. Every turn end re-arms from zero; there is never more than one timer.
+
+time        0    5m   10m  15m  20m  25m
+claude   -S~E--------S~~~E------------------
+timer       [========x   [=================>
+compact  -----------------------------------
+
+legend
+S  turn.start      plum
+~  turn            plum
+E  turn.complete — arms the timer  sky
+=  idle timer · 20 min  sand
+x  cancelled — by turn.start  rose

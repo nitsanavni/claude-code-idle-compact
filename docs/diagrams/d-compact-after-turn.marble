@@ -1,0 +1,19 @@
+# (d) Claude calls compact_after_turn during a turn: the mod compacts ~1 s after the turn completes.
+title:   Compacting on request, right after the turn
+caption: Claude can ask for a compact itself with the compact_after_turn tool. The mod waits for the turn to finish, gives it a one-second beat, then compacts, with no idle wait and no token threshold.
+note:    1 column = 0.25 s. The one-second delay lets the turn settle before /compact runs.
+
+time                    0   1s  2s
+claude   -S~~~~~~~~~~~~~E-----------
+tool     ------t--------------------
+clock                   [===F
+compact  --------------------C------
+
+legend
+S  turn.start      plum
+~  turn            plum
+t  compact_after_turn — tool call  plum
+E  turn.complete  sky
+=  1 s — clock.after(1000)  sand
+F  fires — 1 s later  sand
+C  compact  sage
