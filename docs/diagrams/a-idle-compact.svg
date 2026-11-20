@@ -93,6 +93,7 @@
 .d-span     { fill: var(--t); stroke: var(--h); stroke-width: 1.5; }
 .d-bold     { stroke: var(--h); stroke-width: 5; stroke-linecap: round; opacity: 0; }  /* a span at the schematic level */
 .d-ascii    { font: 500 18px var(--mono); fill: var(--ink-3); opacity: 0; font-variant-ligatures: none; }  /* the text level: the source, wordless */
+.d-ascii-name { font: 500 18px var(--mono); fill: var(--ink-2); opacity: 0; }
 .d-ascii .a-span { fill: var(--h); font-weight: 800; }
 .d-ascii .a-dot  { fill: var(--h); }
 .d-ascii .a-x    { fill: var(--coral); font-weight: 800; }
@@ -110,76 +111,81 @@
 
 </style>
 <rect class="d-bg" x="0.5" y="0.5" width="919" height="339" rx="16"/>
-<line class="d-grid d-stretch lv2" style="--s2:0.8" x1="268.9" y1="46" x2="268.9" y2="316"/>
-<text class="d-tick lv2" x="268.9" y="36" text-anchor="middle">0</text>
-<line class="d-grid d-stretch lv2" style="--s2:0.8" x1="477.2" y1="46" x2="477.2" y2="316"/>
-<text class="d-tick lv2" x="477.2" y="36" text-anchor="middle">5m</text>
-<line class="d-grid d-stretch lv2" style="--s2:0.8" x1="713.4" y1="46" x2="713.4" y2="316"/>
-<text class="d-tick lv2" x="713.4" y="36" text-anchor="middle">20m</text>
-<text class="d-break-label lv2" x="574.5" y="36" text-anchor="middle">+10 min</text>
-<g class="d-lane-g" transform="translate(0 104)" style="--yt:18px;--y0:23px;--y1:44px;--y2:90px;--y3:104px">
-<text class="d-ascii" y="6" text-anchor="middle"><tspan x="346">-</tspan><tspan class="a-dot h-blue" x="358">●</tspan><tspan class="a-span h-teal" x="370">=</tspan><tspan class="a-dot h-teal" x="382">●</tspan><tspan x="394 406 418 430 442 454 466">-------</tspan><tspan class="a-break" x="478">≈</tspan><tspan x="490 502 514 526 538 550 562 574">--------</tspan></text>
 <g class="d-gfx">
-<g class="h-teal"><rect class="d-lane-bar" x="124" y="-7" width="3" height="14" rx="1.5"/></g>
-<text class="d-lane lv1" x="114" y="4" text-anchor="end">Claude</text>
+<line class="d-grid d-stretch p-grid" style="--s0:0.3;--s1:0.4;--s2:0.8" x1="268.9" y1="46" x2="268.9" y2="328"/>
+<text class="d-tick p-axis" x="268.9" y="36" text-anchor="middle">0</text>
+<line class="d-grid d-stretch p-grid" style="--s0:0.3;--s1:0.4;--s2:0.8" x1="477.2" y1="46" x2="477.2" y2="328"/>
+<text class="d-tick p-axis" x="477.2" y="36" text-anchor="middle">5m</text>
+<line class="d-grid d-stretch p-grid" style="--s0:0.3;--s1:0.4;--s2:0.8" x1="713.4" y1="46" x2="713.4" y2="328"/>
+<text class="d-tick p-axis" x="713.4" y="36" text-anchor="middle">20m</text>
+<text class="d-break-label p-axis" x="574.5" y="36" text-anchor="middle">+10 min</text>
+</g>
+<g class="d-lane-g" transform="translate(0 104)" style="--yt:18px;--y0:23px;--y1:31px;--y2:60px;--y3:74px">
+<text class="d-ascii-name p-lanes" x="388" y="6" text-anchor="end">claude</text>
+<text class="d-ascii" y="6" text-anchor="middle"><tspan x="412">-</tspan><tspan class="a-dot h-blue" x="424">●</tspan><tspan class="a-span h-teal" x="436">=</tspan><tspan class="a-dot h-teal" x="448">●</tspan><tspan x="460 472 484 496 508 520 532">-------</tspan><tspan class="a-break" x="544">≈</tspan><tspan x="556 568 580 592 604 616 628 640">--------</tspan></text>
+<g class="d-gfx">
+<g class="h-teal p-ticks"><rect class="d-lane-bar" x="124" y="-7" width="3" height="14" rx="1.5"/></g>
+<text class="d-lane p-lanes" x="114" y="4" text-anchor="end">Claude</text>
 <line class="d-line" x1="144" y1="0" x2="880" y2="0"/>
 <g class="h-teal">
 <line class="d-bold" x1="185.6" y1="0" x2="268.9" y2="0"/>
-<rect class="d-span lv1" x="185.6" y="-10" width="83.3" height="20" rx="10"/>
+<rect class="d-span p-bars" x="185.6" y="-10" width="83.3" height="20" rx="10"/>
 </g>
 <g class="d-break"><rect class="d-break-gap" x="570.5" y="-12" width="8" height="24"/>
 <path class="d-break-mark" d="M569 6 L574 -6 M575 6 L580 -6"/></g>
 <g class="d-mark h-blue" style="--i:0">
-<circle class="d-dot" cx="185.6" cy="0" r="9"/><text class="d-glyph lv1" x="185.6" y="3.6" text-anchor="middle">S</text>
+<circle class="d-dot" cx="185.6" cy="0" r="9"/><text class="d-glyph p-letters" x="185.6" y="3.6" text-anchor="middle">S</text>
 </g>
-<g class="d-lab lv2" transform="translate(0 31)" style="--y2:31px;--y3:31px">
-<text class="d-label lv2" x="206.6" y="0" text-anchor="middle">message sent</text>
-<text class="d-sub lv3" x="206.6" y="16" text-anchor="middle">you ask, Claude starts</text>
+<g class="d-lab p-names" transform="translate(0 31)" style="--y2:31px;--y3:31px">
+<text class="d-label" x="206.6" y="0" text-anchor="middle">message sent</text>
+<text class="d-sub p-details" x="206.6" y="16" text-anchor="middle">you ask, Claude starts</text>
 </g>
 <g class="d-mark h-teal" style="--i:1">
-<circle class="d-dot" cx="268.9" cy="0" r="9"/><text class="d-glyph lv1" x="268.9" y="3.6" text-anchor="middle">E</text>
+<circle class="d-dot" cx="268.9" cy="0" r="9"/><text class="d-glyph p-letters" x="268.9" y="3.6" text-anchor="middle">E</text>
 </g>
-<g class="d-lab lv2" transform="translate(0 -40)" style="--y2:-24px;--y3:-40px">
-<text class="d-label lv2" x="268.9" y="0" text-anchor="middle">reply done</text>
-<text class="d-sub lv3" x="268.9" y="16" text-anchor="middle">the countdown starts</text>
+<g class="d-lab p-names" transform="translate(0 -40)" style="--y2:-24px;--y3:-40px">
+<text class="d-label" x="268.9" y="0" text-anchor="middle">reply done</text>
+<text class="d-sub p-details" x="268.9" y="16" text-anchor="middle">the countdown starts</text>
 </g>
 </g></g>
-<g class="d-lane-g" transform="translate(0 188)" style="--yt:42px;--y0:53px;--y1:92px;--y2:160px;--y3:188px">
-<text class="d-ascii" y="6" text-anchor="middle"><tspan class="a-span h-violet" x="382 394 406 418 430 442 454 466">========</tspan><tspan class="a-break" x="478">≈</tspan><tspan class="a-span h-violet" x="490 502 514">===</tspan><tspan class="a-dot h-violet" x="526">●</tspan></text>
+<g class="d-lane-g" transform="translate(0 188)" style="--yt:42px;--y0:53px;--y1:69px;--y2:130px;--y3:158px">
+<text class="d-ascii-name p-lanes" x="388" y="6" text-anchor="end">countdown</text>
+<text class="d-ascii" y="6" text-anchor="middle"><tspan class="a-span h-violet" x="448 460 472 484 496 508 520 532">========</tspan><tspan class="a-break" x="544">≈</tspan><tspan class="a-span h-violet" x="556 568 580">===</tspan><tspan class="a-dot h-violet" x="592">●</tspan></text>
 <g class="d-gfx">
-<g class="h-violet"><rect class="d-lane-bar" x="124" y="-7" width="3" height="14" rx="1.5"/></g>
-<text class="d-lane lv1" x="114" y="4" text-anchor="end">Countdown</text>
+<g class="h-violet p-ticks"><rect class="d-lane-bar" x="124" y="-7" width="3" height="14" rx="1.5"/></g>
+<text class="d-lane p-lanes" x="114" y="4" text-anchor="end">Countdown</text>
 <line class="d-line" x1="268.9" y1="0" x2="713.4" y2="0"/>
 <g class="h-violet">
 <line class="d-bold" x1="268.9" y1="0" x2="713.4" y2="0"/>
-<rect class="d-span lv1" x="268.9" y="-10" width="444.5" height="20" rx="10"/>
-<text class="d-span-label lv2" x="419.7" y="4" text-anchor="middle">idle countdown · 20 min</text>
+<rect class="d-span p-bars" x="268.9" y="-10" width="444.5" height="20" rx="10"/>
+<text class="d-span-label p-names p-bars" x="419.7" y="4" text-anchor="middle">idle countdown · 20 min</text>
 </g>
 <g class="d-break"><rect class="d-break-gap" x="570.5" y="-12" width="8" height="24"/>
 <path class="d-break-mark" d="M569 6 L574 -6 M575 6 L580 -6"/></g>
 <g class="d-mark h-violet" style="--i:2">
-<circle class="d-dot" cx="713.4" cy="0" r="9"/><text class="d-glyph lv1" x="713.4" y="3.6" text-anchor="middle">F</text>
+<circle class="d-dot" cx="713.4" cy="0" r="9"/><text class="d-glyph p-letters" x="713.4" y="3.6" text-anchor="middle">F</text>
 </g>
-<g class="d-lab lv2" transform="translate(0 31)" style="--y2:31px;--y3:31px">
-<text class="d-label lv2" x="713.4" y="0" text-anchor="middle">time is up</text>
-<text class="d-sub lv3" x="713.4" y="16" text-anchor="middle">big enough: over 120k tokens</text>
+<g class="d-lab p-names" transform="translate(0 31)" style="--y2:31px;--y3:31px">
+<text class="d-label" x="713.4" y="0" text-anchor="middle">time is up</text>
+<text class="d-sub p-details" x="713.4" y="16" text-anchor="middle">big enough: over 120k tokens</text>
 </g>
 </g></g>
-<g class="d-lane-g" transform="translate(0 272)" style="--yt:66px;--y0:83px;--y1:140px;--y2:230px;--y3:272px">
-<text class="d-ascii" y="6" text-anchor="middle"><tspan x="346 358 370 382 394 406 418 430 442 454 466">-----------</tspan><tspan class="a-break" x="478">≈</tspan><tspan x="490 502 514 526">----</tspan><tspan class="a-dot h-green" x="538">●</tspan><tspan x="550 562 574">---</tspan></text>
+<g class="d-lane-g" transform="translate(0 272)" style="--yt:66px;--y0:83px;--y1:107px;--y2:200px;--y3:242px">
+<text class="d-ascii-name p-lanes" x="388" y="6" text-anchor="end">compaction</text>
+<text class="d-ascii" y="6" text-anchor="middle"><tspan x="412 424 436 448 460 472 484 496 508 520 532">-----------</tspan><tspan class="a-break" x="544">≈</tspan><tspan x="556 568 580 592">----</tspan><tspan class="a-dot h-green" x="604">●</tspan><tspan x="616 628 640">---</tspan></text>
 <g class="d-gfx">
-<g class="h-green"><rect class="d-lane-bar" x="124" y="-7" width="3" height="14" rx="1.5"/></g>
-<text class="d-lane lv1" x="114" y="4" text-anchor="end">Compaction</text>
+<g class="h-green p-ticks"><rect class="d-lane-bar" x="124" y="-7" width="3" height="14" rx="1.5"/></g>
+<text class="d-lane p-lanes" x="114" y="4" text-anchor="end">Compaction</text>
 <line class="d-line" x1="144" y1="0" x2="880" y2="0"/>
 <g class="d-break"><rect class="d-break-gap" x="570.5" y="-12" width="8" height="24"/>
 <path class="d-break-mark" d="M569 6 L574 -6 M575 6 L580 -6"/></g>
 <g class="d-mark h-green" style="--i:3">
-<circle class="d-halo lv2" cx="755.1" cy="0" r="16"/>
-<circle class="d-dot" cx="755.1" cy="0" r="9"/><text class="d-glyph lv1" x="755.1" y="3.6" text-anchor="middle">C</text>
+<circle class="d-halo p-details" cx="755.1" cy="0" r="16"/>
+<circle class="d-dot" cx="755.1" cy="0" r="9"/><text class="d-glyph p-letters" x="755.1" y="3.6" text-anchor="middle">C</text>
 </g>
-<g class="d-lab lv2" transform="translate(0 31)" style="--y2:31px;--y3:31px">
-<text class="d-label lv2" x="755.1" y="0" text-anchor="middle">compacted</text>
-<text class="d-sub lv3" x="755.1" y="16" text-anchor="middle">now a short summary</text>
+<g class="d-lab p-names" transform="translate(0 31)" style="--y2:31px;--y3:31px">
+<text class="d-label" x="755.1" y="0" text-anchor="middle">compacted</text>
+<text class="d-sub p-details" x="755.1" y="16" text-anchor="middle">now a short summary</text>
 </g>
 </g></g>
 </svg>

@@ -1,6 +1,6 @@
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
-import { parse, lane, svg, geometry, legendRow, key, html } from './marble.mjs'
+import { parse, lane, svg, geometry, legendRow, key, html, PARTS, PRESETS, viewToHash, hashToView } from './marble.mjs'
 
 test('events, spans closed by an event, cancels and run-on spans', () => {
   const { items, segs } = lane('-a=b--[==x  [==>')
@@ -67,7 +67,7 @@ F  time is up  violet`
 test('legend and key show each marble with its letter', () => {
   const doc = parse(DOC)
   for (const part of [legendRow(doc), key(doc)]) {
-    for (const letter of ['S', 'E', 'F']) assert.match(part, new RegExp(`class="d-glyph lv1"[^>]*>${letter}<`))
+    for (const letter of ['S', 'E', 'F']) assert.match(part, new RegExp(`class="d-glyph p-letters"[^>]*>${letter}<`))
   }
   assert.match(key(doc), /<b>done<\/b> — the countdown starts/)
 })
@@ -78,33 +78,62 @@ test('term: lines are explained in the key', () => {
   assert.match(key(doc), /<b>Turn<\/b> — one round of the conversation/)
 })
 
-test('detail levels: each level is no taller than the next, and lanes carry their place at every level', () => {
+test('layouts: tighter as parts go, and each lane carries its place in every one', () => {
   const doc = parse(DOC)
-  const [l0, l1, l2, l3] = geometry(doc).levels
-  assert.ok(l0.H < l1.H && l1.H < l2.H && l2.H < l3.H, `${l0.H} < ${l1.H} < ${l2.H} < ${l3.H}`)
-  assert.ok(l0.ys[1] - l0.ys[0] < l1.ys[1] - l1.ys[0]) // the wordless schematic packs its lanes tighter
+  const g = geometry(doc), [l0, l1, l2, l3] = g.levels
+  assert.ok(g.text.H <= l0.H && l0.H < l1.H && l1.H < l2.H && l2.H < l3.H, `${g.text.H} ${l0.H} ${l1.H} ${l2.H} ${l3.H}`)
+  assert.ok(l0.ys[1] - l0.ys[0] < l1.ys[1] - l1.ys[0]) // beads only: lanes packed tighter than with bars
+  assert.ok(l2.ys[0] - l1.ys[0] < g.room)              // the axis is not part of a layout: it adds `room` on top
   const out = svg(doc)
-  // the SVG is drawn at full detail: a lane's transform is its level-3 place
-  assert.ok(out.includes(`<g class="d-lane-g" transform="translate(0 ${l3.ys[0]})" style="--yt:${geometry(doc).text.ys[0]}px;--y0:${l0.ys[0]}px;--y1:${l1.ys[0]}px;--y2:${l2.ys[0]}px;--y3:${l3.ys[0]}px">`))
-  assert.match(out, /class="d-lab lv2"/)   // names appear from level 2
-  assert.match(out, /class="d-sub lv3"/)   // detail lines only at level 3
-  assert.match(out, /class="d-tick lv2"/)  // so does the time axis
-  assert.match(out, /class="d-lane lv1"/)  // lane names and marble letters from level 1: level 0 has no words
-  assert.match(out, /class="d-glyph lv1"/)
-  assert.equal(out.match(/<text class="(?!d-ascii)(?![^"]*\blv[123]\b)/g), null) // every word on the figure belongs to a level above 0
-  assert.doesNotMatch(out, /class="d-dot[^"]*lv/) // marbles show at every level
-  // a span is a filled pill from level 1, and a bold stretch of the lane line (same ends) at level 0
-  const bar = out.match(/<rect class="d-span lv1" x="([\d.]+)" y="-10" width="([\d.]+)"/)
+  // the SVG is drawn in full: a lane's transform is its place in the loosest layout, under the axis
+  assert.ok(out.includes(`<g class="d-lane-g" transform="translate(0 ${l3.ys[0] + g.room})" style="--yt:${g.text.ys[0]}px;--y0:${l0.ys[0]}px;--y1:${l1.ys[0]}px;--y2:${l2.ys[0]}px;--y3:${l3.ys[0]}px">`))
+  assert.match(out, new RegExp(`viewBox="0 0 920 ${l3.H + g.room}"`))
+})
+
+test('every mark that can be switched off belongs to a part', () => {
+  const out = svg(parse(DOC))
+  for (const [cls, part] of [['d-lab', 'names'], ['d-sub', 'details'], ['d-tick', 'axis'], ['d-lane', 'lanes'], ['d-glyph', 'letters'], ['d-span', 'bars'], ['d-ascii-name', 'lanes'], ['d-span-label', 'names p-bars']])
+    assert.match(out, new RegExp(`class="${cls} p-${part}"`), `${cls} is part ${part}`)
+  assert.match(out, /class="d-grid d-stretch p-grid" style="--s0:[\d.]+;--s1:[\d.]+;--s2:[\d.]+"/)
+  assert.match(out, /class="h-\w+ p-ticks"><rect class="d-lane-bar"/)
+  assert.doesNotMatch(out, /class="d-dot[^"]*p-/) // marbles always show
+  // every word on the drawing can be switched off: by its own part, or inside a names label
+  const loose = [...out.matchAll(/<text class="([^"]+)"/g)].map(m => m[1]).filter(c => !/\bp-\w+/.test(c))
+  assert.deepEqual([...new Set(loose)].sort(), ['d-ascii', 'd-label'])
+  // a span is a filled bar (part bars), and a bold stretch of the lane line with the same ends when bars are off
+  const bar = out.match(/<rect class="d-span p-bars" x="([\d.]+)" y="-10" width="([\d.]+)"/)
   const bold = [...out.matchAll(/<line class="d-bold" x1="([\d.]+)" y1="0" x2="([\d.]+)" y2="0"\/>/g)]
   assert.equal(bold.length, 2)
   assert.ok(bold.some(b => b[1] === bar[1] && Math.abs(+b[2] - (+bar[1] + +bar[2])) < 0.2))
 })
 
-test('the page has a five-step detail control, starting at the wordless text level', () => {
+test('presets: five, each adding to the one before; text and schematic keep lane names and no other words', () => {
+  const names = Object.keys(PRESETS), all = PARTS.map(p => p[0])
+  assert.deepEqual(names, ['text', 'schematic', 'simple', 'more', 'full'])
+  names.slice(1).forEach((n, i) => assert.ok(PRESETS[names[i]].every(p => PRESETS[n].includes(p)), `${n} keeps ${names[i]}`))
+  assert.deepEqual(PRESETS.text, ['lanes'])
+  assert.deepEqual(PRESETS.schematic, ['lanes', 'drawn', 'ticks'])
+  assert.deepEqual([...PRESETS.full].sort(), [...all].sort())
+})
+
+test('the view in the URL: a preset, plus the parts that differ from it', () => {
+  const all = PARTS.map(p => p[0])
+  assert.equal(viewToHash(PRESETS.schematic, PRESETS), 'level=schematic')
+  assert.equal(viewToHash([...PRESETS.schematic, 'grid'], PRESETS), 'level=schematic&parts=grid')
+  assert.equal(viewToHash(PRESETS.full.filter(p => p !== 'grid'), PRESETS), 'level=full&parts=-grid')
+  assert.deepEqual(hashToView('#level=schematic&parts=grid,-ticks', PRESETS, all), ['drawn', 'lanes', 'grid'])
+  assert.deepEqual(hashToView('#parts=drawn,bars', PRESETS, all), ['drawn', 'bars'])
+  assert.equal(hashToView('', PRESETS, all), null)
+  for (const view of [[], ['drawn'], ['drawn', 'names', 'note'], PRESETS.more]) // any view survives the round trip
+    assert.deepEqual(hashToView('#' + viewToHash(view, PRESETS), PRESETS, all), all.filter(p => view.includes(p)))
+})
+
+test('the page has five presets and a switch per part, and opens at the text preset', () => {
   const page = html(parse(DOC), DOC, '')
-  assert.equal(page.match(/<input type="radio" name="lv"/g).length, 5)
-  assert.match(page, /id="lvt" checked>Text/)
-  assert.match(page, /class="d-stage" style="--ht:\d+;--h0:\d+;--h1:\d+;--h2:\d+;--h3:\d+"/)
+  assert.deepEqual([...page.matchAll(/<button type="button" data-level="(\w+)" aria-pressed="(\w+)"/g)].map(m => m[1] + ':' + m[2]), ['text:true', 'schematic:false', 'simple:false', 'more:false', 'full:false'])
+  assert.deepEqual([...page.matchAll(/<input type="checkbox" id="p-(\w+)"( checked)?>/g)].map(m => m[1] + (m[2] ? '*' : '')), PARTS.map(p => p[0] + (p[0] === 'lanes' ? '*' : '')))
+  assert.match(page, /class="d-stage" style="--ht:\d+;--h0:\d+;--h1:\d+;--h2:\d+;--h3:\d+;--room:\d+;--tshift:[\d.]+%"/)
+  assert.match(page, /function viewToHash/)
   assert.match(page, /How to read this diagram/)
 })
 
@@ -118,7 +147,7 @@ legend
 S  sent  blue
 =  countdown  violet`)
   const out = svg(doc)
-  const rows = [...out.matchAll(/<text class="d-ascii"[^>]*>(.*?)<\/text>/g)].map(m => m[1].replace(/<[^>]+>/g, ''))
+  const rows = [...out.matchAll(/<text class="d-ascii" [^>]*>(.*?)<\/text>/g)].map(m => m[1].replace(/<[^>]+>/g, ''))
   assert.deepEqual(rows, ['-●=●--≈-----', '===≈=×=&gt;'])   // idle columns carry no character
   assert.match(out, /<tspan class="a-span h-violet" x="[\d. ]+">===<\/tspan><tspan class="a-break"/) // a span is a bold run, cut by the break
   assert.match(out, /<tspan class="a-dot h-blue" x="[\d.]+">●<\/tspan>/)
@@ -126,6 +155,5 @@ S  sent  blue
   const xs = [...out.matchAll(/<tspan[^>]* x="([\d. ]+)"/g)].flatMap(m => m[1].split(' ').map(Number))
   assert.deepEqual([...new Set(xs.map(v => Math.round((v - Math.min(...xs)) * 10) % 120))], [0])
   const g = geometry(doc)
-  assert.ok(g.text.H <= g.levels[0].H)
   assert.ok(out.includes(`style="--yt:${g.text.ys[1]}px;`))
 })

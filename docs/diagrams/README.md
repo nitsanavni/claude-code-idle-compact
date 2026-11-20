@@ -1,6 +1,6 @@
 # Diagrams
 
-Timelines of the idle-compact mod. Each `.marble` file is the ASCII source (read it directly if you are an agent); `docs/tools/marble.mjs` renders it to an `.html` page and an `.svg`. The pictures below show full detail. Each page opens as plain text, the source with the words taken out, and its Detail buttons (Text, Schematic, Simple, More, Full) draw it, then add the letters, then the names, then the fine print; its "How to read this diagram" explains every lettered marble. GitHub does not render HTML, so the page links below go through raw.githack.com. Regenerate with `node docs/tools/marble.mjs docs/diagrams/*.marble`.
+Timelines of the idle-compact mod. Each `.marble` file is the ASCII source (read it directly if you are an agent); `docs/tools/marble.mjs` renders it to an `.html` page and an `.svg`. The pictures below show full detail. Each page opens as plain text, the source with the words taken out; its Detail buttons (Text, Schematic, Simple, More, Full) draw it and add words step by step, and the Show switches under them turn single parts on and off. The view is kept in the page address, for example `#level=schematic&parts=grid`, so you can link to it; its "How to read this diagram" explains every lettered marble. GitHub does not render HTML, so the page links below go through raw.githack.com. Regenerate with `node docs/tools/marble.mjs docs/diagrams/*.marble`.
 
 ## Twenty quiet minutes, then a compact
 
