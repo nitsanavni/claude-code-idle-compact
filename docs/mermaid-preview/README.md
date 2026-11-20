@@ -1,6 +1,6 @@
 # marble-beta previews
 
-Rendered from branch `feature/marble-diagram` (mermaid sha 8d24d80d, `packages/mermaid/dist/mermaid.min.js`) in headless Chromium via Playwright, deviceScaleFactor 2, cropped to the SVG. Each example appears as written, then as `--dark` (theme: dark) and `--hand-drawn` (look: handDrawn, handDrawnSeed: 1) unless its source already sets that. Every `<name>.png` sits next to `<name>.mmd`, the exact source rendered, which is also shown under each image.
+Rendered from branch `feature/marble-diagram` (mermaid sha eff0b00d, `packages/mermaid/dist/mermaid.min.js`) in headless Chromium via Playwright, deviceScaleFactor 2, cropped to the SVG. Each example appears as written, then as `--dark` (theme: dark) and `--hand-drawn` (look: handDrawn, handDrawnSeed: 1) unless its source already sets that. Every `<name>.png` sits next to `<name>.mmd`, the exact source rendered, which is also shown under each image.
 
 ## should-render-a-simple-marble-diagram
 
