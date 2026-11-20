@@ -1,6 +1,6 @@
 # idle-compact
 
-You use Claude Code in a cloud session, and you'd like to spend tokens sensibly. You and Claude build up a hefty conversation, then you step away and forget about it. By the time you return, the prompt cache has expired, so your next message would pay to re-read all of it, uncached. If you're fine with that work being summarized, idle-compact compacts it while you're away, and you come back to a small, fresh context.
+You use Claude Code in a cloud session. The conversation gets large, and then you stop for a while. The prompt cache expires, so your next message pays to read the whole conversation again, uncached. If a summary of that work is enough for you, idle-compact compacts the conversation while you're away, and you come back to a small context.
 
 Claude Code already compacts an idle conversation on your own computer, but in **cloud sessions** that's turned off. idle-compact fills that gap, in cloud and local sessions alike. And you can **configure** it: how long to wait, how big the conversation must be, and how you're told, all changeable live.
 
@@ -8,7 +8,7 @@ Claude Code already compacts an idle conversation on your own computer, but in *
 
 [Open the story as a page](https://raw.githack.com/nitsanavni/claude-code-idle-compact/main/docs/humans/diagrams/story.html), with every term explained.
 
-There is a second story, where nobody steps away. The mod also gives Claude tools of its own: with `compact_after_turn` the agent compacts its own context window right after its current reply, when you ask or when it judges a piece of work is done, and with `status` and `config` it can check and tune the timer itself.
+In the second story, nobody stops working. The mod gives Claude three tools: with `compact_after_turn` the agent compacts its own context window right after its current reply, when you ask or when it judges a piece of work is done, and with `status` and `config` it can check and tune the timer itself.
 
 ![Claude can compact its own context when a piece of work is done](docs/humans/diagrams/story-2.svg)
 
