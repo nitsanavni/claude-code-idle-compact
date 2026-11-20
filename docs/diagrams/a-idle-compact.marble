@@ -2,6 +2,7 @@
 title:   Twenty quiet minutes, then a compact
 caption: When a turn ends, the mod arms a 20-minute timer. Nobody comes back, the timer fires, the context is still at least 120k tokens, so the conversation is compacted before the prompt cache goes cold.
 note:    1 column = 1 minute; the ≈ break skips ten quiet minutes. idleSeconds (1200) and minTokens (120000) are live-tunable.
+focus:   C
 break:   +10 min
 
 time        0    5m ≈   20m
@@ -10,9 +11,9 @@ timer       [=======≈===F
 compact  -----------≈----C---
 
 legend
-S  turn.start      plum
-~  turn            plum
-E  turn.complete — arms the timer  sky
-=  idle timer · 20 min  sand
-F  timer fires — context ≥ 120k  sand
-C  compact — fresh, small context  sage
+S  turn.start      blue
+~  turn            teal
+E  turn.complete — arms the timer  teal
+=  idle timer · 20 min  violet
+F  timer fires — context ≥ 120k  violet
+C  compact — fresh, small context  green

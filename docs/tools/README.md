@@ -11,13 +11,16 @@ The `.marble` source is the DSL and stays readable as plain ASCII, so agents can
 
 ```
 title:   ...            caption: ...            note: ...
+focus:   C              the one moment that matters: its first marble gets a soft halo (optional)
 break:   +10 min        label for the next time break, left to right (optional, repeatable)
 time        0  5m ≈ 20m axis labels sit at their column (a ≈ here is ignored, just for alignment)
 claude   -S~E----≈----  lane name, 2+ spaces, marbles (all lanes share one origin column)
 timer       [====≈==F
 legend
-S  turn.start  plum     <symbol>  <label[ — sub]>  [hue: ink sky sage sand rose plum mute]
+S  turn.start  blue     <symbol>  <label[ — sub]>  [hue]
 ```
+
+Hues have fixed roles across all diagrams: `blue` user, `violet` timer, `green` compact fired, `coral` cancel, `amber` warning/threshold, `teal` system; `mute` and `ink` are neutral (`sky sage sand rose plum` still work as older names). A one-letter event symbol is printed inside its marble. The page shows an always-visible legend row under the figure, plus the expandable "How to read this diagram".
 
 Marbles: `-` time passes, space = lane idle, `|` lane ends, `[` opens a span, `=`/`~` span fill (its legend entry names the span), `]` closes it, `x` cancels it, `>` means it runs on, any other character is an event. An event closes an open span, and opens one when fill follows it (`S~~E`).
 

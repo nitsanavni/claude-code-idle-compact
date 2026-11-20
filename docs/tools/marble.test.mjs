@@ -27,7 +27,7 @@ F  fires — after 5m  sand`)
   assert.deepEqual(doc.lanes.map(l => l.name), ['claude', 'timer'])
   assert.deepEqual(doc.lanes[1].items[0], { kind: 'span', fill: '=', from: 3, to: 8, end: 'close' })
   assert.deepEqual(doc.lanes[0].items.at(-1), { kind: 'end', col: 7 })
-  assert.deepEqual(doc.legend.F, { label: 'fires', sub: 'after 5m', hue: 'sand' })
+  assert.deepEqual(doc.legend.F, { label: 'fires', sub: 'after 5m', hue: 'sand', glyph: 'F' })
   assert.match(svg(doc), /^<svg[^>]+viewBox/)
 })
 

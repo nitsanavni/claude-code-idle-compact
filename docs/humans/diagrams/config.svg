@@ -1,92 +1,112 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 920 440" width="920" height="440" role="img" font-family="Inter, system-ui, sans-serif"><title>Four layers, merged one setting at a time</title><style>/* Diagram style guide: shared by every human-facing diagram in docs/.
-   Calm paper tones, one serif for voice, one sans for labels, one mono for source.
+   Clear and vivid on a cool white page: Inter for words, JetBrains Mono for source,
+   six saturated series hues with a fixed role each. Flat marks: no gradients, no glows.
    Tokens first; components below. Generators inline this file, so keep it small. */
 
 :root {
   /* surfaces */
-  --bg:        #f6f4ef;
-  --surface:   #fdfcf9;
-  --rule:      #e6e1d7;
-  --grid:      #ece8df;
+  --bg:        #f4f6fb;
+  --surface:   #ffffff;
+  --rule:      #dfe4ee;
+  --grid:      #eceff6;
   /* text */
-  --ink:       #2c2b28;
-  --ink-2:     #615d55;
-  --ink-3:     #9a958b;
-  /* hues: muted, similar lightness, each with a soft tint */
-  --sky:   #5f86ad;  --sky-tint:   #e3ebf3;
-  --sage:  #5f8f72;  --sage-tint:  #e2ede5;
-  --sand:  #b8894c;  --sand-tint:  #f4eadb;
-  --rose:  #b8695f;  --rose-tint:  #f4e2df;
-  --plum:  #84709f;  --plum-tint:  #ebe6f1;
-  --mute:  #8f8a80;  --mute-tint:  #ece9e3;
+  --ink:       #151a2d;
+  --ink-2:     #4a5268;
+  --ink-3:     #687087;
+  /* series hues, each with a tint. Fixed roles across all diagrams:
+     blue = user, violet = timer, green = compact fired, coral = cancel, amber = warning/threshold, teal = system */
+  --blue:   #2563eb;  --blue-tint:   #e8effe;
+  --green:  #0b8457;  --green-tint:  #e0f5ec;
+  --amber:  #b45309;  --amber-tint:  #fdf0d9;
+  --coral:  #d92d4f;  --coral-tint:  #fde7ec;
+  --violet: #7c3aed;  --violet-tint: #efe9fe;
+  --teal:   #0e7c9a;  --teal-tint:   #def3f8;
+  --on-hue: #ffffff;  /* glyphs inside a marble */
 
-  --serif: "Iowan Old Style", Charter, "Bitstream Charter", Georgia, serif;
   --sans:  Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+  --serif: var(--sans);   /* kept for older generators: everything is Inter now */
   --mono:  "JetBrains Mono", ui-monospace, "SF Mono", Menlo, Consolas, monospace;
 
-  --radius: 14px;
+  --radius: 16px;
   --space:  8px;            /* everything is a multiple of this */
   --measure: 62ch;          /* comfortable line length for prose */
+  --shadow: 0 1px 2px rgb(20 26 45 / .04), 0 8px 24px -12px rgb(20 26 45 / .12);
   color-scheme: light;
 }
 
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
-    --bg: #1b1c1e; --surface: #222326; --rule: #33353a; --grid: #2a2c30;
-    --ink: #e8e6e1; --ink-2: #b0aca4; --ink-3: #7a776f;
-    --sky:  #8fb0d1; --sky-tint:  #26313c;
-    --sage: #8dbb9d; --sage-tint: #243229;
-    --sand: #d7ae75; --sand-tint: #3a3123;
-    --rose: #d6928a; --rose-tint: #3b2826;
-    --plum: #ad9cc6; --plum-tint: #2f2a38;
-    --mute: #8f8b84; --mute-tint: #2c2c2d;
+    --bg: #121622; --surface: #1a1f2e; --rule: #2c3347; --grid: #232a3b;
+    --ink: #eef1f8; --ink-2: #aab3c7; --ink-3: #8791a8;
+    --blue: #6ea8ff; --green: #3ddc97; --amber: #ffb84d; --coral: #ff7a90; --violet: #b79bff; --teal: #3fd0e6;
+    --blue-tint:   color-mix(in srgb, var(--blue) 16%, var(--surface));
+    --green-tint:  color-mix(in srgb, var(--green) 16%, var(--surface));
+    --amber-tint:  color-mix(in srgb, var(--amber) 16%, var(--surface));
+    --coral-tint:  color-mix(in srgb, var(--coral) 16%, var(--surface));
+    --violet-tint: color-mix(in srgb, var(--violet) 16%, var(--surface));
+    --teal-tint:   color-mix(in srgb, var(--teal) 16%, var(--surface));
+    --on-hue: var(--bg);
+    --shadow: none;
     color-scheme: dark;
   }
 }
 :root[data-theme="dark"] {
-  --bg: #1b1c1e; --surface: #222326; --rule: #33353a; --grid: #2a2c30;
-  --ink: #e8e6e1; --ink-2: #b0aca4; --ink-3: #7a776f;
-  --sky:  #8fb0d1; --sky-tint:  #26313c;
-  --sage: #8dbb9d; --sage-tint: #243229;
-  --sand: #d7ae75; --sand-tint: #3a3123;
-  --rose: #d6928a; --rose-tint: #3b2826;
-  --plum: #ad9cc6; --plum-tint: #2f2a38;
-  --mute: #8f8b84; --mute-tint: #2c2c2d;
+  --bg: #121622; --surface: #1a1f2e; --rule: #2c3347; --grid: #232a3b;
+  --ink: #eef1f8; --ink-2: #aab3c7; --ink-3: #8791a8;
+  --blue: #6ea8ff; --green: #3ddc97; --amber: #ffb84d; --coral: #ff7a90; --violet: #b79bff; --teal: #3fd0e6;
+  --blue-tint:   color-mix(in srgb, var(--blue) 16%, var(--surface));
+  --green-tint:  color-mix(in srgb, var(--green) 16%, var(--surface));
+  --amber-tint:  color-mix(in srgb, var(--amber) 16%, var(--surface));
+  --coral-tint:  color-mix(in srgb, var(--coral) 16%, var(--surface));
+  --violet-tint: color-mix(in srgb, var(--violet) 16%, var(--surface));
+  --teal-tint:   color-mix(in srgb, var(--teal) 16%, var(--surface));
+  --on-hue: var(--bg);
+  --shadow: none;
   color-scheme: dark;
 }
 
 /* svg vocabulary (diagram generators emit these classes) */
 .d-grid   { stroke: var(--grid); stroke-width: 1; }
-.d-tick   { font: 500 11px var(--sans); fill: var(--ink-3); letter-spacing: .04em; }
-.d-lane   { font: 600 11px var(--sans); fill: var(--ink-3); letter-spacing: .12em; text-transform: uppercase; }
+.d-tick   { font: 500 11px var(--sans); fill: var(--ink-3); font-variant-numeric: tabular-nums; }
+.d-lane   { font: 600 12px var(--sans); fill: var(--ink-2); }
+.d-lane-bar { fill: var(--h); }
 .d-line   { stroke: var(--rule); stroke-width: 2; stroke-linecap: round; }
-.d-end    { stroke: var(--ink-3); stroke-width: 2; stroke-linecap: round; }
-.d-label  { font: 500 13px var(--sans); fill: var(--ink); }
-.d-sub    { font: 400 12px var(--sans); fill: var(--ink-3); }
-.d-span-label { font: 500 12px var(--sans); }
+.d-end    { stroke: var(--ink-2); stroke-width: 2; stroke-linecap: round; }
+.d-label  { font: 600 13px var(--sans); fill: var(--ink); }
+.d-sub    { font: 400 12px var(--sans); fill: var(--ink-2); }
+.d-span-label { font: 600 12px var(--sans); fill: var(--ink); }
 
-/* hue helpers: .h-sky etc. set --h / --t for marks */
-.h-ink  { --h: var(--ink);  --t: var(--mute-tint); }
-.h-sky  { --h: var(--sky);  --t: var(--sky-tint); }
-.h-sage { --h: var(--sage); --t: var(--sage-tint); }
-.h-sand { --h: var(--sand); --t: var(--sand-tint); }
-.h-rose { --h: var(--rose); --t: var(--rose-tint); }
-.h-plum { --h: var(--plum); --t: var(--plum-tint); }
-.h-mute { --h: var(--mute); --t: var(--mute-tint); }
-.d-dot      { fill: var(--surface); stroke: var(--h); stroke-width: 2.5; }
+/* hue helpers: .h-blue etc. set --h / --t for marks. The older names map onto the new roles. */
+.h-ink    { --h: var(--ink-2);  --t: var(--grid); }
+.h-mute   { --h: var(--ink-3);  --t: var(--grid); }
+.h-blue,   .h-sky  { --h: var(--blue);   --t: var(--blue-tint); }
+.h-green,  .h-sage { --h: var(--green);  --t: var(--green-tint); }
+.h-amber,  .h-sand { --h: var(--amber);  --t: var(--amber-tint); }
+.h-coral,  .h-rose { --h: var(--coral);  --t: var(--coral-tint); }
+.h-violet, .h-plum { --h: var(--violet); --t: var(--violet-tint); }
+.h-teal   { --h: var(--teal);   --t: var(--teal-tint); }
+.d-dot      { fill: var(--h); stroke: var(--surface); stroke-width: 3; }
 .d-dot-core { fill: var(--h); }
+.d-glyph    { font: 700 10px var(--sans); fill: var(--on-hue); }
 .d-halo     { fill: var(--t); }
-.d-span     { fill: var(--t); stroke: var(--h); stroke-width: 1.25; stroke-opacity: .55; }
-.d-span-label { fill: var(--h); }
-.d-cancel   { stroke: var(--h); stroke-width: 2.5; stroke-linecap: round; }
-.d-arrow    { fill: none; stroke: var(--h); stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; stroke-opacity: .7; }
+.d-span     { fill: var(--t); stroke: var(--h); stroke-width: 1.5; }
+.d-ghost    { fill: none; stroke: var(--ink-3); stroke-width: 1.5; stroke-dasharray: 4 4; }
+.d-cancel   { stroke: var(--coral); stroke-width: 2.5; stroke-linecap: round; }
+.d-arrow    { fill: var(--h); }
 .d-bg       { fill: var(--surface); stroke: var(--rule); }
+.d-break-gap   { fill: var(--surface); }
+.d-break-mark  { fill: none; stroke: var(--ink-3); stroke-width: 1.5; stroke-linecap: round; }
+.d-break-label { font: 500 11px var(--sans); fill: var(--ink-3); }
+@media (prefers-reduced-motion: no-preference) {
+  .d-mark { animation: d-pop 150ms ease-out both; animation-delay: calc(var(--i, 0) * 70ms); transform-box: fill-box; transform-origin: center; }
+  @keyframes d-pop { from { opacity: 0; transform: scale(.6); } }
+}
 
 
-.g-box    { fill: var(--t); stroke: var(--h); stroke-width: 1.25; stroke-opacity: .55; }
+.g-box    { fill: var(--t); stroke: var(--h); stroke-width: 1.5; }
 .g-box.dashed, .g-group { stroke-dasharray: 5 5; }
 .g-group  { fill: none; stroke: var(--ink-3); stroke-width: 1.25; stroke-opacity: .6; }
-.g-title  { font: 600 14px var(--sans); fill: var(--ink); }
+.g-title  { font: 600 13px var(--sans); fill: var(--ink); }
 .g-sub    { font: 400 12px var(--sans); fill: var(--ink-2); }
 .g-mono   { font: 500 12px var(--mono); fill: var(--ink); }
 .g-cap    { font: 600 11px var(--sans); fill: var(--ink-3); letter-spacing: .12em; text-transform: uppercase; }

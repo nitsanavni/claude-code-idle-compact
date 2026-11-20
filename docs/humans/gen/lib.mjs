@@ -12,10 +12,10 @@ export const r = n => Math.round(n * 10) / 10
 
 // Extra vocabulary for box, plot and graph diagrams, on top of style.css's tokens.
 export const EXTRA = `
-.g-box    { fill: var(--t); stroke: var(--h); stroke-width: 1.25; stroke-opacity: .55; }
+.g-box    { fill: var(--t); stroke: var(--h); stroke-width: 1.5; }
 .g-box.dashed, .g-group { stroke-dasharray: 5 5; }
 .g-group  { fill: none; stroke: var(--ink-3); stroke-width: 1.25; stroke-opacity: .6; }
-.g-title  { font: 600 14px var(--sans); fill: var(--ink); }
+.g-title  { font: 600 13px var(--sans); fill: var(--ink); }
 .g-sub    { font: 400 12px var(--sans); fill: var(--ink-2); }
 .g-mono   { font: 500 12px var(--mono); fill: var(--ink); }
 .g-cap    { font: 600 11px var(--sans); fill: var(--ink-3); letter-spacing: .12em; text-transform: uppercase; }
