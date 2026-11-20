@@ -131,54 +131,51 @@
 </style>
 <rect class="d-bg" x="0.5" y="0.5" width="919" height="522" rx="14"/><g class="h-blue"><circle cx="117.6" cy="56" r="30" style="fill: var(--t)"/><g transform="translate(117.6 56)"><path d="M-13 -5 a7 7 0 0 1 6.5 -9 a9 9 0 0 1 17 2 a6 6 0 0 1 2 11.5 h-24 a5 5 0 0 1 -1.5 -4.500 Z" transform="translate(1 -3)" style="fill: var(--h)"/><circle cx="0" cy="8" r="4" style="fill: var(--h)"/><path d="M-8 20 a8 7 0 0 1 16 0 Z" style="fill: var(--h)"/></g>
 <circle cx="91.6" cy="32" r="10" style="fill: var(--h); stroke: var(--surface); stroke-width: 3"/><text x="91.6" y="36" text-anchor="middle" style="font: 700 11px var(--sans); fill: var(--on-hue)">1</text></g>
-<text class="g-title" x="117.6" y="112" text-anchor="middle" style="font-size: 14px">A long session with</text>
-<text class="g-title" x="117.6" y="129" text-anchor="middle" style="font-size: 14px">Claude</text>
-<text class="g-sub" x="117.6" y="149" text-anchor="middle">You and Claude are deep</text>
-<text class="g-sub" x="117.6" y="165" text-anchor="middle">in a big task, and the</text>
-<text class="g-sub" x="117.6" y="181" text-anchor="middle">context keeps growing.</text>
+<text class="g-title" x="117.6" y="112" text-anchor="middle" style="font-size: 14px">A long session</text>
+<text class="g-sub" x="117.6" y="132" text-anchor="middle">You and Claude work on a</text>
+<text class="g-sub" x="117.6" y="148" text-anchor="middle">large task. The context</text>
+<text class="g-sub" x="117.6" y="164" text-anchor="middle">grows.</text>
 <g class="h-teal"><circle cx="288.8" cy="56" r="30" style="fill: var(--t)"/><g transform="translate(288.8 56)"><circle cx="0" cy="0" r="16" style="fill: var(--h)"/><path d="M-7 0 l5 5 l9 -10" style="fill: none; stroke: var(--t); stroke-width: 3; stroke-linecap: round; stroke-linejoin: round"/></g>
 <circle cx="262.8" cy="32" r="10" style="fill: var(--h); stroke: var(--surface); stroke-width: 3"/><text x="262.8" y="36" text-anchor="middle" style="font: 700 11px var(--sans); fill: var(--on-hue)">2</text></g>
 <path class="g-head" d="M199.2 51 l5 5 l-5 5"/>
 <text class="g-title" x="288.8" y="112" text-anchor="middle" style="font-size: 14px">A piece of work is</text>
 <text class="g-title" x="288.8" y="129" text-anchor="middle" style="font-size: 14px">finished</text>
-<text class="g-sub" x="288.8" y="149" text-anchor="middle">The tests pass, the notes</text>
-<text class="g-sub" x="288.8" y="165" text-anchor="middle">are written. Most of the</text>
-<text class="g-sub" x="288.8" y="181" text-anchor="middle">history is no longer</text>
-<text class="g-sub" x="288.8" y="197" text-anchor="middle">needed.</text>
+<text class="g-sub" x="288.8" y="149" text-anchor="middle">For example, the tests</text>
+<text class="g-sub" x="288.8" y="165" text-anchor="middle">pass. Most of the history</text>
+<text class="g-sub" x="288.8" y="181" text-anchor="middle">is no longer needed.</text>
 <g class="h-violet"><circle cx="460" cy="56" r="30" style="fill: var(--t)"/><g transform="translate(460 56)"><path d="M-15 -13 h30 a4 4 0 0 1 4 4 v14 a4 4 0 0 1 -4 4 h-18 l-8 8 v-8 h-4 a4 4 0 0 1 -4 -4 v-14 a4 4 0 0 1 4 -4 Z" style="fill: var(--h)"/><path d="M-9 -5 h18 M-9 2 h11" style="stroke: var(--t); stroke-width: 2.5; stroke-linecap: round"/></g>
 <circle cx="434" cy="32" r="10" style="fill: var(--h); stroke: var(--surface); stroke-width: 3"/><text x="434" y="36" text-anchor="middle" style="font: 700 11px var(--sans); fill: var(--on-hue)">3</text></g>
 <path class="g-head" d="M370.4 51 l5 5 l-5 5"/>
-<text class="g-title" x="460" y="112" text-anchor="middle" style="font-size: 14px">Claude asks to</text>
-<text class="g-title" x="460" y="129" text-anchor="middle" style="font-size: 14px">compact</text>
-<text class="g-sub" x="460" y="149" text-anchor="middle">You say &quot;compact after</text>
-<text class="g-sub" x="460" y="165" text-anchor="middle">this turn&quot;, or Claude</text>
-<text class="g-sub" x="460" y="181" text-anchor="middle">decides itself, and it</text>
-<text class="g-sub" x="460" y="197" text-anchor="middle">calls a tool.</text>
+<text class="g-title" x="460" y="112" text-anchor="middle" style="font-size: 14px">Claude calls the tool</text>
+<text class="g-sub" x="460" y="132" text-anchor="middle">You ask for a compaction,</text>
+<text class="g-sub" x="460" y="148" text-anchor="middle">or Claude decides to</text>
+<text class="g-sub" x="460" y="164" text-anchor="middle">compact. Claude calls</text>
+<text class="g-sub" x="460" y="180" text-anchor="middle">compact_after_turn.</text>
 <g class="h-green"><circle cx="631.2" cy="56" r="30" style="fill: var(--t)"/><g transform="translate(631.2 56)"><rect x="-17" y="-14" width="14" height="4" rx="1.5" style="fill: var(--h); opacity: .45"/><rect x="-17" y="-8" width="14" height="4" rx="1.5" style="fill: var(--h); opacity: .45"/><rect x="-17" y="-2" width="14" height="4" rx="1.5" style="fill: var(--h); opacity: .45"/><rect x="-17" y="4" width="14" height="4" rx="1.5" style="fill: var(--h); opacity: .45"/><rect x="-17" y="10" width="14" height="4" rx="1.5" style="fill: var(--h); opacity: .45"/><path d="M0 0 h7 m-4 -4 l4 4 l-4 4" style="fill: none; stroke: var(--h); stroke-width: 2; stroke-linecap: round; stroke-linejoin: round"/><rect x="10" y="-2" width="9" height="4" rx="1.5" style="fill: var(--h)"/></g>
 <circle cx="605.2" cy="32" r="10" style="fill: var(--h); stroke: var(--surface); stroke-width: 3"/><text x="605.2" y="36" text-anchor="middle" style="font: 700 11px var(--sans); fill: var(--on-hue)">4</text></g>
 <path class="g-head" d="M541.6 51 l5 5 l-5 5"/>
-<text class="g-title" x="631.2" y="112" text-anchor="middle" style="font-size: 14px">Compacted, right</text>
-<text class="g-title" x="631.2" y="129" text-anchor="middle" style="font-size: 14px">after the reply</text>
-<text class="g-sub" x="631.2" y="149" text-anchor="middle">One second after the</text>
-<text class="g-sub" x="631.2" y="165" text-anchor="middle">reply ends: no 20-minute</text>
-<text class="g-sub" x="631.2" y="181" text-anchor="middle">wait and no size check.</text>
+<text class="g-title" x="631.2" y="112" text-anchor="middle" style="font-size: 14px">Compaction after the</text>
+<text class="g-title" x="631.2" y="129" text-anchor="middle" style="font-size: 14px">reply</text>
+<text class="g-sub" x="631.2" y="149" text-anchor="middle">It runs one second after</text>
+<text class="g-sub" x="631.2" y="165" text-anchor="middle">the reply ends. There is</text>
+<text class="g-sub" x="631.2" y="181" text-anchor="middle">no 20-minute wait and no</text>
+<text class="g-sub" x="631.2" y="197" text-anchor="middle">size check.</text>
 <g class="h-green"><circle cx="802.4" cy="56" r="30" style="fill: var(--t)"/><g transform="translate(802.4 56)"><circle cx="0" cy="-7" r="7" style="fill: var(--h)"/><path d="M-13 15 a13 12 0 0 1 26 0 Z" style="fill: var(--h)"/></g>
 <circle cx="776.4" cy="32" r="10" style="fill: var(--h); stroke: var(--surface); stroke-width: 3"/><text x="776.4" y="36" text-anchor="middle" style="font: 700 11px var(--sans); fill: var(--on-hue)">5</text></g>
 <path class="g-head" d="M712.8 51 l5 5 l-5 5"/>
 <text class="g-title" x="802.4" y="112" text-anchor="middle" style="font-size: 14px">The next task starts</text>
-<text class="g-title" x="802.4" y="129" text-anchor="middle" style="font-size: 14px">small</text>
-<text class="g-sub" x="802.4" y="149" text-anchor="middle">Same session, fresh</text>
-<text class="g-sub" x="802.4" y="165" text-anchor="middle">context. Every message</text>
-<text class="g-sub" x="802.4" y="181" text-anchor="middle">from here on has less to</text>
-<text class="g-sub" x="802.4" y="197" text-anchor="middle">read.</text>
+<text class="g-title" x="802.4" y="129" text-anchor="middle" style="font-size: 14px">with a small context</text>
+<text class="g-sub" x="802.4" y="149" text-anchor="middle">The session continues.</text>
+<text class="g-sub" x="802.4" y="165" text-anchor="middle">Each later message reads</text>
+<text class="g-sub" x="802.4" y="181" text-anchor="middle">less.</text>
 <text class="g-cap" x="32" y="243">Context size</text>
 <clipPath id="before"><rect x="0" y="0" width="631.2" height="386"/></clipPath><clipPath id="after"><rect x="631.2" y="0" width="920" height="386"/></clipPath>
 <g class="h-teal" clip-path="url(#before)"><path d="M32 355 C117.6 355 117.6 304.8 203.2 304.8 C288.8 304.8 288.8 270.5 374.4 270.5 C460 270.5 460 267.8 545.6 267.8 H617.2 C631.2 267.8 631.2 370.8 645.2 370.8 H716.8 C802.4 370.8 802.4 352.3 888 352.3 V384 H32 Z" style="fill: var(--t)"/><path d="M32 355 C117.6 355 117.6 304.8 203.2 304.8 C288.8 304.8 288.8 270.5 374.4 270.5 C460 270.5 460 267.8 545.6 267.8 H617.2 C631.2 267.8 631.2 370.8 645.2 370.8 H716.8 C802.4 370.8 802.4 352.3 888 352.3" style="fill: none; stroke: var(--h); stroke-width: 2.5"/></g>
 <g class="h-green" clip-path="url(#after)"><path d="M32 355 C117.6 355 117.6 304.8 203.2 304.8 C288.8 304.8 288.8 270.5 374.4 270.5 C460 270.5 460 267.8 545.6 267.8 H617.2 C631.2 267.8 631.2 370.8 645.2 370.8 H716.8 C802.4 370.8 802.4 352.3 888 352.3 V384 H32 Z" style="fill: var(--t)"/><path d="M32 355 C117.6 355 117.6 304.8 203.2 304.8 C288.8 304.8 288.8 270.5 374.4 270.5 C460 270.5 460 267.8 545.6 267.8 H617.2 C631.2 267.8 631.2 370.8 645.2 370.8 H716.8 C802.4 370.8 802.4 352.3 888 352.3" style="fill: none; stroke: var(--h); stroke-width: 2.5"/></g>
 <g class="h-coral"><path d="M631.2 267.8 H880" style="fill: none; stroke: var(--h); stroke-width: 2.5; stroke-dasharray: 2 7; stroke-linecap: round"/>
 <circle cx="880" cy="267.8" r="6" style="fill: var(--h); stroke: var(--surface); stroke-width: 3"/>
-<text class="g-sub" x="888" y="289.8" text-anchor="end" style="fill: var(--h); font-weight: 500">without it: every later message keeps</text>
-<text class="g-sub" x="888" y="304.8" text-anchor="end" style="fill: var(--h); font-weight: 500">carrying the whole history</text>
+<text class="g-sub" x="888" y="289.8" text-anchor="end" style="fill: var(--h); font-weight: 500">without it: every later message reads</text>
+<text class="g-sub" x="888" y="304.8" text-anchor="end" style="fill: var(--h); font-weight: 500">the whole history</text>
 </g><g class="h-green"><circle cx="880" cy="352.3" r="6" style="fill: var(--h); stroke: var(--surface); stroke-width: 3"/>
 <text class="g-title" x="866" y="340.3" text-anchor="end" style="fill: var(--h)">with idle-compact</text></g>
 <line class="g-axis" x1="32" y1="384" x2="888" y2="384"/>
@@ -186,6 +183,6 @@
 <circle cx="64" cy="453.5" r="15" style="fill: var(--h)"/><path d="M57 453.5 h14 m-7 -7 v14" style="stroke: var(--on-hue); stroke-width: 2.5; stroke-linecap: round"/></g>
 <text class="g-title" x="94" y="433" style="font-size: 14px">Three tools for Claude</text>
 <text class="g-sub" x="94" y="452">compact_after_turn compacts as soon as the current reply ends. config reads or changes the settings (how long to wait, how</text>
-<text class="g-sub" x="94" y="469">big is big enough) and takes effect at once. status shows the settings and what the timer is doing. So Claude can tune and</text>
-<text class="g-sub" x="94" y="486">check idle-compact itself.</text>
+<text class="g-sub" x="94" y="469">big is big enough) and takes effect at once. status shows the settings and what the timer is doing. Claude can use these</text>
+<text class="g-sub" x="94" y="486">to check and change idle-compact.</text>
 </svg>

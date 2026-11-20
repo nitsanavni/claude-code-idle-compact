@@ -1,14 +1,14 @@
 # The story idle-compact was made for, in five scenes, over a graph of how big the conversation is.
 title:   Use Claude Code in the cloud without paying to re-read a big conversation
-caption: You work with Claude in a cloud session and want to spend tokens sensibly. The conversation grows large, you step away and forget it, and the prompt cache expires. idle-compact compacts it while you are gone, so coming back costs a short summary instead of re-reading the whole thing uncached.
+caption: You work with Claude in a cloud session. The conversation gets large, you stop for a while, and the prompt cache expires. idle-compact compacts the conversation while you are away, so your next message reads a short summary instead of the whole conversation without the cache.
 note:    Compacting replaces the details of the old conversation with a summary. This story is for when that trade is fine with you; if it is not, raise the thresholds or switch the mod off.
 
 # scene  <icon>  <hue>  <size from>-<size to>  <title> — <text>      sizes are percent of the graph's height
-scene  cloud    blue    6-40    You, using Claude Code in the cloud — You work with Claude in a cloud session, and you would rather not waste tokens.
-scene  grow     teal    40-86   The conversation gets hefty — Every message, file and reply is added to the context. It is now around 150k tokens, but the cache keeps each new message cheap.
-scene  away     mute    86-86   You step away; the cache expires — Lunch, a meeting, the weekend. The cache that made each message cheap is gone.
-scene  compact  green   86-10   It is compacted for you — After 20 quiet minutes idle-compact has Claude Code swap the history for a short summary.
-scene  back     green   10-16   You return to a small context — Your next message reads a summary, not 150k uncached tokens: faster, and far cheaper.
+scene  cloud    blue    6-40    You use Claude Code in the cloud — You work with Claude in a cloud session.
+scene  grow     teal    40-86   The conversation gets large — Every message, file and reply is added to the context. It reaches about 150k tokens. The cache keeps each new message cheap.
+scene  away     mute    86-86   You stop; the cache expires — You stop working for a while. The cache expires.
+scene  compact  green   86-10   idle-compact compacts it — After 20 minutes without a turn, idle-compact runs /compact. The conversation is replaced by a short summary.
+scene  back     green   10-16   You come back to a small context — Your next message reads the summary, not 150k uncached tokens. It is faster and cheaper.
 
 graph    Context size — what every message costs to read
 away     3 4  you are away

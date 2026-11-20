@@ -1,20 +1,20 @@
 # The second story: not idle at all. Claude compacts its own context when a chunk of work is done.
 title:   Claude can compact its own context when a piece of work is done
-caption: You do not have to walk away for a compaction to happen. idle-compact gives Claude a tool to compact its own conversation right after its current reply, so a long session can shed finished work and carry on small.
+caption: Compaction can also happen while you are working. idle-compact gives Claude a tool that compacts the conversation right after its current reply. Use it when a piece of work is finished.
 note:    This path skips both the 20-minute wait and the size check: it compacts one second after the reply ends, whatever the size.
 
 # scene  <icon>  <hue>  <size from>-<size to>  <title> — <text>      sizes are percent of the graph's height
-scene  cloud    blue    22-60   A long session with Claude — You and Claude are deep in a big task, and the context keeps growing.
-scene  done     teal    60-86   A piece of work is finished — The tests pass, the notes are written. Most of the history is no longer needed.
-scene  ask      violet  86-88   Claude asks to compact — You say "compact after this turn", or Claude decides itself, and it calls a tool.
-scene  compact  green   88-10   Compacted, right after the reply — One second after the reply ends: no 20-minute wait and no size check.
-scene  back     green   10-24   The next task starts small — Same session, fresh context. Every message from here on has less to read.
+scene  cloud    blue    22-60   A long session — You and Claude work on a large task. The context grows.
+scene  done     teal    60-86   A piece of work is finished — For example, the tests pass. Most of the history is no longer needed.
+scene  ask      violet  86-88   Claude calls the tool — You ask for a compaction, or Claude decides to compact. Claude calls compact_after_turn.
+scene  compact  green   88-10   Compaction after the reply — It runs one second after the reply ends. There is no 20-minute wait and no size check.
+scene  back     green   10-24   The next task starts with a small context — The session continues. Each later message reads less.
 
 graph    Context size — what every message has to carry
 with     with idle-compact
-without  without it: every later message keeps carrying the whole history
+without  without it: every later message reads the whole history
 
-also     violet  Three tools for Claude — compact_after_turn compacts as soon as the current reply ends. config reads or changes the settings (how long to wait, how big is big enough) and takes effect at once. status shows the settings and what the timer is doing. So Claude can tune and check idle-compact itself.
+also     violet  Three tools for Claude — compact_after_turn compacts as soon as the current reply ends. config reads or changes the settings (how long to wait, how big is big enough) and takes effect at once. status shows the settings and what the timer is doing. Claude can use these to check and change idle-compact.
 
 term  Tool — an action an add-on makes available to Claude. You do not call it yourself; you ask Claude in plain words and it uses the tool.
 term  Turn — one round of the conversation: your message, and everything Claude does until its reply is done.
