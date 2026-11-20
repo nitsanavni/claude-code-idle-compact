@@ -1,6 +1,8 @@
 # idle-compact
 
-A Claude Code mod that compacts the conversation after you've been idle for a while, before the prompt cache expires. When you come back, the next turn starts from a small, fresh context instead of re-reading a large, uncached one.
+Claude Code already compacts an idle conversation on your own computer, but in **cloud sessions** that's turned off. idle-compact fills that gap: it compacts after you've been idle for a while, before the prompt cache expires, in cloud and local sessions alike. And you can **configure** it: how long to wait, how big the conversation must be, and how you're told, all changeable live.
+
+When you come back, the next turn starts from a small, fresh context instead of re-reading a large, uncached one.
 
 ![idle-compact at a glance: the parts, and how they work together](docs/humans/diagrams/overview.svg)
 
