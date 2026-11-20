@@ -34,3 +34,20 @@ F  fires — after 5m  sand`)
 test('rejects unknown hues', () => {
   assert.throws(() => parse('a  -x-\nlegend\nx  boom  neon'), /unknown hue/)
 })
+
+test('time breaks: an aligned ≈ column, labels in order, spans run through it', () => {
+  const doc = parse(`break: +10 min
+time     0  ≈  20m
+claude   -E-≈--C-
+timer     [=≈=F
+
+legend
+=  timer  sand`)
+  assert.deepEqual(doc.breaks, [{ col: 3, label: '+10 min' }])
+  assert.deepEqual(doc.axis.map(a => a.text), ['0', '20m'])
+  assert.deepEqual(doc.lanes[1].items[0], { kind: 'span', fill: '=', from: 1, to: 5, end: 'close' })
+  assert.deepEqual(doc.lanes[0].segs, [{ from: 0, to: 7 }])
+  assert.match(svg(doc), /d-break-mark/)
+  assert.throws(() => parse('a  -≈-\nb  -x-'), /time break at column 1 is not aligned: lane "b"/)
+  assert.throws(() => parse('break: one\nbreak: two\na  -≈-'), /2 break: labels but only 1/)
+})

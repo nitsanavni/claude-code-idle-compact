@@ -117,6 +117,9 @@ details.source pre {
 .d-cancel   { stroke: var(--h); stroke-width: 2.5; stroke-linecap: round; }
 .d-arrow    { fill: none; stroke: var(--h); stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; stroke-opacity: .7; }
 .d-bg       { fill: var(--surface); stroke: var(--rule); }
+.d-break-gap   { fill: var(--surface); }
+.d-break-mark  { fill: none; stroke: var(--ink-3); stroke-width: 1.5; stroke-linecap: round; }
+.d-break-label { font: 500 11px var(--sans); fill: var(--ink-3); letter-spacing: .04em; }
 
 /* "How to read this diagram": a quiet, expandable key */
 details.key { margin-top: calc(var(--space) * 3); max-width: var(--measure); }

@@ -5,12 +5,14 @@
 // Source format (see docs/tools/README.md):
 //   # comment                      ignored
 //   title: / caption: / note:      page text
+//   break: <label>                 label for the next time break, left to right (optional)
 //   time     0    5    10          axis: each label sits at its column
 //   lane     -a---[====b---x   |   one lane per line; lane name, 2+ spaces, marbles
 //   legend                         then lines:  <sym>  <label[ — sub]>  [hue]
 // Marbles: '-' time passes, ' ' lane idle, '|' lane ends, '[' opens a span,
 //   '=' or '~' span fill, ']' closes, 'x' cancels (closes a span), '>' span runs on,
 //   any other char is an event; an event closes an open span, and opens one if fill follows.
+//   '≈' is a time break: a column of it, aligned across lanes, skips ahead (time is compressed there).
 // Columns are instants: all lanes share one origin (the leftmost marble column).
 
 import { readFileSync, writeFileSync } from 'node:fs'
@@ -18,14 +20,18 @@ import { dirname, join } from 'node:path'
 import { fileURLToPath } from 'node:url'
 
 const FILL = new Set(['=', '~'])
+export const BREAK = '≈'
 const HUES = new Set(['ink', 'sky', 'sage', 'sand', 'rose', 'plum', 'mute'])
 
 export function parse(src) {
-  const doc = { title: '', caption: '', note: '', axis: [], lanes: [], legend: {}, cols: 0 }
+  const doc = { title: '', caption: '', note: '', axis: [], lanes: [], legend: {}, cols: 0, breaks: [] }
+  const labels = []
   const raw = [] // [{name, start, line}] before origin is known
   let mode = 'lanes'
   for (const line of src.split('\n').map(l => l.replace(/\s+$/, ''))) {
     if (!line.trim() || line.trim().startsWith('#')) continue
+    const br = line.match(/^break:\s*(.*)$/)
+    if (br) { labels.push(br[1]); continue }
     const kv = line.match(/^(title|caption|note):\s*(.*)$/)
     if (kv) { doc[kv[1]] = doc[kv[1]] ? doc[kv[1]] + ' ' + kv[2] : kv[2]; continue }
     if (/^legend:?$/.test(line.trim())) { mode = 'legend'; continue }
@@ -47,9 +53,17 @@ export function parse(src) {
     const cells = r.line.slice(origin)
     doc.cols = Math.max(doc.cols, cells.length)
     if (r.name === 'time') {
-      for (const t of cells.matchAll(/\S+/g)) doc.axis.push({ col: t.index, text: t[0] })
+      for (const t of cells.matchAll(/\S+/g)) if (t[0] !== BREAK) doc.axis.push({ col: t.index, text: t[0] })
     } else doc.lanes.push({ name: r.name, ...lane(cells) })
   }
+  // a break is a column, so every lane must agree: '≈' or idle (' ') there, nothing else
+  const cols = [...new Set(raw.flatMap(r => [...r.line.slice(origin)].flatMap((c, i) => c === BREAK ? [i] : [])))].sort((a, b) => a - b)
+  for (const r of raw) for (const col of cols) {
+    const c = r.line.slice(origin)[col]
+    if (c !== undefined && c !== ' ' && c !== BREAK) throw new Error(`time break at column ${col} is not aligned: lane "${r.name}" has "${c}" there`)
+  }
+  if (labels.length > cols.length) throw new Error(`${labels.length} break: labels but only ${cols.length} time breaks`)
+  doc.breaks = cols.map((col, i) => ({ col, label: labels[i] || '' }))
   return doc
 }
 
@@ -62,7 +76,7 @@ export function lane(cells) {
     if (c === ' ') { if (seg) { segs.push(seg); seg = null } continue }
     if (!seg) seg = { from: i, to: i }
     seg.to = i
-    if (c === '-' || (span && FILL.has(c))) continue
+    if (c === '-' || c === BREAK || (span && FILL.has(c))) continue
     if (c === '[') { span = { fill: FILL.has(cells[i + 1]) ? cells[i + 1] : '=', from: i }; continue }
     if (c === ']') { if (span) close(i, 'close'); continue }
     if (c === '>') { if (span) close(i, 'open'); continue }
@@ -84,8 +98,15 @@ const textW = (s, px) => s.length * px * 0.56 // close enough for Inter at small
 
 export function svg(doc, { css = '' } = {}) {
   const W = 920, L = 112, R = 40, top = 28
-  const cell = (W - L - R) / Math.max(1, doc.cols - 1)
-  const x = col => L + col * cell
+  // time breaks compress the axis: the steps into and out of a break column get a fixed small width
+  const brk = new Set(doc.breaks.map(b => b.col)), GAP = 14
+  const narrow = i => brk.has(i) || brk.has(i + 1)
+  const steps = Math.max(1, doc.cols - 1)
+  const nNarrow = [...Array(steps).keys()].filter(narrow).length
+  const cell = (W - L - R - nNarrow * GAP) / Math.max(1, steps - nNarrow)
+  const xs = [L]
+  for (let i = 0; i < steps; i++) xs.push(xs[i] + (narrow(i) ? GAP : cell))
+  const x = col => xs[Math.min(Math.max(0, col), xs.length - 1)]
   const legend = s => doc.legend[s] || { label: s, sub: '', hue: 'ink' }
   const out = []
   let y = top + 18
@@ -110,6 +131,7 @@ export function svg(doc, { css = '' } = {}) {
     return res
   })
   const H = y + 4
+  const front = [] // dots and labels sit above the break bands
 
   if (css) out.push(`<style>${css}</style>`, `<rect class="d-bg" x="0.5" y="0.5" width="${W - 1}" height="${H - 1}" rx="16"/>`)
   // axis + quiet grid
@@ -127,8 +149,13 @@ export function svg(doc, { css = '' } = {}) {
         out.push(`<rect class="d-span" x="${x1}" y="${ly - 12}" width="${w}" height="24" rx="12"/>`)
         if (it.end === 'open') out.push(`<path class="d-arrow" d="M${x2 - 16} ${ly - 5} l5 5 l-5 5 M${x2 - 10} ${ly - 5} l5 5 l-5 5"/>`)
         if (g.label && it.fill in doc.legend) {
-          const fits = textW(g.label, 12) + 40 < w
-          const lx = (x1 + x2) / 2 - (it.end === 'open' ? 10 : 0)
+          // a span cut by time breaks: label its widest piece
+          const cuts = doc.breaks.map(b => b.col).filter(c => c > it.from && c < it.to)
+          const pieces = [it.from, ...cuts, it.to].slice(1).map((c, i, a) => [x(i ? cuts[i - 1] : it.from) + (i ? 4 : 0), x(c) - (c === it.to ? 0 : 4)])
+          const [p1, p2] = pieces.reduce((m, p) => p[1] - p[0] > m[1] - m[0] ? p : m)
+          const lastOpen = it.end === 'open' && p2 === x2
+          const fits = textW(g.label, 12) + 40 < p2 - p1
+          const lx = (p1 + p2) / 2 - (lastOpen ? 10 : 0)
           // too short for its label: leave it unlabelled; the key below names it
           if (fits) out.push(`<text class="d-span-label" x="${lx}" y="${ly + 4.5}" text-anchor="middle">${esc(g.label)}</text>`)
         }
@@ -138,6 +165,7 @@ export function svg(doc, { css = '' } = {}) {
       }
     }
     for (const { it, g, cx, r } of placed) {
+      const out = front
       const px = x(it.col), ty = r === 1 ? ly - 40 : ly + 34 + Math.max(0, r - 1) * 40
       out.push(`<g class="h-${it.kind === 'cancel' && !(it.sym in doc.legend) ? 'rose' : g.hue}">`)
       if (r > 1) out.push(`<line class="d-grid" x1="${px}" y1="${ly + 14}" x2="${px}" y2="${ty - 14}"/>`)
@@ -154,6 +182,19 @@ export function svg(doc, { css = '' } = {}) {
       if (g.sub) out.push(`<text class="d-sub" x="${cx}" y="${ty + 17}" text-anchor="middle">${esc(g.sub)}</text>`)
     }
   }
+  // time breaks: an 8px gap cut through every lane, a slanted // in it, and a small label up with the ticks
+  for (const b of doc.breaks) {
+    const bx = x(b.col)
+    out.push(`<g class="d-break">`)
+    for (const { ln, y: ly } of lanes) {
+      if (!ln.segs.some(s => s.from <= b.col && s.to >= b.col)) continue
+      out.push(`<rect class="d-break-gap" x="${bx - 4}" y="${ly - 14}" width="8" height="28"/>`)
+      out.push(`<path class="d-break-mark" d="M${bx - 5.5} ${ly + 6} L${bx - 0.5} ${ly - 6} M${bx + 0.5} ${ly + 6} L${bx + 5.5} ${ly - 6}"/>`)
+    }
+    if (b.label) out.push(`<text class="d-break-label" x="${bx}" y="${top}" text-anchor="middle">${esc(b.label)}</text>`)
+    out.push(`</g>`)
+  }
+  out.push(...front)
   const title = doc.title ? `<title>${esc(doc.title)}</title>` : ''
   return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${W} ${Math.ceil(H)}" width="${W}" height="${Math.ceil(H)}" role="img" font-family="Inter, system-ui, sans-serif">${title}\n${out.join('\n')}\n</svg>`
 }
@@ -177,6 +218,10 @@ export function key(doc) {
   const extra = []
   if (all.some(i => i.kind === 'cancel')) extra.push(li(icon(`<g class="h-${doc.legend.x ? g('x').hue : 'rose'}"><circle class="d-halo" cx="17" cy="9" r="8.5"/><path class="d-cancel" d="M13.5 5.5 L20.5 12.5 M20.5 5.5 L13.5 12.5"/></g>`), 'Cross', ' — a cancellation: the span ends here, before it ran its course.'))
   if (all.some(i => i.kind === 'span' && i.end === 'open')) extra.push(li(icon(`<g class="h-sand"><path class="d-arrow" d="M10 4 l5 5 l-5 5 M17 4 l5 5 l-5 5"/></g>`), 'Chevrons', ' — the span is still running past the right edge.'))
+  if (doc.breaks.length) {
+    const said = [...new Set(doc.breaks.map(b => b.label).filter(Boolean))]
+    extra.push(li(icon('<line class="d-line" x1="1" y1="9" x2="12" y2="9"/><line class="d-line" x1="22" y1="9" x2="33" y2="9"/><path class="d-break-mark" d="M11.5 14 L16 4 M18 14 L22.5 4"/>'), 'Time break', ` — the timeline skips ahead here${said.length ? ` (${said.map(esc).join(', ')})` : ''}; time is not to scale across it, so a span that crosses it lasts longer than it looks.`))
+  }
   if (all.some(i => i.kind === 'end')) extra.push(li(icon('<line class="d-end" x1="17" y1="2" x2="17" y2="16"/>'), 'Bar', ' — the lane ends.'))
   extra.push(li(icon('<line class="d-line" x1="1" y1="9" x2="33" y2="9"/>'), 'Thin line', ' — time passing with nothing happening. A gap in a lane means that actor is inactive.'))
   parts.push(`<ul>${extra.join('')}</ul>`)
