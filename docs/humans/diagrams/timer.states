@@ -1,25 +1,32 @@
 # The idle timer as a state machine. Positions are grid cells: at <col> <row>.
-title:   The timer, from turn to compaction
-caption: Every time a turn ends the mod starts a countdown, and every new turn cancels it. If the countdown runs out, the mod looks at the context size and compacts only when it is worth it. Claude can also ask for a compaction right after the current turn.
-note:    After any outcome the timer rests until the next turn ends. Settings are read again at every start and at every check, so changes apply on the next turn.
+title:   How idle-compact decides when to compact
+caption: When Claude finishes replying, idle-compact starts a countdown, and your next message cancels it. If the countdown runs out, the conversation is compacted, but only when it is big enough to be worth it.
+note:    After any outcome the timer rests until Claude finishes its next reply. The numbers shown are the defaults: 20 minutes and 120,000 tokens are both settings.
 
 start  session  at 0 -0.8
-start  tool     at 0.05 1
-state  idle     Resting — no countdown          at 0 0    mute
-state  armed    Counting down — idleSeconds     at 1 0    sand
-state  check    Checking — how big is it?       at 2 0    sky
-state  done     Compacted — toast, log, push    at 3 -1   sage
-state  skip     Skipped — too small to bother   at 3 0    mute
-state  dry      Dry run — reports, no change    at 3 1    mute
-state  queued   Queued — waits for turn end     at 1 1    plum
+start  tool     at -0.3 1
+state  idle     Resting — no countdown running        at 0 0    mute
+state  armed    Counting down — 20 minutes by default  at 1 0    violet
+state  check    Size check — is it big enough?        at 2 0    amber
+state  done     Compacted — and you are notified      at 3 -1   green
+state  skip     Left alone — too small to matter      at 3 0    mute
+state  dry      Dry run — a report, no change         at 3 1    mute
+state  queued   Requested — waits for the reply to end  at 1 1    teal
 
-session -> idle   session starts
-idle -> armed     turn ends  bend 16
-armed -> idle     new turn starts  bend 16
-armed -> armed    turn ends or settings change
+session -> idle   a session starts
+idle -> armed     Claude finishes replying  bend 22
+armed -> idle     you send a message  bend 22
+armed -> armed    another reply ends, or a setting changes
 armed -> check    time is up
-check -> done     ≥ minTokens
-check -> skip     < minTokens
-check -> dry      ≥ minTokens, dryRun
-tool -> queued    compact_after_turn  dashed
-queued -> check   turn ends, 1 s later  dashed
+check -> done     big enough
+check -> skip     too small
+check -> dry      big enough, dry run on
+tool -> queued    Claude asks to compact now  dashed
+queued -> check   1 second after the reply ends  dashed  bend -8
+
+term  Compact — Claude Code replaces the conversation so far with a short summary of it, so there is far less to re-read.
+term  Big enough — the conversation holds at least 120,000 tokens (a token is a small piece of text, roughly three quarters of a word). Smaller conversations are cheap to re-read, so they are left alone.
+term  Notified — a short message on screen, a line in the mod's log, and a notification on your phone or desktop.
+term  Dry run — a setting for trying the mod out: it reports what it would have done and changes nothing.
+term  Claude asks to compact now — idle-compact gives Claude a tool for this (compact_after_turn). Ask Claude to "compact after this turn" and it skips the wait and the size check.
+term  Session — one conversation with Claude Code, on your computer or in the cloud.

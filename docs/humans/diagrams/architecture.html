@@ -103,6 +103,15 @@ h1 { font: 650 clamp(28px, 4vw, 36px)/1.15 var(--sans); letter-spacing: -.02em; 
 .legend svg { flex: none; height: 18px; width: auto; }
 .legend + .note { margin-top: calc(var(--space) * 4); }
 
+/* links: quiet until hovered; the footer lists this diagram's files and the other diagrams */
+a { color: inherit; text-decoration: underline; text-decoration-color: color-mix(in srgb, currentColor 35%, transparent); text-underline-offset: 3px; }
+a:hover { color: var(--blue); text-decoration-color: currentColor; }
+.eyebrow a { text-decoration: none; }
+nav.more { margin-top: calc(var(--space) * 5); padding-top: calc(var(--space) * 3); border-top: 1px solid var(--rule); font-size: 14px; color: var(--ink-2); }
+nav.more p { margin: 0 0 var(--space); display: grid; grid-template-columns: 136px 1fr; align-items: baseline; }
+nav.more i { font: 600 12px/1 var(--sans); letter-spacing: .08em; text-transform: uppercase; color: var(--ink-3); }
+nav.more b { font-weight: 600; color: var(--ink); }
+
 /* agent-readable source, tucked away */
 details.source { margin-top: var(--space); }
 details.source summary::-webkit-details-marker { display: none; }
@@ -162,6 +171,7 @@ details.key ul { list-style: none; padding: 0; margin: var(--space) 0 calc(var(-
 details.key li { display: flex; align-items: baseline; gap: calc(var(--space) * 1.5); font-size: 15px; color: var(--ink-2); padding: calc(var(--space) * .5) 0; }
 details.key li svg { flex: none; width: 34px; height: 18px; align-self: center; }
 details.key li b { font-weight: 600; color: var(--ink); }
+details.key ul.terms li { display: block; }
 
 .g-box    { fill: var(--t); stroke: var(--h); stroke-width: 1.5; }
 .g-box.dashed, .g-group { stroke-dasharray: 5 5; }
@@ -186,7 +196,7 @@ details.key li b { font-weight: 600; color: var(--ink); }
 </head>
 <body>
 <main class="page">
-<p class="eyebrow">idle-compact · architecture</p>
+<p class="eyebrow"><a href="https://github.com/nitsanavni/claude-code-idle-compact#readme">idle-compact</a> · architecture</p>
 <h1>A small, testable core between two thin layers</h1>
 <p class="lede">Claude Code tells the mod when turns start and end. A thin wiring layer passes that on to the core, which makes every decision. The core reaches the outside world only through small wrappers, and in tests those wrappers answer from memory instead.</p>
 <figure class="figure"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 920 690" width="920" height="690" role="img" font-family="Inter, system-ui, sans-serif"><title>A small, testable core between two thin layers</title>
@@ -271,6 +281,11 @@ core -&gt; config  reads
 core -&gt; infra  reads time, files, store; compacts
 infra -&gt; real
 infra -&gt; stub  dashed</pre></details>
+<nav class="more">
+<p><i>This diagram</i><span><a href="architecture.svg">as an SVG</a> · <a href="https://github.com/nitsanavni/claude-code-idle-compact/blob/main/docs/humans/diagrams/architecture.tiers">its source on GitHub</a></span></p>
+<p><i>More diagrams</i><span><a href="overview.html">Overview</a> · <a href="why.html">Why it exists</a> · <a href="timer.html">The timer</a> · <a href="config.html">Settings</a> · <b>Code architecture</b> · <a href="../../diagrams/a-idle-compact.html">Timeline: idle, then compacted</a> · <a href="../../diagrams/b-user-returns.html">Timeline: coming back early</a> · <a href="../../diagrams/c-small-context-skip.html">Timeline: too small to compact</a> · <a href="../../diagrams/d-compact-after-turn.html">Timeline: compacting on request</a></span></p>
+<p><i>The project</i><span><a href="https://github.com/nitsanavni/claude-code-idle-compact#readme">idle-compact on GitHub</a> · <a href="https://github.com/nitsanavni/claude-code-idle-compact/blob/main/docs/humans/README.md">docs for people</a></span></p>
+</nav>
 </main>
 </body>
 </html>

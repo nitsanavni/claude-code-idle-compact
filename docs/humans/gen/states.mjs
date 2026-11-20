@@ -4,11 +4,12 @@
 //   state  <id>  <title> — <sub>  at <col> <row>  <hue>     a state box; col/row may be fractional
 //   start  <id>  at <col> <row>                              an entry point (a small filled dot)
 //   <from> -> <to>  [<label>]  [dashed]  [bend <px>]         a transition; from == to draws a loop above
+//   term  <word> — <meaning>                                 a word the diagram uses, explained in the key
 import { cols, esc, header, icon, li, main, page, r, svg } from './lib.mjs'
 
 export function parse(src) {
   const { meta, body } = header(src)
-  const doc = { meta, states: {}, edges: [] }
+  const doc = { meta, states: {}, edges: [], terms: [] }
   const at = s => s.replace(/^at\s+/, '').split(/\s+/).map(Number)
   for (const line of body) {
     const c = cols(line)
@@ -21,6 +22,9 @@ export function parse(src) {
       const [, id, pos] = c
       const [col, row] = at(pos)
       doc.states[id] = { id, col, row, start: true }
+    } else if (c[0] === 'term' || line.startsWith('term ')) {
+      const [word, meaning = ''] = line.replace(/^term\s+/, '').split(/\s+—\s+/)
+      doc.terms.push({ word, meaning })
     } else if (/->/.test(line)) {
       const m = line.match(/^(\S+)\s*->\s*(\S+)\s*(.*)$/)
       let rest = m[3].trim(), dashed = false, bend = 0
@@ -33,7 +37,7 @@ export function parse(src) {
   return doc
 }
 
-const W = 1040, colW = 270, rowH = 140, boxW = 168, boxH = 62, padX = 112, padY = 96
+const W = 1040, colW = 270, rowH = 140, boxW = 188, boxH = 62, padX = 112, padY = 96
 
 export function draw(doc, standalone) {
   const S = Object.values(doc.states)
@@ -92,16 +96,17 @@ export function key(doc) {
   const states = Object.values(doc.states).filter(s => !s.start)
   return `<p>Each <b>pill</b> is a state the timer can be in; the mod is in exactly one of them at a time. Each <b>arrow</b> is a way to move between states, labelled with what makes it happen.</p>
 <ul>${states.map(s => li(pill(s.hue), s.title, esc(s.sub))).join('')}</ul>
-<ul>${li(icon('<circle class="g-start" cx="17" cy="9" r="5"/>'), 'Filled dot', 'where things begin: a session starting, or Claude calling a tool.')}
+<ul>${li(icon('<circle class="g-start" cx="17" cy="9" r="5"/>'), 'Filled dot', 'where things begin: a session starting, or Claude asking for a compaction.')}
 ${li(icon('<path class="g-edge" d="M2 9 H28"/><path class="g-head" d="M24 5 l5 4 l-5 4"/>'), 'Arrow', 'a transition, with its trigger written next to it.')}
 ${li(icon('<path class="g-edge dashed" d="M2 9 H28"/><path class="g-head" d="M24 5 l5 4 l-5 4"/>'), 'Dashed arrow', 'a transition you start on purpose, not by waiting.')}
 ${li(icon('<path class="g-edge" d="M9 15 C9 1 25 1 25 13"/><path class="g-head" d="M21 9 l4 5 l4 -5"/>'), 'Loop', 'the state starts over: the countdown begins again from the top.')}</ul>
-<p>Only the main conversation moves the timer. Turns run by subagents neither start nor stop it.</p>`
+${doc.terms.length ? `<p>The words used here:</p><ul class="terms">${doc.terms.map(t => `<li><span><b>${esc(t.word)}</b> — ${esc(t.meaning)}</span></li>`).join('')}</ul>` : ''}
+<p>Only the main conversation moves the timer. Helper agents that Claude starts in the background neither start nor stop it.</p>`
 }
 
-export function build(src) {
+export function build(src, file) {
   const doc = parse(src)
-  return { html: page({ meta: doc.meta, figure: draw(doc, false), key: key(doc), src, kind: 'timer' }), svg: draw(doc, true) }
+  return { html: page({ meta: doc.meta, figure: draw(doc, false), key: key(doc), src, kind: 'timer', file, ext: '.states' }), svg: draw(doc, true) }
 }
 
 main(import.meta.url, '.states', build)

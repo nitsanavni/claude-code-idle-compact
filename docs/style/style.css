@@ -97,6 +97,15 @@ h1 { font: 650 clamp(28px, 4vw, 36px)/1.15 var(--sans); letter-spacing: -.02em; 
 .legend svg { flex: none; height: 18px; width: auto; }
 .legend + .note { margin-top: calc(var(--space) * 4); }
 
+/* links: quiet until hovered; the footer lists this diagram's files and the other diagrams */
+a { color: inherit; text-decoration: underline; text-decoration-color: color-mix(in srgb, currentColor 35%, transparent); text-underline-offset: 3px; }
+a:hover { color: var(--blue); text-decoration-color: currentColor; }
+.eyebrow a { text-decoration: none; }
+nav.more { margin-top: calc(var(--space) * 5); padding-top: calc(var(--space) * 3); border-top: 1px solid var(--rule); font-size: 14px; color: var(--ink-2); }
+nav.more p { margin: 0 0 var(--space); display: grid; grid-template-columns: 136px 1fr; align-items: baseline; }
+nav.more i { font: 600 12px/1 var(--sans); letter-spacing: .08em; text-transform: uppercase; color: var(--ink-3); }
+nav.more b { font-weight: 600; color: var(--ink); }
+
 /* agent-readable source, tucked away */
 details.source { margin-top: var(--space); }
 details.source summary::-webkit-details-marker { display: none; }
@@ -156,3 +165,4 @@ details.key ul { list-style: none; padding: 0; margin: var(--space) 0 calc(var(-
 details.key li { display: flex; align-items: baseline; gap: calc(var(--space) * 1.5); font-size: 15px; color: var(--ink-2); padding: calc(var(--space) * .5) 0; }
 details.key li svg { flex: none; width: 34px; height: 18px; align-self: center; }
 details.key li b { font-weight: 600; color: var(--ink); }
+details.key ul.terms li { display: block; }

@@ -72,9 +72,9 @@ export function key(doc) {
 <p>A conversation that stays idle drifts right. If it is big enough to sit inside a shaded corner when its time comes, it gets compacted.</p>`
 }
 
-export function build(src) {
+export function build(src, file) {
   const doc = parse(src)
-  return { html: page({ meta: doc.meta, figure: draw(doc, false), key: key(doc), src, kind: 'why' }), svg: draw(doc, true) }
+  return { html: page({ meta: doc.meta, figure: draw(doc, false), key: key(doc), src, kind: 'why', file, ext: '.zones' }), svg: draw(doc, true) }
 }
 
 main(import.meta.url, '.zones', build)

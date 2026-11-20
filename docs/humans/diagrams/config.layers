@@ -1,6 +1,6 @@
 # Where each setting comes from. Rows are layers, lowest priority first; "." = unset.
-title:   Four layers, merged one setting at a time
-caption: Every setting starts at its default. Your plugin options, a project file and live changes made through Claude can each override it, and the last layer to set a value wins. A layer that leaves a setting alone lets the one above it show through.
+title:   Which setting wins: four config layers, in order of precedence
+caption: idle-compact reads its settings from four places. Each row below overrides the rows above it, one setting at a time, and the bottom row is what the mod ends up using.
 note:    An example. Here the project file slows the timer to 15 minutes, then a live change in this session asks for 5 minutes and a dry run.
 
 fields  enabled  idleSeconds  minTokens  dryRun  announce

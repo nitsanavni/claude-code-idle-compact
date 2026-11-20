@@ -5,6 +5,8 @@ import { readFileSync, writeFileSync } from 'node:fs'
 import { dirname, join } from 'node:path'
 import { fileURLToPath } from 'node:url'
 
+import { nav, selfPath, REPO } from '../../style/nav.mjs'
+
 const here = dirname(fileURLToPath(import.meta.url))
 
 export const esc = s => String(s ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;')
@@ -50,7 +52,7 @@ export function header(src) {
   for (const raw of src.split('\n')) {
     const line = raw.replace(/\s+$/, '')
     if (!line.trim() || line.trim().startsWith('#')) continue
-    const m = line.match(/^(title|caption|note|eyebrow):\s*(.*)$/)
+    const m = line.match(/^(title|caption|note|eyebrow|tagline):\s*(.*)$/)
     if (m) meta[m[1]] = m[2]
     else body.push(line.trim())
   }
@@ -64,7 +66,7 @@ export const cols = line => line.split(/\s{2,}/)
 export const icon = body => `<svg viewBox="0 0 34 18" aria-hidden="true">${body}</svg>`
 export const li = (ic, label, rest = '') => `<li>${ic}<span><b>${esc(label)}</b>${rest ? ' — ' + rest : ''}</span></li>`
 
-export function page({ meta, figure, key, src, kind }) {
+export function page({ meta, figure, key, src, kind, file = '', ext = '' }) {
   return `<!doctype html>
 <html lang="en">
 <head>
@@ -75,13 +77,14 @@ export function page({ meta, figure, key, src, kind }) {
 </head>
 <body>
 <main class="page">
-<p class="eyebrow">idle-compact · ${esc(meta.eyebrow || kind)}</p>
+<p class="eyebrow"><a href="${REPO}#readme">idle-compact</a> · ${esc(meta.eyebrow || kind)}</p>
 <h1>${esc(meta.title)}</h1>
 ${meta.caption ? `<p class="lede">${esc(meta.caption)}</p>` : ''}
 <figure class="figure">${figure}</figure>
 ${meta.note ? `<p class="note">${esc(meta.note)}</p>` : ''}
 <details class="key"><summary>How to read this diagram</summary>${key}</details>
 <details class="source"><summary>Diagram source</summary><pre>${esc(src.trim())}</pre></details>
+${file ? nav(selfPath(file), ext) : ''}
 </main>
 </body>
 </html>
@@ -95,7 +98,7 @@ export function main(metaUrl, ext, build) {
   if (!files.length) { console.error(`usage: node ${process.argv[1]} <file${ext}>...`); process.exit(2) }
   for (const f of files) {
     const src = readFileSync(f, 'utf8')
-    const { html, svg } = build(src)
+    const { html, svg } = build(src, f)
     const base = f.replace(new RegExp(`\\${ext}$`), '')
     writeFileSync(base + '.html', html)
     writeFileSync(base + '.svg', svg + '\n')

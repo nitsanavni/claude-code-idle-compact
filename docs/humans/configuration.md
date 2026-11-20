@@ -21,7 +21,7 @@ A setting can be set in four places. Each one overrides the ones before it, one 
 3. **The project file** `.claude/idle-compact.json`. Commit it to share settings with everyone working in the repo.
 4. **Live changes**: ask Claude, and it uses the `config` tool. These are yours alone, kept outside git, and they apply in every project until you ask Claude to reset them.
 
-![Four layers, merged one setting at a time](diagrams/config.svg)
+![Which setting wins: four config layers, in order of precedence](diagrams/config.svg)
 
 [Open the interactive page](https://raw.githack.com/nitsanavni/claude-code-idle-compact/main/docs/humans/diagrams/config.html)
 

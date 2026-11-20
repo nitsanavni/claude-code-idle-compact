@@ -2,7 +2,7 @@
 
 The mod waits for quiet. When a turn ends it starts a countdown; when you send a new message, the countdown stops. If the countdown runs out, the mod checks how big the conversation is, and compacts it only if it is at least `minTokens`.
 
-![The timer, from turn to compaction](diagrams/timer.svg)
+![How idle-compact decides when to compact](diagrams/timer.svg)
 
 [Open the interactive page](https://raw.githack.com/nitsanavni/claude-code-idle-compact/main/docs/humans/diagrams/timer.html)
 
@@ -11,7 +11,7 @@ A few details:
 - Only your main conversation counts. Subagents working in the background don't start or stop the timer.
 - Changing a setting restarts the countdown with the new value.
 - You can also ask Claude to "compact after this turn". It compacts a second after the turn ends, whatever the size, even in a dry run.
-- After compacting, the mod tells you with a toast, a log line and a push notification (see `announce`).
+- After compacting, the mod tells you: a short message on screen (a "toast"), a line in its log, and a notification on your phone or desktop. The `announce` setting picks which.
 
 ## The same story over time
 

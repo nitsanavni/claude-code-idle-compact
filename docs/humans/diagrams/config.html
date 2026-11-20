@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Four layers, merged one setting at a time</title>
+<title>Which setting wins: four config layers, in order of precedence</title>
 <style>/* Diagram style guide: shared by every human-facing diagram in docs/.
    Clear and vivid on a cool white page: Inter for words, JetBrains Mono for source,
    six saturated series hues with a fixed role each. Flat marks: no gradients, no glows.
@@ -103,6 +103,15 @@ h1 { font: 650 clamp(28px, 4vw, 36px)/1.15 var(--sans); letter-spacing: -.02em; 
 .legend svg { flex: none; height: 18px; width: auto; }
 .legend + .note { margin-top: calc(var(--space) * 4); }
 
+/* links: quiet until hovered; the footer lists this diagram's files and the other diagrams */
+a { color: inherit; text-decoration: underline; text-decoration-color: color-mix(in srgb, currentColor 35%, transparent); text-underline-offset: 3px; }
+a:hover { color: var(--blue); text-decoration-color: currentColor; }
+.eyebrow a { text-decoration: none; }
+nav.more { margin-top: calc(var(--space) * 5); padding-top: calc(var(--space) * 3); border-top: 1px solid var(--rule); font-size: 14px; color: var(--ink-2); }
+nav.more p { margin: 0 0 var(--space); display: grid; grid-template-columns: 136px 1fr; align-items: baseline; }
+nav.more i { font: 600 12px/1 var(--sans); letter-spacing: .08em; text-transform: uppercase; color: var(--ink-3); }
+nav.more b { font-weight: 600; color: var(--ink); }
+
 /* agent-readable source, tucked away */
 details.source { margin-top: var(--space); }
 details.source summary::-webkit-details-marker { display: none; }
@@ -162,6 +171,7 @@ details.key ul { list-style: none; padding: 0; margin: var(--space) 0 calc(var(-
 details.key li { display: flex; align-items: baseline; gap: calc(var(--space) * 1.5); font-size: 15px; color: var(--ink-2); padding: calc(var(--space) * .5) 0; }
 details.key li svg { flex: none; width: 34px; height: 18px; align-self: center; }
 details.key li b { font-weight: 600; color: var(--ink); }
+details.key ul.terms li { display: block; }
 
 .g-box    { fill: var(--t); stroke: var(--h); stroke-width: 1.5; }
 .g-box.dashed, .g-group { stroke-dasharray: 5 5; }
@@ -186,15 +196,16 @@ details.key li b { font-weight: 600; color: var(--ink); }
 </head>
 <body>
 <main class="page">
-<p class="eyebrow">idle-compact · configuration</p>
-<h1>Four layers, merged one setting at a time</h1>
-<p class="lede">Every setting starts at its default. Your plugin options, a project file and live changes made through Claude can each override it, and the last layer to set a value wins. A layer that leaves a setting alone lets the one above it show through.</p>
-<figure class="figure"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 920 440" width="920" height="440" role="img" font-family="Inter, system-ui, sans-serif"><title>Four layers, merged one setting at a time</title>
+<p class="eyebrow"><a href="https://github.com/nitsanavni/claude-code-idle-compact#readme">idle-compact</a> · configuration</p>
+<h1>Which setting wins: four config layers, in order of precedence</h1>
+<p class="lede">idle-compact reads its settings from four places. Each row below overrides the rows above it, one setting at a time, and the bottom row is what the mod ends up using.</p>
+<figure class="figure"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 920 440" width="920" height="440" role="img" font-family="Inter, system-ui, sans-serif"><title>Which setting wins: four config layers, in order of precedence</title>
 <text class="g-mono" x="290.8" y="38" text-anchor="middle" style="fill: var(--ink-2)">enabled</text>
 <text class="g-mono" x="424.4" y="38" text-anchor="middle" style="fill: var(--ink-2)">idleSeconds</text>
 <text class="g-mono" x="558" y="38" text-anchor="middle" style="fill: var(--ink-2)">minTokens</text>
 <text class="g-mono" x="691.6" y="38" text-anchor="middle" style="fill: var(--ink-2)">dryRun</text>
 <text class="g-mono" x="825.2" y="38" text-anchor="middle" style="fill: var(--ink-2)">announce</text>
+<text class="g-cap" x="28" y="38">Lower rows win ↓</text>
 <g class="h-mute"><circle class="d-dot-core" cx="34" cy="88" r="4"/></g>
 <text class="g-title" x="50" y="85">defaults</text>
 <text class="g-sub" x="50" y="103">built into the mod</text>
@@ -255,8 +266,8 @@ details.key li b { font-weight: 600; color: var(--ink); }
 <li><svg viewBox="0 0 34 18" aria-hidden="true"><g class="h-sand"><line class="g-edge-h" x1="17" y1="1" x2="17" y2="17" style="stroke-width: 1.5; stroke-opacity: .5"/></g></svg><span><b>Thread</b> — carries the winning value down to the result.</span></li></ul>
 <p>Merging happens <b>per setting</b>, not per row: a project file that sets only <code>idleSeconds</code> changes nothing else.</p></details>
 <details class="source"><summary>Diagram source</summary><pre># Where each setting comes from. Rows are layers, lowest priority first; &quot;.&quot; = unset.
-title:   Four layers, merged one setting at a time
-caption: Every setting starts at its default. Your plugin options, a project file and live changes made through Claude can each override it, and the last layer to set a value wins. A layer that leaves a setting alone lets the one above it show through.
+title:   Which setting wins: four config layers, in order of precedence
+caption: idle-compact reads its settings from four places. Each row below overrides the rows above it, one setting at a time, and the bottom row is what the mod ends up using.
 note:    An example. Here the project file slows the timer to 15 minutes, then a live change in this session asks for 5 minutes and a dry run.
 
 fields  enabled  idleSeconds  minTokens  dryRun  announce
@@ -265,6 +276,11 @@ layer  plugin options — /config or settings.json        sky   .     .     .   
 layer  project file — .claude/idle-compact.json         sand  .     900   150000  .      .
 layer  live changes — the config tool, per user         plum  .     300   .       true   .
 result  in effect — what the timer uses</pre></details>
+<nav class="more">
+<p><i>This diagram</i><span><a href="config.svg">as an SVG</a> · <a href="https://github.com/nitsanavni/claude-code-idle-compact/blob/main/docs/humans/diagrams/config.layers">its source on GitHub</a></span></p>
+<p><i>More diagrams</i><span><a href="overview.html">Overview</a> · <a href="why.html">Why it exists</a> · <a href="timer.html">The timer</a> · <b>Settings</b> · <a href="architecture.html">Code architecture</a> · <a href="../../diagrams/a-idle-compact.html">Timeline: idle, then compacted</a> · <a href="../../diagrams/b-user-returns.html">Timeline: coming back early</a> · <a href="../../diagrams/c-small-context-skip.html">Timeline: too small to compact</a> · <a href="../../diagrams/d-compact-after-turn.html">Timeline: compacting on request</a></span></p>
+<p><i>The project</i><span><a href="https://github.com/nitsanavni/claude-code-idle-compact#readme">idle-compact on GitHub</a> · <a href="https://github.com/nitsanavni/claude-code-idle-compact/blob/main/docs/humans/README.md">docs for people</a></span></p>
+</nav>
 </main>
 </body>
 </html>

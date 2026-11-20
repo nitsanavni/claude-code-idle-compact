@@ -41,6 +41,7 @@ export function draw(doc, standalone) {
     `<text class="g-mono" x="${r(x)}" y="${y + 4.5}" text-anchor="middle"${strong ? '' : ' style="fill: var(--ink-2)"'}>${esc(v)}</text></g>`
   const o = []
   doc.fields.forEach((f, i) => o.push(`<text class="g-mono" x="${r(cx(i))}" y="${top - 18}" text-anchor="middle" style="fill: var(--ink-2)">${esc(f)}</text>`))
+  o.push(`<text class="g-cap" x="${padX}" y="${top - 18}">Lower rows win ↓</text>`)
   doc.layers.forEach((l, j) => {
     if (j) o.push(`<line class="g-rule" x1="${padX}" y1="${top + rowH * j}" x2="${W - padX}" y2="${top + rowH * j}"/>`)
     o.push(`<g class="h-${l.hue}"><circle class="d-dot-core" cx="${padX + 6}" cy="${rowY(j)}" r="4"/></g>`)
@@ -79,9 +80,9 @@ ${li(icon('<g class="h-sand"><line class="g-edge-h" x1="17" y1="1" x2="17" y2="1
 <p>Merging happens <b>per setting</b>, not per row: a project file that sets only <code>idleSeconds</code> changes nothing else.</p>`
 }
 
-export function build(src) {
+export function build(src, file) {
   const doc = parse(src)
-  return { html: page({ meta: doc.meta, figure: draw(doc, false), key: key(doc), src, kind: 'configuration' }), svg: draw(doc, true) }
+  return { html: page({ meta: doc.meta, figure: draw(doc, false), key: key(doc), src, kind: 'configuration', file, ext: '.layers' }), svg: draw(doc, true) }
 }
 
 main(import.meta.url, '.layers', build)

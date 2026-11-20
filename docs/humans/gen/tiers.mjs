@@ -105,9 +105,9 @@ ${li(icon('<path class="g-edge dashed" d="M2 9 H28"/><path class="g-head" d="M24
 ${li(icon('<rect class="g-group" x="2" y="2" width="30" height="14" rx="5"/>'), 'Dashed frame', 'boxes that live together in one file.')}</ul>`
 }
 
-export function build(src) {
+export function build(src, file) {
   const doc = parse(src)
-  return { html: page({ meta: doc.meta, figure: draw(doc, false), key: key(doc), src, kind: 'architecture' }), svg: draw(doc, true) }
+  return { html: page({ meta: doc.meta, figure: draw(doc, false), key: key(doc), src, kind: 'architecture', file, ext: '.tiers' }), svg: draw(doc, true) }
 }
 
 main(import.meta.url, '.tiers', build)
