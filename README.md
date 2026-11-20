@@ -5,7 +5,7 @@ A Claude Code mod that compacts the conversation after you've been idle for a wh
 ## Install
 
 ```
-/plugin install idle-compact --marketplace nitsanavni/idle-compact
+/plugin install idle-compact --marketplace nitsanavni/claude-code-idle-compact
 ```
 
 ## How it works
