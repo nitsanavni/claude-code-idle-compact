@@ -44,3 +44,13 @@ Ask Claude to set `idleSeconds: 5`, `minTokens: 0` and an `afterPrompt` such as 
 ## Notes
 
 - It works in headless and cloud sessions, where `$.session.compact` isn't available: there it falls back to running the `compact` command.
+
+## Security & CI
+
+A gitleaks pre-commit hook blocks commits that contain secrets (default rules plus a high-entropy string rule, see `.gitleaks.toml`). Install [gitleaks](https://github.com/gitleaks/gitleaks/releases) v8+, then enable the hook once per clone:
+
+```sh
+scripts/setup-hooks.sh   # git config core.hooksPath .githooks
+```
+
+CI (`.github/workflows/ci.yml`) scans the full history with gitleaks and runs `claude plugin validate .` and `claude plugin test .` on every push to `main` and on pull requests.
