@@ -1,6 +1,6 @@
 # marble-beta previews
 
-Rendered from branch `feature/marble-diagram` (mermaid sha eff0b00d, `packages/mermaid/dist/mermaid.min.js`) in headless Chromium via Playwright, deviceScaleFactor 2, cropped to the SVG. Each example appears as written, then as `--dark` (theme: dark) and `--hand-drawn` (look: handDrawn, handDrawnSeed: 1) unless its source already sets that. Every `<name>.png` sits next to `<name>.mmd`, the exact source rendered, which is also shown under each image.
+Rendered from branch `feature/marble-diagram` (mermaid sha ed6b51cc, `packages/mermaid/dist/mermaid.min.js`) in headless Chromium via Playwright, deviceScaleFactor 2, cropped to the SVG. Each example appears as written, then as `--dark` (theme: dark) and `--hand-drawn` (look: handDrawn, handDrawnSeed: 1) unless its source already sets that. Every `<name>.png` sits next to `<name>.mmd`, the exact source rendered, which is also shown under each image.
 
 ## should-render-a-simple-marble-diagram
 
@@ -36,11 +36,34 @@ description: >-
 ---
 marble-beta
   axis    : 0    5    /  1h
-  request : -[====x---/--[====#
+  request : -[====!---/--[====#
   result  : ----------/-------#
   label = "attempt"
-  label x "timed out"
+  label ! "timed out"
   label # "TimeoutError"
+```
+
+## should-render-marble-rxjs-syntax
+
+Source: e2e/diagrams/marble/pr-check/should-render-marble-rxjs-syntax.mmd
+
+![should-render-marble-rxjs-syntax](should-render-marble-rxjs-syntax.png)
+
+```mermaid
+---
+description: >-
+  Marble diagram written in RxJS marble syntax: a sync group stacked in one
+  column, a completion inside a group, a subscription point, a
+  subscription-only lane drawn as a span, and time progressions drawn as
+  labelled breaks.
+---
+marble-beta
+  title RxJS syntax: groups, subscriptions, time progression
+  hot      : --a--^--b--(cd|)
+  subs     : -----^---!
+  expected : -- 9ms a 9ms b 9ms (c|)
+  label ^ "subscribed"
+  label ! "unsubscribed"
 ```
 
 ## should-render-marble-spans-cancellations-and-labels
@@ -60,12 +83,12 @@ marble-beta
   title switchMap: a new search cancels the one in flight
   axis       : 0    5    10   15
   input      : -a-----b--c--------|
-  "search a" :  [=====x
-  "search b" :        [==x
+  "search a" :  [=====!
+  "search b" :        [==!
   "search c" :           [=====]
   output     : ----------------r--|
   label = "request"
-  label x "cancelled"
+  label ! "cancelled"
   label r "results for c"
 ```
 
@@ -179,6 +202,52 @@ marble-beta
   output : --------c-----d|
 ```
 
+## docs-rxjs-groups-concat
+
+Source: packages/mermaid/src/docs/syntax/marble.md
+
+![docs-rxjs-groups-concat](docs-rxjs-groups-concat.png)
+
+```mermaid
+marble-beta
+  title concat(first, of(1, 2, 3))
+  first  : --a--|
+  second :      (123|)
+  result : --a--(123|)
+  label | "complete"
+```
+
+## docs-rxjs-subscriptions-hot
+
+Source: packages/mermaid/src/docs/syntax/marble.md
+
+![docs-rxjs-subscriptions-hot](docs-rxjs-subscriptions-hot.png)
+
+```mermaid
+marble-beta
+  title Two subscribers to a hot source
+  source : --a--a--a--a--a--a--a--
+  sub1   : --^-----------!
+  sub2   : ---------^--------!
+  first  : --a--a--a--a--
+  second : -----------a--a--a-
+  label ^ "subscribed"
+  label ! "unsubscribed"
+```
+
+## docs-rxjs-time-progression
+
+Source: packages/mermaid/src/docs/syntax/marble.md
+
+![docs-rxjs-time-progression](docs-rxjs-time-progression.png)
+
+```mermaid
+marble-beta
+  title concatMap(d => of(d).pipe(delay(10)))
+  input    : -a-b-c|
+  expected : -- 9ms a 9ms b 9ms (c|)
+```
+
 ## docs-lining-up-takeuntil
 
 Source: packages/mermaid/src/docs/syntax/marble.md
@@ -205,12 +274,12 @@ marble-beta
   title switchMap: a new search cancels the one in flight
   axis       : 0    5    10   15
   input      : -a-----b--c--------|
-  "search a" :  [=====x
-  "search b" :        [==x
+  "search a" :  [=====!
+  "search b" :        [==!
   "search c" :           [=====]
   output     : ----------------r--|
   label = "request"
-  label x "cancelled"
+  label ! "cancelled"
   label r "results for c"
 ```
 
@@ -224,10 +293,10 @@ Source: packages/mermaid/src/docs/syntax/marble.md
 marble-beta
   title timeout(5) then retry once after 1h
   axis    : 0    5    /  1h
-  request : -[====x---/--[====#
+  request : -[====!---/--[====#
   result  : ----------/-------#
   label = "attempt"
-  label x "timed out"
+  label ! "timed out"
   label # "TimeoutError"
 ```
 
@@ -362,10 +431,10 @@ config:
 ---
 marble-beta
   axis    : 0    5    /  1h
-  request : -[====x---/--[====#
+  request : -[====!---/--[====#
   result  : ----------/-------#
   label = "attempt"
-  label x "timed out"
+  label ! "timed out"
   label # "TimeoutError"
 ```
 
@@ -387,11 +456,62 @@ config:
 ---
 marble-beta
   axis    : 0    5    /  1h
-  request : -[====x---/--[====#
+  request : -[====!---/--[====#
   result  : ----------/-------#
   label = "attempt"
-  label x "timed out"
+  label ! "timed out"
   label # "TimeoutError"
+```
+
+## should-render-marble-rxjs-syntax--dark
+
+Source: e2e/diagrams/marble/pr-check/should-render-marble-rxjs-syntax.mmd (dark theme)
+
+![should-render-marble-rxjs-syntax--dark](should-render-marble-rxjs-syntax--dark.png)
+
+```mermaid
+---
+description: >-
+  Marble diagram written in RxJS marble syntax: a sync group stacked in one
+  column, a completion inside a group, a subscription point, a
+  subscription-only lane drawn as a span, and time progressions drawn as
+  labelled breaks.
+config:
+  theme: dark
+---
+marble-beta
+  title RxJS syntax: groups, subscriptions, time progression
+  hot      : --a--^--b--(cd|)
+  subs     : -----^---!
+  expected : -- 9ms a 9ms b 9ms (c|)
+  label ^ "subscribed"
+  label ! "unsubscribed"
+```
+
+## should-render-marble-rxjs-syntax--hand-drawn
+
+Source: e2e/diagrams/marble/pr-check/should-render-marble-rxjs-syntax.mmd (hand-drawn look)
+
+![should-render-marble-rxjs-syntax--hand-drawn](should-render-marble-rxjs-syntax--hand-drawn.png)
+
+```mermaid
+---
+description: >-
+  Marble diagram written in RxJS marble syntax: a sync group stacked in one
+  column, a completion inside a group, a subscription point, a
+  subscription-only lane drawn as a span, and time progressions drawn as
+  labelled breaks.
+config:
+  look: handDrawn
+  handDrawnSeed: 1
+---
+marble-beta
+  title RxJS syntax: groups, subscriptions, time progression
+  hot      : --a--^--b--(cd|)
+  subs     : -----^---!
+  expected : -- 9ms a 9ms b 9ms (c|)
+  label ^ "subscribed"
+  label ! "unsubscribed"
 ```
 
 ## should-render-marble-spans-cancellations-and-labels--dark
@@ -413,12 +533,12 @@ marble-beta
   title switchMap: a new search cancels the one in flight
   axis       : 0    5    10   15
   input      : -a-----b--c--------|
-  "search a" :  [=====x
-  "search b" :        [==x
+  "search a" :  [=====!
+  "search b" :        [==!
   "search c" :           [=====]
   output     : ----------------r--|
   label = "request"
-  label x "cancelled"
+  label ! "cancelled"
   label r "results for c"
 ```
 
@@ -442,12 +562,12 @@ marble-beta
   title switchMap: a new search cancels the one in flight
   axis       : 0    5    10   15
   input      : -a-----b--c--------|
-  "search a" :  [=====x
-  "search b" :        [==x
+  "search a" :  [=====!
+  "search b" :        [==!
   "search c" :           [=====]
   output     : ----------------r--|
   label = "request"
-  label x "cancelled"
+  label ! "cancelled"
   label r "results for c"
 ```
 
@@ -611,6 +731,125 @@ marble-beta
   output : --------c-----d|
 ```
 
+## docs-rxjs-groups-concat--dark
+
+Source: packages/mermaid/src/docs/syntax/marble.md (dark theme)
+
+![docs-rxjs-groups-concat--dark](docs-rxjs-groups-concat--dark.png)
+
+```mermaid
+---
+config:
+  theme: dark
+---
+marble-beta
+  title concat(first, of(1, 2, 3))
+  first  : --a--|
+  second :      (123|)
+  result : --a--(123|)
+  label | "complete"
+```
+
+## docs-rxjs-groups-concat--hand-drawn
+
+Source: packages/mermaid/src/docs/syntax/marble.md (hand-drawn look)
+
+![docs-rxjs-groups-concat--hand-drawn](docs-rxjs-groups-concat--hand-drawn.png)
+
+```mermaid
+---
+config:
+  look: handDrawn
+  handDrawnSeed: 1
+---
+marble-beta
+  title concat(first, of(1, 2, 3))
+  first  : --a--|
+  second :      (123|)
+  result : --a--(123|)
+  label | "complete"
+```
+
+## docs-rxjs-subscriptions-hot--dark
+
+Source: packages/mermaid/src/docs/syntax/marble.md (dark theme)
+
+![docs-rxjs-subscriptions-hot--dark](docs-rxjs-subscriptions-hot--dark.png)
+
+```mermaid
+---
+config:
+  theme: dark
+---
+marble-beta
+  title Two subscribers to a hot source
+  source : --a--a--a--a--a--a--a--
+  sub1   : --^-----------!
+  sub2   : ---------^--------!
+  first  : --a--a--a--a--
+  second : -----------a--a--a-
+  label ^ "subscribed"
+  label ! "unsubscribed"
+```
+
+## docs-rxjs-subscriptions-hot--hand-drawn
+
+Source: packages/mermaid/src/docs/syntax/marble.md (hand-drawn look)
+
+![docs-rxjs-subscriptions-hot--hand-drawn](docs-rxjs-subscriptions-hot--hand-drawn.png)
+
+```mermaid
+---
+config:
+  look: handDrawn
+  handDrawnSeed: 1
+---
+marble-beta
+  title Two subscribers to a hot source
+  source : --a--a--a--a--a--a--a--
+  sub1   : --^-----------!
+  sub2   : ---------^--------!
+  first  : --a--a--a--a--
+  second : -----------a--a--a-
+  label ^ "subscribed"
+  label ! "unsubscribed"
+```
+
+## docs-rxjs-time-progression--dark
+
+Source: packages/mermaid/src/docs/syntax/marble.md (dark theme)
+
+![docs-rxjs-time-progression--dark](docs-rxjs-time-progression--dark.png)
+
+```mermaid
+---
+config:
+  theme: dark
+---
+marble-beta
+  title concatMap(d => of(d).pipe(delay(10)))
+  input    : -a-b-c|
+  expected : -- 9ms a 9ms b 9ms (c|)
+```
+
+## docs-rxjs-time-progression--hand-drawn
+
+Source: packages/mermaid/src/docs/syntax/marble.md (hand-drawn look)
+
+![docs-rxjs-time-progression--hand-drawn](docs-rxjs-time-progression--hand-drawn.png)
+
+```mermaid
+---
+config:
+  look: handDrawn
+  handDrawnSeed: 1
+---
+marble-beta
+  title concatMap(d => of(d).pipe(delay(10)))
+  input    : -a-b-c|
+  expected : -- 9ms a 9ms b 9ms (c|)
+```
+
 ## docs-lining-up-takeuntil--dark
 
 Source: packages/mermaid/src/docs/syntax/marble.md (dark theme)
@@ -665,12 +904,12 @@ marble-beta
   title switchMap: a new search cancels the one in flight
   axis       : 0    5    10   15
   input      : -a-----b--c--------|
-  "search a" :  [=====x
-  "search b" :        [==x
+  "search a" :  [=====!
+  "search b" :        [==!
   "search c" :           [=====]
   output     : ----------------r--|
   label = "request"
-  label x "cancelled"
+  label ! "cancelled"
   label r "results for c"
 ```
 
@@ -690,12 +929,12 @@ marble-beta
   title switchMap: a new search cancels the one in flight
   axis       : 0    5    10   15
   input      : -a-----b--c--------|
-  "search a" :  [=====x
-  "search b" :        [==x
+  "search a" :  [=====!
+  "search b" :        [==!
   "search c" :           [=====]
   output     : ----------------r--|
   label = "request"
-  label x "cancelled"
+  label ! "cancelled"
   label r "results for c"
 ```
 
@@ -713,10 +952,10 @@ config:
 marble-beta
   title timeout(5) then retry once after 1h
   axis    : 0    5    /  1h
-  request : -[====x---/--[====#
+  request : -[====!---/--[====#
   result  : ----------/-------#
   label = "attempt"
-  label x "timed out"
+  label ! "timed out"
   label # "TimeoutError"
 ```
 
@@ -735,10 +974,10 @@ config:
 marble-beta
   title timeout(5) then retry once after 1h
   axis    : 0    5    /  1h
-  request : -[====x---/--[====#
+  request : -[====!---/--[====#
   result  : ----------/-------#
   label = "attempt"
-  label x "timed out"
+  label ! "timed out"
   label # "TimeoutError"
 ```
 
