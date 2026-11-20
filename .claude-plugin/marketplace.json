@@ -1,0 +1,7 @@
+{
+  "name": "idle-compact",
+  "owner": { "name": "nitsanavni" },
+  "plugins": [
+    { "name": "idle-compact", "source": "./", "description": "Compacts the session after an idle period, before the prompt cache expires; tunable live" }
+  ]
+}
