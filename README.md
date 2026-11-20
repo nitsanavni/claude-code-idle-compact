@@ -78,3 +78,5 @@ scripts/setup-hooks.sh   # git config core.hooksPath .githooks
 ```
 
 CI (`.github/workflows/ci.yml`) scans the full history with gitleaks and runs `claude plugin validate .` and `claude plugin test .` on every push to `main` and on pull requests.
+
+More docs, for people and for agents: [docs/README.md](docs/README.md).
