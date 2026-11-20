@@ -8,6 +8,12 @@ idle-compact is a Claude Code mod. When you step away from a conversation, it co
 
 [Open the interactive page](https://raw.githack.com/nitsanavni/claude-code-idle-compact/main/docs/humans/diagrams/story.html)
 
+A second story, where nobody steps away: Claude compacts its own context when a piece of work is done.
+
+![Claude can compact its own context when a piece of work is done](diagrams/story-2.svg)
+
+[Open the interactive page](https://raw.githack.com/nitsanavni/claude-code-idle-compact/main/docs/humans/diagrams/story-2.html)
+
 ## The big picture
 
 ![idle-compact at a glance: the parts, and how they work together](diagrams/overview.svg)

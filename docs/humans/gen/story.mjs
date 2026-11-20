@@ -3,17 +3,18 @@
 // Usage: node docs/humans/gen/story.mjs docs/humans/diagrams/story.scenes
 //
 //   scene  <icon>  <hue>  <from>-<to>  <title> — <text>    a scene; from/to: the graph's height at its start and end, in percent.
-//                                                          icons: cloud, grow, away, compact, back
+//                                                          icons: cloud, grow, away, ask, done, compact, back
 //   graph    <name> — <what it means>                      what the graph measures (the name is drawn; both go in the key)
 //   away     <first> <last>  <label>                       the scenes (1-based) during which the person is away
 //   with     <label>                                       label of the line after the drop
 //   without  <label>                                       label of the dashed line that does not drop (starts at the biggest drop)
+//   also     <hue>  <title> — <text>                       a side note in a box under the graph
 //   term     <word> — <meaning>                            a word the diagram uses, explained in the key
 import { cols, esc, header, icon, li, main, page, r, svg } from './lib.mjs'
 
 export function parse(src) {
   const { meta, body } = header(src)
-  const doc = { meta, scenes: [], graph: '', away: null, with: '', without: '', terms: [] }
+  const doc = { meta, scenes: [], graph: '', away: null, with: '', without: '', also: null, terms: [] }
   for (const line of body) {
     const [head, ...rest] = cols(line)
     if (head === 'scene') {
@@ -22,6 +23,7 @@ export function parse(src) {
       doc.scenes.push({ icon: ic, hue, from, to, title, sub })
     } else if (head === 'away') { const [range, label = ''] = rest; const [a, b] = range.split(/\s+/).map(Number); doc.away = { a, b, label } }
     else if (head === 'graph' || head === 'with' || head === 'without') doc[head] = rest.join('  ')
+    else if (head === 'also') { const [title, text = ''] = rest.slice(1).join('  ').split(/\s+—\s+/); doc.also = { hue: rest[0], title, text } }
     else if (head === 'term') { const [word, meaning = ''] = rest.join('  ').split(/\s+—\s+/); doc.terms.push({ word, meaning }) }
     else throw new Error(`story: cannot read "${line}"`)
   }
@@ -40,6 +42,10 @@ const ICONS = {
   away: `<path d="M5 -15 a15 15 0 1 0 11 24 a12 12 0 0 1 -11 -24 Z" style="fill: var(--h)"/><circle cx="12" cy="-10" r="1.8" style="fill: var(--h)"/><circle cx="17" cy="-1" r="1.2" style="fill: var(--h)"/>`,
   // a tall stack squeezed into a short one
   compact: `${[-14, -8, -2, 4, 10].map(y => `<rect x="-17" y="${y}" width="14" height="4" rx="1.5" style="fill: var(--h); opacity: .45"/>`).join('')}<path d="M0 0 h7 m-4 -4 l4 4 l-4 4" style="fill: none; stroke: var(--h); stroke-width: 2; stroke-linecap: round; stroke-linejoin: round"/><rect x="10" y="-2" width="9" height="4" rx="1.5" style="fill: var(--h)"/>`,
+  // a speech bubble: someone asks
+  ask: `<path d="M-15 -13 h30 a4 4 0 0 1 4 4 v14 a4 4 0 0 1 -4 4 h-18 l-8 8 v-8 h-4 a4 4 0 0 1 -4 -4 v-14 a4 4 0 0 1 4 -4 Z" style="fill: var(--h)"/><path d="M-9 -5 h18 M-9 2 h11" style="stroke: var(--t); stroke-width: 2.5; stroke-linecap: round"/>`,
+  // a tick: done
+  done: `<circle cx="0" cy="0" r="16" style="fill: var(--h)"/><path d="M-7 0 l5 5 l9 -10" style="fill: none; stroke: var(--t); stroke-width: 3; stroke-linecap: round; stroke-linejoin: round"/>`,
   // a person, back
   back: `<circle cx="0" cy="-7" r="7" style="fill: var(--h)"/><path d="M-13 15 a13 12 0 0 1 26 0 Z" style="fill: var(--h)"/>`,
 }
@@ -93,7 +99,17 @@ export function draw(doc, standalone) {
     o.push(`<text class="g-title" x="${end - 22}" y="${r(gy(doc.scenes.at(-1).to) - 12)}" text-anchor="end" style="fill: var(--h)">${esc(doc.with)}</text></g>`)
   }
   o.push(`<line class="g-axis" x1="${padX}" y1="${base}" x2="${W - padX}" y2="${base}"/>`)
-  return svg({ W, H: base + 28, title: doc.meta.title, inner: o.join('\n'), standalone })
+  let H = base + 28
+  if (doc.also) {
+    // the side note: a tinted box with a small mark, a title and a couple of lines
+    const lines = wrap(doc.also.text, 122), y = base + 24, h = 40 + lines.length * 17
+    o.push(`<g class="h-${doc.also.hue}"><rect x="${padX}" y="${y}" width="${W - padX * 2}" height="${h}" rx="14" style="fill: var(--t)"/>`)
+    o.push(`<circle cx="${padX + 32}" cy="${y + h / 2}" r="15" style="fill: var(--h)"/><path d="M${padX + 25} ${y + h / 2} h14 m-7 -7 v14" style="stroke: var(--on-hue); stroke-width: 2.5; stroke-linecap: round"/></g>`)
+    o.push(`<text class="g-title" x="${padX + 62}" y="${y + 25}" style="font-size: 14px">${esc(doc.also.title)}</text>`)
+    lines.forEach((l, k) => o.push(`<text class="g-sub" x="${padX + 62}" y="${y + 44 + k * 17}">${esc(l)}</text>`))
+    H = y + h + 24
+  }
+  return svg({ W, H, title: doc.meta.title, inner: o.join('\n'), standalone })
 }
 
 export function key(doc) {
@@ -103,7 +119,8 @@ export function key(doc) {
 <ul>${li(sw('teal', `<path d="M2 14 C12 14 18 4 32 4 V17 H2 Z" style="fill: var(--t)"/><path d="M2 14 C12 14 18 4 32 4" style="fill: none; stroke: var(--h); stroke-width: 2"/>`), 'Rising line', 'the conversation growing as you work.')}
 ${li(sw('green', `<path d="M2 4 H12 C17 4 17 14 22 14 H32 V17 H2 Z" style="fill: var(--t)"/><path d="M2 4 H12 C17 4 17 14 22 14 H32" style="fill: none; stroke: var(--h); stroke-width: 2"/>`), 'The drop', `the compaction. From here the line is green: the story ${esc(doc.with)}.`)}
 ${li(sw('coral', `<path d="M2 9 H26" style="fill: none; stroke: var(--h); stroke-width: 2; stroke-dasharray: 2 6; stroke-linecap: round"/><circle cx="29" cy="9" r="4" style="fill: var(--h)"/>`), 'Dotted line', `what would happen ${esc(doc.without)}.`)}
-${doc.away ? li(icon('<rect x="2" y="2" width="30" height="14" rx="4" style="fill: var(--bg); stroke: var(--rule)"/>'), 'Shaded band', `the stretch of the story in which ${esc(doc.away.label)}.`) : ''}</ul>
+${doc.away ? li(icon('<rect x="2" y="2" width="30" height="14" rx="4" style="fill: var(--bg); stroke: var(--rule)"/>'), 'Shaded band', `the stretch of the story in which ${esc(doc.away.label)}.`) : ''}
+${doc.also ? li(sw(doc.also.hue, '<rect x="2" y="2" width="30" height="14" rx="5" style="fill: var(--t)"/><circle cx="10" cy="9" r="4" style="fill: var(--h)"/>'), 'Tinted box', `an extra that is not part of the timeline: ${esc(doc.also.title.charAt(0).toLowerCase() + doc.also.title.slice(1))}.`) : ''}</ul>
 ${doc.terms.length ? `<p>The words used here:</p><ul class="terms">${doc.terms.map(t => `<li><span><b>${esc(t.word)}</b> — ${esc(t.meaning)}</span></li>`).join('')}</ul>` : ''}`
 }
 

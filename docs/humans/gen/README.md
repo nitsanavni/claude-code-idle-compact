@@ -3,7 +3,7 @@
 One small generator per diagram kind. Each reads a tiny text DSL and writes a self-contained `.html` page (inline SVG, styles from `docs/style/style.css`, an expandable "How to read this diagram" key, and the source) and a standalone `.svg` next to the source. Zero dependencies; `lib.mjs` holds the shared page shell.
 
 ```sh
-node docs/humans/gen/story.mjs    docs/humans/diagrams/story.scenes       # the story: numbered scenes over a graph that forks
+node docs/humans/gen/story.mjs    docs/humans/diagrams/story*.scenes      # the two stories: numbered scenes over a graph that forks
 node docs/humans/gen/overview.mjs docs/humans/diagrams/overview.parts     # the big picture: parts and numbered steps
 node docs/humans/gen/zones.mjs  docs/humans/diagrams/why.zones             # yes/no table over a threshold plot
 node docs/humans/gen/layers.mjs docs/humans/diagrams/config.layers         # config layers, merged per field

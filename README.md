@@ -8,6 +8,12 @@ Claude Code already compacts an idle conversation on your own computer, but in *
 
 [Open the story as a page](https://raw.githack.com/nitsanavni/claude-code-idle-compact/main/docs/humans/diagrams/story.html), with every term explained.
 
+There is a second story, where nobody steps away. The mod also gives Claude tools of its own: with `compact_after_turn` the agent compacts its own context window right after its current reply, when you ask or when it judges a piece of work is done, and with `status` and `config` it can check and tune the timer itself.
+
+![Claude can compact its own context when a piece of work is done](docs/humans/diagrams/story-2.svg)
+
+[Open the second story as a page](https://raw.githack.com/nitsanavni/claude-code-idle-compact/main/docs/humans/diagrams/story-2.html).
+
 ![idle-compact at a glance: the parts, and how they work together](docs/humans/diagrams/overview.svg)
 
 [Open this diagram as a page](https://raw.githack.com/nitsanavni/claude-code-idle-compact/main/docs/humans/diagrams/overview.html), with every term explained.

@@ -5,7 +5,8 @@ import { posix } from 'node:path'
 export const REPO = 'https://github.com/nitsanavni/claude-code-idle-compact'
 
 export const PAGES = [
-  ['humans/diagrams/story.html', 'The story'],
+  ['humans/diagrams/story.html', 'Story 1: you step away'],
+  ['humans/diagrams/story-2.html', 'Story 2: Claude compacts itself'],
   ['humans/diagrams/overview.html', 'Overview'],
   ['humans/diagrams/why.html', 'Why it exists'],
   ['humans/diagrams/timer.html', 'The timer'],
