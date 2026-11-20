@@ -67,7 +67,7 @@ F  time is up  violet`
 test('legend and key show each marble with its letter', () => {
   const doc = parse(DOC)
   for (const part of [legendRow(doc), key(doc)]) {
-    for (const letter of ['S', 'E', 'F']) assert.match(part, new RegExp(`class="d-glyph"[^>]*>${letter}<`))
+    for (const letter of ['S', 'E', 'F']) assert.match(part, new RegExp(`class="d-glyph lv1"[^>]*>${letter}<`))
   }
   assert.match(key(doc), /<b>done<\/b> — the countdown starts/)
 })
@@ -88,13 +88,21 @@ test('detail levels: each level is no taller than the next, and lanes carry thei
   assert.match(out, /class="d-lab lv2"/)   // names appear from level 2
   assert.match(out, /class="d-sub lv3"/)   // detail lines only at level 3
   assert.match(out, /class="d-tick lv2"/)  // so does the time axis
+  assert.match(out, /class="d-lane lv1"/)  // lane names and marble letters from level 1: level 0 has no words
+  assert.match(out, /class="d-glyph lv1"/)
+  assert.equal(out.match(/<text class="(?![^"]*\blv[123]\b)/g), null) // every word on the figure belongs to a level above 0
   assert.doesNotMatch(out, /class="d-dot[^"]*lv/) // marbles show at every level
+  // a span is a filled pill from level 1, and a bold stretch of the lane line (same ends) at level 0
+  const bar = out.match(/<rect class="d-span lv1" x="([\d.]+)" y="-10" width="([\d.]+)"/)
+  const bold = [...out.matchAll(/<line class="d-bold" x1="([\d.]+)" y1="0" x2="([\d.]+)" y2="0"\/>/g)]
+  assert.equal(bold.length, 2)
+  assert.ok(bold.some(b => b[1] === bar[1] && Math.abs(+b[2] - (+bar[1] + +bar[2])) < 0.2))
 })
 
-test('the page has a three-step detail control, starting at the simplest', () => {
+test('the page has a four-step detail control, starting at the wordless schematic', () => {
   const page = html(parse(DOC), DOC, '')
-  assert.equal(page.match(/<input type="radio" name="lv"/g).length, 3)
-  assert.match(page, /id="lv1" checked/)
+  assert.equal(page.match(/<input type="radio" name="lv"/g).length, 4)
+  assert.match(page, /id="lv0" checked>Schematic/)
   assert.match(page, /class="d-stage" style="--h1:\d+;--h2:\d+;--h3:\d+"/)
   assert.match(page, /How to read this diagram/)
 })

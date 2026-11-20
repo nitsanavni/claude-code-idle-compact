@@ -148,6 +148,7 @@ details.source pre {
 .d-glyph    { font: 700 10px var(--sans); fill: var(--on-hue); }
 .d-halo     { fill: var(--t); }
 .d-span     { fill: var(--t); stroke: var(--h); stroke-width: 1.5; }
+.d-bold     { stroke: var(--h); stroke-width: 5; stroke-linecap: round; opacity: 0; }  /* a span at the schematic level */
 .d-ghost    { fill: none; stroke: var(--ink-3); stroke-width: 1.5; stroke-dasharray: 4 4; }
 .d-cancel   { stroke: var(--coral); stroke-width: 2.5; stroke-linecap: round; }
 .d-arrow    { fill: var(--h); }
@@ -173,7 +174,7 @@ details.key li svg { flex: none; width: 34px; height: 18px; align-self: center; 
 details.key li b { font-weight: 600; color: var(--ink); }
 details.key ul.terms li { display: block; }
 
-/* detail levels (timeline pages): three radios step the figure from marbles only (1) to full detail (3).
+/* detail levels (timeline pages): four radios step the figure from a wordless schematic (0) to full detail (3).
    The SVG is drawn at level 3; each lane carries its place at every level as --y1 --y2 --y3. */
 .levels { display: inline-flex; align-items: center; gap: 2px; border: 0; padding: 3px; margin: 0 0 calc(var(--space) * 2); background: var(--grid); border-radius: 999px; }
 .levels legend { float: left; padding: 0 var(--space) 0 calc(var(--space) * 1.5); font: 600 12px/1 var(--sans); letter-spacing: .08em; text-transform: uppercase; color: var(--ink-3); }
@@ -187,19 +188,22 @@ details.key ul.terms li { display: block; }
 .d-stretch { transform-box: fill-box; transform-origin: 50% 0; }
 @media (prefers-reduced-motion: no-preference) {
   .d-stage { transition: aspect-ratio 420ms cubic-bezier(.3, 0, .2, 1); }
-  .d-lane-g, .lv2, .lv3 { transition: transform 420ms cubic-bezier(.3, 0, .2, 1), opacity 260ms ease; }
+  .d-lane-g, .d-bold, .lv1, .lv2, .lv3 { transition: transform 420ms cubic-bezier(.3, 0, .2, 1), opacity 260ms ease; }
 }
-.page:has(#lv1:checked) .d-stage { aspect-ratio: 920 / var(--h1); }
-.page:has(#lv1:checked) .d-lane-g { transform: translateY(var(--y1)); }
-.page:has(#lv1:checked) .d-lab,
+.page:has(:is(#lv0, #lv1):checked) .d-stage { aspect-ratio: 920 / var(--h1); }
+.page:has(:is(#lv0, #lv1):checked) .d-lane-g { transform: translateY(var(--y1)); }
+.page:has(:is(#lv0, #lv1):checked) .d-lab,
 .page:has(#lv2:checked) .d-lab { transform: translateY(var(--y2)); }
-.page:has(#lv1:checked) .d-stretch,
+.page:has(:is(#lv0, #lv1):checked) .d-stretch,
 .page:has(#lv2:checked) .d-stretch { transform: scaleY(var(--s2)); }
-.page:has(#lv1:checked) :is(.lv2, .lv3) { opacity: 0; }
+.page:has(:is(#lv0, #lv1):checked) :is(.lv2, .lv3) { opacity: 0; }
+.page:has(#lv0:checked) .d-stage .lv1 { opacity: 0; }
+.page:has(#lv0:checked) .d-stage .d-bold { opacity: 1; }
+.page:has(#lv0:checked) .legend { display: none; }
 .page:has(#lv2:checked) .d-stage { aspect-ratio: 920 / var(--h2); }
 .page:has(#lv2:checked) .d-lane-g { transform: translateY(var(--y2)); }
 .page:has(#lv2:checked) .lv3 { opacity: 0; }
-.page:has(#lv1:checked) .note, .page:has(#lv2:checked) .note { display: none; }
+.page:has(:is(#lv0, #lv1, #lv2):checked) .note { display: none; }
 </style>
 </head>
 <body>
@@ -207,7 +211,7 @@ details.key ul.terms li { display: block; }
 <p class="eyebrow h-blue"><a href="https://github.com/nitsanavni/claude-code-idle-compact#readme">idle-compact</a> · timeline</p>
 <h1>Coming back early cancels the timer</h1>
 <p class="lede">You send a new message after nine minutes. That cancels the countdown, so nothing is compacted while you are working. When Claude finishes that reply, a fresh 20-minute countdown starts.</p>
-<fieldset class="levels"><legend>Detail</legend><label title="Lanes and marbles only"><input type="radio" name="lv" id="lv1" checked>Simple</label><label title="Adds names and the time scale"><input type="radio" name="lv" id="lv2">More</label><label title="Adds a line of detail under each name"><input type="radio" name="lv" id="lv3">Full</label></fieldset>
+<fieldset class="levels"><legend>Detail</legend><label title="No words: just lanes and beads"><input type="radio" name="lv" id="lv0" checked>Schematic</label><label title="Adds lane names, a letter in each marble, and spans as bars"><input type="radio" name="lv" id="lv1">Simple</label><label title="Adds names and the time scale"><input type="radio" name="lv" id="lv2">More</label><label title="Adds a line of detail under each name"><input type="radio" name="lv" id="lv3">Full</label></fieldset>
 <figure class="figure"><div class="d-stage" style="--h1:176;--h2:288;--h3:330"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 920 330" width="920" height="330" role="img" font-family="Inter, system-ui, sans-serif"><title>Coming back early cancels the timer</title>
 <line class="d-grid d-stretch lv2" style="--s2:0.8" x1="225.7" y1="64" x2="225.7" y2="306"/>
 <text class="d-tick lv2" x="225.7" y="54" text-anchor="middle">0</text>
@@ -222,57 +226,61 @@ details.key ul.terms li { display: block; }
 <text class="d-break-label lv2" x="757.1" y="36" text-anchor="middle">+10 min</text>
 <g class="d-lane-g" transform="translate(0 122)" style="--y1:44px;--y2:108px;--y3:122px">
 <g class="h-teal"><rect class="d-lane-bar" x="65.8" y="-7" width="3" height="14" rx="1.5"/></g>
-<text class="d-lane" x="120" y="4" text-anchor="end">Claude</text>
+<text class="d-lane lv1" x="120" y="4" text-anchor="end">Claude</text>
 <line class="d-line" x1="144" y1="0" x2="880" y2="0"/>
 <g class="h-teal">
-<rect class="d-span" x="171.2" y="-10" width="54.5" height="20" rx="10"/>
+<line class="d-bold" x1="171.2" y1="0" x2="225.7" y2="0"/>
+<rect class="d-span lv1" x="171.2" y="-10" width="54.5" height="20" rx="10"/>
 </g>
 <g class="h-teal">
-<rect class="d-span" x="470.8" y="-10" width="108.9" height="20" rx="10"/>
+<line class="d-bold" x1="470.8" y1="0" x2="579.7" y2="0"/>
+<rect class="d-span lv1" x="470.8" y="-10" width="108.9" height="20" rx="10"/>
 </g>
 <g class="d-break"><rect class="d-break-gap" x="753.1" y="-12" width="8" height="24"/>
 <path class="d-break-mark" d="M751.6 6 L756.6 -6 M757.6 6 L762.6 -6"/></g>
 <g class="d-mark h-blue" style="--i:0">
-<circle class="d-dot" cx="171.2" cy="0" r="9"/><text class="d-glyph" x="171.2" y="3.6" text-anchor="middle">S</text>
+<circle class="d-dot" cx="171.2" cy="0" r="9"/><text class="d-glyph lv1" x="171.2" y="3.6" text-anchor="middle">S</text>
 </g>
 <g class="d-lab lv2" transform="translate(0 31)" style="--y2:31px;--y3:31px">
-<text class="d-label" x="206.6" y="0" text-anchor="middle">message sent</text>
+<text class="d-label lv2" x="206.6" y="0" text-anchor="middle">message sent</text>
 <text class="d-sub lv3" x="206.6" y="16" text-anchor="middle">you ask, Claude starts</text>
 </g>
 <g class="d-mark h-teal" style="--i:1">
-<circle class="d-dot" cx="225.7" cy="0" r="9"/><text class="d-glyph" x="225.7" y="3.6" text-anchor="middle">E</text>
+<circle class="d-dot" cx="225.7" cy="0" r="9"/><text class="d-glyph lv1" x="225.7" y="3.6" text-anchor="middle">E</text>
 </g>
 <g class="d-lab lv2" transform="translate(0 -40)" style="--y2:-24px;--y3:-40px">
-<text class="d-label" x="225.7" y="0" text-anchor="middle">reply done</text>
+<text class="d-label lv2" x="225.7" y="0" text-anchor="middle">reply done</text>
 <text class="d-sub lv3" x="225.7" y="16" text-anchor="middle">the countdown starts</text>
 </g>
 <g class="d-mark h-blue" style="--i:2">
-<circle class="d-dot" cx="470.8" cy="0" r="9"/><text class="d-glyph" x="470.8" y="3.6" text-anchor="middle">S</text>
+<circle class="d-dot" cx="470.8" cy="0" r="9"/><text class="d-glyph lv1" x="470.8" y="3.6" text-anchor="middle">S</text>
 </g>
 <g class="d-lab lv2" transform="translate(0 31)" style="--y2:31px;--y3:31px">
-<text class="d-label" x="470.8" y="0" text-anchor="middle">message sent</text>
+<text class="d-label lv2" x="470.8" y="0" text-anchor="middle">message sent</text>
 <text class="d-sub lv3" x="470.8" y="16" text-anchor="middle">you ask, Claude starts</text>
 </g>
 <g class="d-mark h-teal" style="--i:4">
-<circle class="d-dot" cx="579.7" cy="0" r="9"/><text class="d-glyph" x="579.7" y="3.6" text-anchor="middle">E</text>
+<circle class="d-dot" cx="579.7" cy="0" r="9"/><text class="d-glyph lv1" x="579.7" y="3.6" text-anchor="middle">E</text>
 </g>
 <g class="d-lab lv2" transform="translate(0 -40)" style="--y2:-24px;--y3:-40px">
-<text class="d-label" x="579.7" y="0" text-anchor="middle">reply done</text>
+<text class="d-label lv2" x="579.7" y="0" text-anchor="middle">reply done</text>
 <text class="d-sub lv3" x="579.7" y="16" text-anchor="middle">the countdown starts</text>
 </g>
 </g>
 <g class="d-lane-g" transform="translate(0 206)" style="--y1:92px;--y2:178px;--y3:206px">
 <g class="h-violet"><rect class="d-lane-bar" x="44.2" y="-7" width="3" height="14" rx="1.5"/></g>
-<text class="d-lane" x="120" y="4" text-anchor="end">Countdown</text>
+<text class="d-lane lv1" x="120" y="4" text-anchor="end">Countdown</text>
 <line class="d-line" x1="225.7" y1="0" x2="470.8" y2="0"/>
 <line class="d-line" x1="579.7" y1="0" x2="880" y2="0"/>
 <g class="h-violet">
-<path class="d-span" d="M459.8 -10 H235.7 A10 10 0 0 0 235.7 10 H459.8 Z"/>
+<line class="d-bold" x1="225.7" y1="0" x2="459.8" y2="0"/>
+<path class="d-span lv1" d="M459.8 -10 H235.7 A10 10 0 0 0 235.7 10 H459.8 Z"/>
 <text class="d-span-label lv2" x="342.7" y="4" text-anchor="middle">idle countdown · 20 min</text>
 </g>
 <g class="h-violet">
-<rect class="d-span" x="579.7" y="-10" width="300.3" height="20" rx="10"/>
-<path class="d-arrow" d="M865 -5 Q868 0 865 5 L873 0 Z"/>
+<line class="d-bold" x1="579.7" y1="0" x2="880" y2="0"/>
+<rect class="d-span lv1" x="579.7" y="-10" width="300.3" height="20" rx="10"/>
+<path class="d-arrow lv1" d="M865 -5 Q868 0 865 5 L873 0 Z"/>
 </g>
 <g class="d-break"><rect class="d-break-gap" x="753.1" y="-12" width="8" height="24"/>
 <path class="d-break-mark" d="M751.6 6 L756.6 -6 M757.6 6 L762.6 -6"/></g>
@@ -280,25 +288,25 @@ details.key ul.terms li { display: block; }
 <path class="d-cancel" d="M465.8 -5 L475.8 5 M475.8 -5 L465.8 5"/>
 </g>
 <g class="d-lab lv2" transform="translate(0 31)" style="--y2:31px;--y3:31px">
-<text class="d-label" x="470.8" y="0" text-anchor="middle">cancelled</text>
+<text class="d-label lv2" x="470.8" y="0" text-anchor="middle">cancelled</text>
 <text class="d-sub lv3" x="470.8" y="16" text-anchor="middle">by your new message</text>
 </g>
 </g>
 <g class="d-lane-g" transform="translate(0 290)" style="--y1:140px;--y2:248px;--y3:290px">
 <g class="h-mute"><rect class="d-lane-bar" x="37" y="-7" width="3" height="14" rx="1.5"/></g>
-<text class="d-lane" x="120" y="4" text-anchor="end">Compaction</text>
+<text class="d-lane lv1" x="120" y="4" text-anchor="end">Compaction</text>
 <line class="d-line" x1="144" y1="0" x2="880" y2="0"/>
 <g class="d-break"><rect class="d-break-gap" x="753.1" y="-12" width="8" height="24"/>
 <path class="d-break-mark" d="M751.6 6 L756.6 -6 M757.6 6 L762.6 -6"/></g>
 </g>
 </svg></div></figure>
-<ul class="legend"><li><svg viewBox="0 0 18 18" aria-hidden="true"><g class="h-blue"><circle class="d-dot" cx="9" cy="9" r="8"/><text class="d-glyph" x="9" y="12.6" text-anchor="middle">S</text></g></svg><span>message sent</span></li><li><svg viewBox="0 0 30 18" aria-hidden="true"><g class="h-teal"><rect class="d-span" x="1" y="3" width="28" height="12" rx="6"/></g></svg><span>Claude working</span></li><li><svg viewBox="0 0 18 18" aria-hidden="true"><g class="h-teal"><circle class="d-dot" cx="9" cy="9" r="8"/><text class="d-glyph" x="9" y="12.6" text-anchor="middle">E</text></g></svg><span>reply done</span></li><li><svg viewBox="0 0 30 18" aria-hidden="true"><g class="h-violet"><rect class="d-span" x="1" y="3" width="28" height="12" rx="6"/></g></svg><span>idle countdown · 20 min</span></li><li><svg viewBox="0 0 18 18" aria-hidden="true"><path class="d-cancel" d="M4.5 4.5 L13.5 13.5 M13.5 4.5 L4.5 13.5"/></svg><span>cancelled</span></li><li><svg viewBox="0 0 30 18" aria-hidden="true"><line class="d-line" x1="2" y1="9" x2="10" y2="9"/><line class="d-line" x1="20" y1="9" x2="28" y2="9"/><path class="d-break-mark" d="M10 14 L14 4 M16 14 L20 4"/></svg><span>time break</span></li></ul>
+<ul class="legend"><li><svg viewBox="0 0 18 18" aria-hidden="true"><g class="h-blue"><circle class="d-dot" cx="9" cy="9" r="8"/><text class="d-glyph lv1" x="9" y="12.6" text-anchor="middle">S</text></g></svg><span>message sent</span></li><li><svg viewBox="0 0 30 18" aria-hidden="true"><g class="h-teal"><rect class="d-span" x="1" y="3" width="28" height="12" rx="6"/></g></svg><span>Claude working</span></li><li><svg viewBox="0 0 18 18" aria-hidden="true"><g class="h-teal"><circle class="d-dot" cx="9" cy="9" r="8"/><text class="d-glyph lv1" x="9" y="12.6" text-anchor="middle">E</text></g></svg><span>reply done</span></li><li><svg viewBox="0 0 30 18" aria-hidden="true"><g class="h-violet"><rect class="d-span" x="1" y="3" width="28" height="12" rx="6"/></g></svg><span>idle countdown · 20 min</span></li><li><svg viewBox="0 0 18 18" aria-hidden="true"><path class="d-cancel" d="M4.5 4.5 L13.5 13.5 M13.5 4.5 L4.5 13.5"/></svg><span>cancelled</span></li><li><svg viewBox="0 0 30 18" aria-hidden="true"><line class="d-line" x1="2" y1="9" x2="10" y2="9"/><line class="d-line" x1="20" y1="9" x2="28" y2="9"/><path class="d-break-mark" d="M10 14 L14 4 M16 14 L20 4"/></svg><span>time break</span></li></ul>
 <p class="note">1 column = 1 minute; the ≈ break skips ten quiet minutes. Every finished reply starts the countdown again from zero; there is never more than one.</p>
 <details class="key"><summary>How to read this diagram</summary><p>Each row is a <b>lane</b>: the timeline of one actor (Claude, Countdown, Compaction), read left to right. The numbers along the top mark elapsed time; the faint vertical lines let you line moments up across lanes.</p>
-<p>A <b>marble</b> (a round dot) is a moment, something that happens at one instant. Each marble carries a letter; this is what the letters stand for:</p><ul><li><svg viewBox="0 0 18 18" aria-hidden="true"><g class="h-blue"><circle class="d-dot" cx="9" cy="9" r="8"/><text class="d-glyph" x="9" y="12.6" text-anchor="middle">S</text></g></svg><span><b>message sent</b> — you ask, Claude starts</span></li><li><svg viewBox="0 0 18 18" aria-hidden="true"><g class="h-teal"><circle class="d-dot" cx="9" cy="9" r="8"/><text class="d-glyph" x="9" y="12.6" text-anchor="middle">E</text></g></svg><span><b>reply done</b> — the countdown starts</span></li></ul>
+<p>A <b>marble</b> (a round dot) is a moment, something that happens at one instant. Each marble carries a letter; this is what the letters stand for:</p><ul><li><svg viewBox="0 0 18 18" aria-hidden="true"><g class="h-blue"><circle class="d-dot" cx="9" cy="9" r="8"/><text class="d-glyph lv1" x="9" y="12.6" text-anchor="middle">S</text></g></svg><span><b>message sent</b> — you ask, Claude starts</span></li><li><svg viewBox="0 0 18 18" aria-hidden="true"><g class="h-teal"><circle class="d-dot" cx="9" cy="9" r="8"/><text class="d-glyph lv1" x="9" y="12.6" text-anchor="middle">E</text></g></svg><span><b>reply done</b> — the countdown starts</span></li></ul>
 <p>A <b>pill</b> is a span, something that lasts. Its length is its duration:</p><ul><li><svg viewBox="0 0 30 18" aria-hidden="true"><g class="h-teal"><rect class="d-span" x="1" y="3" width="28" height="12" rx="6"/></g></svg><span><b>Claude working</b></span></li><li><svg viewBox="0 0 30 18" aria-hidden="true"><g class="h-violet"><rect class="d-span" x="1" y="3" width="28" height="12" rx="6"/></g></svg><span><b>idle countdown · 20 min</b></span></li></ul>
 <ul><li><svg viewBox="0 0 18 18" aria-hidden="true"><path class="d-cancel" d="M4.5 4.5 L13.5 13.5 M13.5 4.5 L4.5 13.5"/></svg><span><b>Cross</b> — a cancellation: the span is cut off here, before it ran its course.</span></li><li><svg viewBox="0 0 30 18" aria-hidden="true"><g class="h-violet"><path class="d-span" d="M1 9 a6 6 0 0 1 6 -6 H29 V15 H7 a6 6 0 0 1 -6 -6 Z" style="stroke:none"/><path class="d-arrow" d="M19 5 Q21.5 9 19 13 L26 9 Z"/></g></svg><span><b>Arrowhead</b> — the span is still running past the right edge.</span></li><li><svg viewBox="0 0 30 18" aria-hidden="true"><line class="d-line" x1="2" y1="9" x2="10" y2="9"/><line class="d-line" x1="20" y1="9" x2="28" y2="9"/><path class="d-break-mark" d="M10 14 L14 4 M16 14 L20 4"/></svg><span><b>Time break</b> — the timeline skips ahead here (+10 min); time is not to scale across it, so a span that crosses it lasts longer than it looks.</span></li><li><svg viewBox="0 0 34 18" aria-hidden="true"><line class="d-line" x1="1" y1="9" x2="33" y2="9"/></svg><span><b>Thin line</b> — time passing with nothing happening. A gap in a lane means that actor is inactive.</span></li></ul>
-<p>The <b>Detail</b> buttons above the figure show less or more: <b>Simple</b> is just the lanes and marbles, <b>More</b> adds each marble's name and the time scale, and <b>Full</b> adds a line of detail under each name.</p></details>
+<p>The <b>Detail</b> buttons above the figure show less or more: <b>Schematic</b> is the bare picture with no words, where something that lasts is just a bolder stretch of its lane, <b>Simple</b> adds the lane names and a letter in each marble, <b>More</b> adds each marble's name and the time scale, and <b>Full</b> adds a line of detail under each name.</p></details>
 <details class="source"><summary>ASCII source</summary><pre># (b) You come back before 20 minutes: the new message cancels the countdown; the next reply's end starts a new one.
 title:   Coming back early cancels the timer
 caption: You send a new message after nine minutes. That cancels the countdown, so nothing is compacted while you are working. When Claude finishes that reply, a fresh 20-minute countdown starts.

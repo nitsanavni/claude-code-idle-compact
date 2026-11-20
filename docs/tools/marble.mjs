@@ -109,11 +109,11 @@ const glyph = g => (g.glyph ?? '')
 // a 20px pill from x1 to x2 on the lane at y; flat ends where cut (by a cancel)
 const pill = (x1, x2, y, flatR = false) => {
   const r = 10, w = x2 - x1
-  if (!flatR) return `<rect class="d-span" x="${n1(x1)}" y="${y - r}" width="${n1(w)}" height="${2 * r}" rx="${r}"/>`
-  return `<path class="d-span" d="M${n1(x2)} ${y - r} H${n1(x1 + r)} A${r} ${r} 0 0 0 ${n1(x1 + r)} ${y + r} H${n1(x2)} Z"/>`
+  if (!flatR) return `<rect class="d-span lv1" x="${n1(x1)}" y="${y - r}" width="${n1(w)}" height="${2 * r}" rx="${r}"/>`
+  return `<path class="d-span lv1" d="M${n1(x2)} ${y - r} H${n1(x1 + r)} A${r} ${r} 0 0 0 ${n1(x1 + r)} ${y + r} H${n1(x2)} Z"/>`
 }
 const marble = (cx, cy, g, r = 9) => `<circle class="d-dot" cx="${n1(cx)}" cy="${cy}" r="${r}"/>` +
-  (glyph(g) ? `<text class="d-glyph" x="${n1(cx)}" y="${cy + 3.6}" text-anchor="middle">${esc(glyph(g))}</text>` : '')
+  (glyph(g) ? `<text class="d-glyph lv1" x="${n1(cx)}" y="${cy + 3.6}" text-anchor="middle">${esc(glyph(g))}</text>` : '')
 const cross = (cx, cy, s = 5) => `<path class="d-cancel" d="M${n1(cx - s)} ${cy - s} L${n1(cx + s)} ${cy + s} M${n1(cx + s)} ${cy - s} L${n1(cx - s)} ${cy + s}"/>`
 
 // the hue a lane is drawn in: the most common hue among its marks
@@ -131,9 +131,10 @@ export function leadHue(doc) {
   return first ? g(first.sym).hue : 'ink'
 }
 
-// Detail levels: 1 = lanes and marbles only, 2 = + names and the time axis, 3 = + the detail under each name.
+// Detail levels: 0 = schematic, no words at all (lanes and beads; a span is a bolder stretch of line), 1 = + lane names and marble letters,
+// 2 = + names and the time axis, 3 = + the detail under each name. Level 0 shares level 1's geometry.
 // The SVG is drawn at level 3. Each lane is a group placed by a transform, and carries its place at every
-// level as CSS variables (--y1 --y2 --y3); marks that only show from a level up are classed lv2 / lv3.
+// level as CSS variables (--y1 --y2 --y3); marks that only show from a level up are classed lv1 / lv2 / lv3.
 // A page can then step between levels with CSS alone (see "detail levels" in style.css); on its own the SVG is level 3.
 export function geometry(doc) {
   const W = 920, M = 24, L = M + 120, R = M + 16
@@ -205,13 +206,14 @@ export function svg(doc, { css = '' } = {}) {
     out.push(`<g class="d-lane-g" transform="translate(0 ${g3.ys[li]})" style="${vars('y', g => g.ys[li])}">`)
     const name = sentence(ln.name), nx = L - 24
     out.push(`<g class="h-${hue}"><rect class="d-lane-bar" x="${n1(nx - textW(name, 12, 0.6) - 11)}" y="${ly - 7}" width="3" height="14" rx="1.5"/></g>`)
-    out.push(`<text class="d-lane" x="${nx}" y="${ly + 4}" text-anchor="end">${esc(name)}</text>`)
+    out.push(`<text class="d-lane lv1" x="${nx}" y="${ly + 4}" text-anchor="end">${esc(name)}</text>`)
     for (const s of ln.segs) if (s.to > s.from) out.push(`<line class="d-line" x1="${n1(x(s.from))}" y1="${ly}" x2="${n1(x(s.to))}" y2="${ly}"/>`)
     for (const it of ln.items) {
       if (it.kind === 'span') {
         const g = legend(it.fill), x1 = x(it.from), x2 = it.end === 'cancel' ? x(it.to) - 11 : x(it.to)
-        out.push(`<g class="h-${g.hue}">`, pill(x1, x2, ly, it.end === 'cancel'))
-        if (it.end === 'open') out.push(`<path class="d-arrow" d="M${n1(x2 - 15)} ${ly - 5} Q${n1(x2 - 12)} ${ly} ${n1(x2 - 15)} ${ly + 5} L${n1(x2 - 7)} ${ly} Z"/>`)
+        // at level 0 a span is only a bolder stretch of the lane line; from level 1 it is a filled pill
+        out.push(`<g class="h-${g.hue}">`, `<line class="d-bold" x1="${n1(x1)}" y1="${ly}" x2="${n1(x2)}" y2="${ly}"/>`, pill(x1, x2, ly, it.end === 'cancel'))
+        if (it.end === 'open') out.push(`<path class="d-arrow lv1" d="M${n1(x2 - 15)} ${ly - 5} Q${n1(x2 - 12)} ${ly} ${n1(x2 - 15)} ${ly + 5} L${n1(x2 - 7)} ${ly} Z"/>`)
         if (g.label && it.fill in doc.legend) {
           // a span cut by time breaks: label its widest piece
           const cuts = doc.breaks.map(b => b.col).filter(c => c > it.from && c < it.to)
@@ -245,7 +247,7 @@ export function svg(doc, { css = '' } = {}) {
       }
       front.push(`</g>`)
       front.push(`<g class="d-lab lv2" transform="translate(0 ${ty})" style="--y2:${g2.labelDy(r)}px;--y3:${ty}px">`)
-      front.push(`<text class="d-label" x="${n1(cx)}" y="0" text-anchor="middle">${esc(g.label)}</text>`)
+      front.push(`<text class="d-label lv2" x="${n1(cx)}" y="0" text-anchor="middle">${esc(g.label)}</text>`)
       if (g.sub) front.push(`<text class="d-sub lv3" x="${n1(cx)}" y="16" text-anchor="middle">${esc(g.sub)}</text>`)
       front.push(`</g>`)
     }
@@ -307,15 +309,15 @@ export function key(doc) {
   if (all.some(i => i.kind === 'end')) extra.push(li(mini.end(), 'Bar', ' — the lane ends.'))
   extra.push(li('<svg viewBox="0 0 34 18" aria-hidden="true"><line class="d-line" x1="1" y1="9" x2="33" y2="9"/></svg>', 'Thin line', ' — time passing with nothing happening. A gap in a lane means that actor is inactive.'))
   parts.push(`<ul>${extra.join('')}</ul>`)
-  parts.push(`<p>The <b>Detail</b> buttons above the figure show less or more: <b>Simple</b> is just the lanes and marbles, <b>More</b> adds each marble's name and the time scale, and <b>Full</b> adds a line of detail under each name.</p>`)
+  parts.push(`<p>The <b>Detail</b> buttons above the figure show less or more: <b>Schematic</b> is the bare picture with no words, where something that lasts is just a bolder stretch of its lane, <b>Simple</b> adds the lane names and a letter in each marble, <b>More</b> adds each marble's name and the time scale, and <b>Full</b> adds a line of detail under each name.</p>`)
   if (doc.terms.length) parts.push(`<p>The words used here:</p><ul class="terms">${doc.terms.map(t => `<li><span><b>${esc(t.word)}</b> — ${esc(t.meaning)}</span></li>`).join('')}</ul>`)
   return `<details class="key"><summary>How to read this diagram</summary>${parts.join('\n')}</details>`
 }
 
 // the control that steps between detail levels: three radios, wired to the figure by CSS alone
-export const LEVELS = [['Simple', 'lanes and marbles only'], ['More', 'adds names and the time scale'], ['Full', 'adds a line of detail under each name']]
-const levelControl = (start = 1) => `<fieldset class="levels"><legend>Detail</legend>${LEVELS.map(([name, what], i) =>
-  `<label title="${esc(sentence(what))}"><input type="radio" name="lv" id="lv${i + 1}"${i + 1 === start ? ' checked' : ''}>${name}</label>`).join('')}</fieldset>`
+export const LEVELS = [['Schematic', 'no words: just lanes and beads'], ['Simple', 'adds lane names, a letter in each marble, and spans as bars'], ['More', 'adds names and the time scale'], ['Full', 'adds a line of detail under each name']]
+const levelControl = (start = 0) => `<fieldset class="levels"><legend>Detail</legend>${LEVELS.map(([name, what], i) =>
+  `<label title="${esc(sentence(what))}"><input type="radio" name="lv" id="lv${i}"${i === start ? ' checked' : ''}>${name}</label>`).join('')}</fieldset>`
 
 export function html(doc, src, css, file = '') {
   const { levels } = geometry(doc)
