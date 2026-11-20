@@ -1,0 +1,131 @@
+/* Diagram style guide: shared by every human-facing diagram in docs/.
+   Calm paper tones, one serif for voice, one sans for labels, one mono for source.
+   Tokens first; components below. Generators inline this file, so keep it small. */
+
+:root {
+  /* surfaces */
+  --bg:        #f6f4ef;
+  --surface:   #fdfcf9;
+  --rule:      #e6e1d7;
+  --grid:      #ece8df;
+  /* text */
+  --ink:       #2c2b28;
+  --ink-2:     #615d55;
+  --ink-3:     #9a958b;
+  /* hues: muted, similar lightness, each with a soft tint */
+  --sky:   #5f86ad;  --sky-tint:   #e3ebf3;
+  --sage:  #5f8f72;  --sage-tint:  #e2ede5;
+  --sand:  #b8894c;  --sand-tint:  #f4eadb;
+  --rose:  #b8695f;  --rose-tint:  #f4e2df;
+  --plum:  #84709f;  --plum-tint:  #ebe6f1;
+  --mute:  #8f8a80;  --mute-tint:  #ece9e3;
+
+  --serif: "Iowan Old Style", Charter, "Bitstream Charter", Georgia, serif;
+  --sans:  Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+  --mono:  "JetBrains Mono", ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+
+  --radius: 14px;
+  --space:  8px;            /* everything is a multiple of this */
+  --measure: 62ch;          /* comfortable line length for prose */
+  color-scheme: light;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #1b1c1e; --surface: #222326; --rule: #33353a; --grid: #2a2c30;
+    --ink: #e8e6e1; --ink-2: #b0aca4; --ink-3: #7a776f;
+    --sky:  #8fb0d1; --sky-tint:  #26313c;
+    --sage: #8dbb9d; --sage-tint: #243229;
+    --sand: #d7ae75; --sand-tint: #3a3123;
+    --rose: #d6928a; --rose-tint: #3b2826;
+    --plum: #ad9cc6; --plum-tint: #2f2a38;
+    --mute: #8f8b84; --mute-tint: #2c2c2d;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #1b1c1e; --surface: #222326; --rule: #33353a; --grid: #2a2c30;
+  --ink: #e8e6e1; --ink-2: #b0aca4; --ink-3: #7a776f;
+  --sky:  #8fb0d1; --sky-tint:  #26313c;
+  --sage: #8dbb9d; --sage-tint: #243229;
+  --sand: #d7ae75; --sand-tint: #3a3123;
+  --rose: #d6928a; --rose-tint: #3b2826;
+  --plum: #ad9cc6; --plum-tint: #2f2a38;
+  --mute: #8f8b84; --mute-tint: #2c2c2d;
+  color-scheme: dark;
+}
+
+/* page */
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0; background: var(--bg); color: var(--ink);
+  font: 400 16px/1.6 var(--sans);
+  -webkit-font-smoothing: antialiased;
+}
+.page { max-width: 960px; margin: 0 auto; padding: calc(var(--space) * 9) calc(var(--space) * 2) calc(var(--space) * 8); }
+
+/* type */
+.eyebrow { font: 500 12px/1 var(--sans); letter-spacing: .14em; text-transform: uppercase; color: var(--ink-3); margin: 0 0 calc(var(--space) * 2); }
+h1 { font: 400 clamp(28px, 4vw, 38px)/1.15 var(--serif); letter-spacing: -.01em; margin: 0 0 calc(var(--space) * 2); text-wrap: balance; }
+.lede { font: 400 18px/1.6 var(--serif); color: var(--ink-2); max-width: var(--measure); margin: 0 0 calc(var(--space) * 6); text-wrap: pretty; }
+.note { font-size: 14px; color: var(--ink-2); max-width: var(--measure); margin: calc(var(--space) * 4) 0 0; }
+
+/* the figure card */
+.figure {
+  background: var(--surface); border: 1px solid var(--rule); border-radius: var(--radius);
+  padding: calc(var(--space) * 3) calc(var(--space) * 4) calc(var(--space) * 3);
+  box-shadow: 0 1px 2px rgb(0 0 0 / .03), 0 12px 32px -18px rgb(60 50 30 / .18);
+  overflow-x: auto;
+}
+.figure svg { display: block; width: 100%; height: auto; min-width: 560px; }
+
+/* agent-readable source, tucked away */
+details.source { margin-top: var(--space); }
+details.source summary::-webkit-details-marker { display: none; }
+details.source summary::before { content: "+ "; }
+details.source[open] summary::before { content: "– "; }
+details.source pre {
+  margin: calc(var(--space) * 2) 0 0; padding: calc(var(--space) * 2.5); overflow-x: auto;
+  background: var(--surface); border: 1px solid var(--rule); border-radius: 10px;
+  font: 400 13px/1.55 var(--mono); color: var(--ink-2); font-variant-ligatures: none;
+}
+
+/* svg vocabulary (diagram generators emit these classes) */
+.d-grid   { stroke: var(--grid); stroke-width: 1; }
+.d-tick   { font: 500 11px var(--sans); fill: var(--ink-3); letter-spacing: .04em; }
+.d-lane   { font: 600 11px var(--sans); fill: var(--ink-3); letter-spacing: .12em; text-transform: uppercase; }
+.d-line   { stroke: var(--rule); stroke-width: 2; stroke-linecap: round; }
+.d-end    { stroke: var(--ink-3); stroke-width: 2; stroke-linecap: round; }
+.d-label  { font: 500 13px var(--sans); fill: var(--ink); }
+.d-sub    { font: 400 12px var(--sans); fill: var(--ink-3); }
+.d-span-label { font: 500 12px var(--sans); }
+
+/* hue helpers: .h-sky etc. set --h / --t for marks */
+.h-ink  { --h: var(--ink);  --t: var(--mute-tint); }
+.h-sky  { --h: var(--sky);  --t: var(--sky-tint); }
+.h-sage { --h: var(--sage); --t: var(--sage-tint); }
+.h-sand { --h: var(--sand); --t: var(--sand-tint); }
+.h-rose { --h: var(--rose); --t: var(--rose-tint); }
+.h-plum { --h: var(--plum); --t: var(--plum-tint); }
+.h-mute { --h: var(--mute); --t: var(--mute-tint); }
+.d-dot      { fill: var(--surface); stroke: var(--h); stroke-width: 2.5; }
+.d-dot-core { fill: var(--h); }
+.d-halo     { fill: var(--t); }
+.d-span     { fill: var(--t); stroke: var(--h); stroke-width: 1.25; stroke-opacity: .55; }
+.d-span-label { fill: var(--h); }
+.d-cancel   { stroke: var(--h); stroke-width: 2.5; stroke-linecap: round; }
+.d-arrow    { fill: none; stroke: var(--h); stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; stroke-opacity: .7; }
+.d-bg       { fill: var(--surface); stroke: var(--rule); }
+
+/* "How to read this diagram": a quiet, expandable key */
+details.key { margin-top: calc(var(--space) * 3); max-width: var(--measure); }
+details.key summary, details.source summary { cursor: pointer; font: 500 12px/1 var(--sans); letter-spacing: .12em; text-transform: uppercase; color: var(--ink-3); list-style: none; padding: var(--space) 0; }
+details.key summary::-webkit-details-marker { display: none; }
+details.key summary::before { content: "+ "; }
+details.key[open] summary::before { content: "– "; }
+details.key p { font-size: 15px; color: var(--ink-2); margin: calc(var(--space) * 1.5) 0; }
+details.key ul { list-style: none; padding: 0; margin: var(--space) 0 calc(var(--space) * 2); }
+details.key li { display: flex; align-items: baseline; gap: calc(var(--space) * 1.5); font-size: 15px; color: var(--ink-2); padding: calc(var(--space) * .5) 0; }
+details.key li svg { flex: none; width: 34px; height: 18px; align-self: center; }
+details.key li b { font-weight: 500; color: var(--ink); }
