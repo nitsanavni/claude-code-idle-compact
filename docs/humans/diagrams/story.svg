@@ -145,16 +145,18 @@
 <text class="g-sub" x="288.8" y="149" text-anchor="middle">Every message, file and</text>
 <text class="g-sub" x="288.8" y="165" text-anchor="middle">reply is added to the</text>
 <text class="g-sub" x="288.8" y="181" text-anchor="middle">context. It is now around</text>
-<text class="g-sub" x="288.8" y="197" text-anchor="middle">150k tokens.</text>
+<text class="g-sub" x="288.8" y="197" text-anchor="middle">150k tokens, but the</text>
+<text class="g-sub" x="288.8" y="213" text-anchor="middle">cache keeps each new</text>
+<text class="g-sub" x="288.8" y="229" text-anchor="middle">message cheap.</text>
 <g class="h-mute"><circle cx="460" cy="56" r="30" style="fill: var(--t)"/><g transform="translate(460 56)"><path d="M5 -15 a15 15 0 1 0 11 24 a12 12 0 0 1 -11 -24 Z" style="fill: var(--h)"/><circle cx="12" cy="-10" r="1.8" style="fill: var(--h)"/><circle cx="17" cy="-1" r="1.2" style="fill: var(--h)"/></g>
 <circle cx="434" cy="32" r="10" style="fill: var(--h); stroke: var(--surface); stroke-width: 3"/><text x="434" y="36" text-anchor="middle" style="font: 700 11px var(--sans); fill: var(--on-hue)">3</text></g>
 <path class="g-head" d="M370.4 51 l5 5 l-5 5"/>
-<text class="g-title" x="460" y="112" text-anchor="middle" style="font-size: 14px">You step away and</text>
-<text class="g-title" x="460" y="129" text-anchor="middle" style="font-size: 14px">forget</text>
+<text class="g-title" x="460" y="112" text-anchor="middle" style="font-size: 14px">You step away; the</text>
+<text class="g-title" x="460" y="129" text-anchor="middle" style="font-size: 14px">cache expires</text>
 <text class="g-sub" x="460" y="149" text-anchor="middle">Lunch, a meeting, the</text>
 <text class="g-sub" x="460" y="165" text-anchor="middle">weekend. The cache that</text>
 <text class="g-sub" x="460" y="181" text-anchor="middle">made each message cheap</text>
-<text class="g-sub" x="460" y="197" text-anchor="middle">expires.</text>
+<text class="g-sub" x="460" y="197" text-anchor="middle">is gone.</text>
 <g class="h-green"><circle cx="631.2" cy="56" r="30" style="fill: var(--t)"/><g transform="translate(631.2 56)"><rect x="-17" y="-14" width="14" height="4" rx="1.5" style="fill: var(--h); opacity: .45"/><rect x="-17" y="-8" width="14" height="4" rx="1.5" style="fill: var(--h); opacity: .45"/><rect x="-17" y="-2" width="14" height="4" rx="1.5" style="fill: var(--h); opacity: .45"/><rect x="-17" y="4" width="14" height="4" rx="1.5" style="fill: var(--h); opacity: .45"/><rect x="-17" y="10" width="14" height="4" rx="1.5" style="fill: var(--h); opacity: .45"/><path d="M0 0 h7 m-4 -4 l4 4 l-4 4" style="fill: none; stroke: var(--h); stroke-width: 2; stroke-linecap: round; stroke-linejoin: round"/><rect x="10" y="-2" width="9" height="4" rx="1.5" style="fill: var(--h)"/></g>
 <circle cx="605.2" cy="32" r="10" style="fill: var(--h); stroke: var(--surface); stroke-width: 3"/><text x="605.2" y="36" text-anchor="middle" style="font: 700 11px var(--sans); fill: var(--on-hue)">4</text></g>
 <path class="g-head" d="M541.6 51 l5 5 l-5 5"/>
