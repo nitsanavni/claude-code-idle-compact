@@ -1,0 +1,12 @@
+---
+config:
+  theme: dark
+---
+marble-beta
+  title timeout(5) then retry once after 1h
+  axis    : 0    5    /  1h
+  request : -[====x---/--[====#
+  result  : ----------/-------#
+  label = "attempt"
+  label x "timed out"
+  label # "TimeoutError"
