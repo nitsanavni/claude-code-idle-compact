@@ -148,6 +148,12 @@ details.source pre {
 .d-glyph    { font: 700 10px var(--sans); fill: var(--on-hue); }
 .d-halo     { fill: var(--t); }
 .d-span     { fill: var(--t); stroke: var(--h); stroke-width: 1.5; }
+.d-bold     { stroke: var(--h); stroke-width: 5; stroke-linecap: round; opacity: 0; }  /* a span at the schematic level */
+.d-ascii    { font: 500 18px var(--mono); fill: var(--ink-3); opacity: 0; font-variant-ligatures: none; }  /* the text level: the source, wordless */
+.d-ascii-name { font: 500 18px var(--mono); fill: var(--ink-2); opacity: 0; }
+.d-ascii .a-span { fill: var(--h); font-weight: 800; }
+.d-ascii .a-dot  { fill: var(--h); }
+.d-ascii .a-x    { fill: var(--coral); font-weight: 800; }
 .d-ghost    { fill: none; stroke: var(--ink-3); stroke-width: 1.5; stroke-dasharray: 4 4; }
 .d-cancel   { stroke: var(--coral); stroke-width: 2.5; stroke-linecap: round; }
 .d-arrow    { fill: var(--h); }
@@ -173,33 +179,70 @@ details.key li svg { flex: none; width: 34px; height: 18px; align-self: center; 
 details.key li b { font-weight: 600; color: var(--ink); }
 details.key ul.terms li { display: block; }
 
-/* detail levels (timeline pages): three radios step the figure from marbles only (1) to full detail (3).
-   The SVG is drawn at level 3; each lane carries its place at every level as --y1 --y2 --y3. */
-.levels { display: inline-flex; align-items: center; gap: 2px; border: 0; padding: 3px; margin: 0 0 calc(var(--space) * 2); background: var(--grid); border-radius: 999px; }
-.levels legend { float: left; padding: 0 var(--space) 0 calc(var(--space) * 1.5); font: 600 12px/1 var(--sans); letter-spacing: .08em; text-transform: uppercase; color: var(--ink-3); }
-.levels label { cursor: pointer; padding: 7px 14px; border-radius: 999px; font: 600 13px/1 var(--sans); color: var(--ink-2); }
-.levels input { position: absolute; opacity: 0; pointer-events: none; }
-.levels label:has(input:checked) { background: var(--surface); color: var(--ink); box-shadow: var(--shadow); }
-.levels label:has(input:focus-visible) { outline: 2px solid var(--blue); outline-offset: 1px; }
-.d-stage { overflow: hidden; min-width: 560px; aspect-ratio: 920 / var(--h3); }
+/* parts (timeline pages): a checkbox per part (#p-<part>) shows or hides the marks classed .p-<part>, and the
+   layout follows from what is on: text (not drawn) < beads only < room for bars < room for names < room for details.
+   Each lane carries its place in every layout (--yt --y0 --y1 --y2 --y3); the time axis adds --room on top.
+   With everything on, nothing below applies, so the default is the full figure. */
+.view { display: flex; flex-direction: column; align-items: flex-start; gap: var(--space); margin: 0 0 calc(var(--space) * 2); }
+.view span { padding: 0 var(--space) 0 calc(var(--space) * 1.5); min-width: 72px; font: 600 12px/1 var(--sans); letter-spacing: .08em; text-transform: uppercase; color: var(--ink-3); }
+.levels { display: inline-flex; align-items: center; gap: 2px; padding: 3px; background: var(--grid); border-radius: 999px; }
+.levels button { cursor: pointer; border: 0; background: none; padding: 7px 14px; border-radius: 999px; font: 600 13px/1 var(--sans); color: var(--ink-2); }
+.levels button[aria-pressed="true"] { background: var(--surface); color: var(--ink); box-shadow: var(--shadow); }
+.parts { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; padding: 0 3px; }
+.parts label { cursor: pointer; display: inline-flex; align-items: center; gap: 6px; padding: 5px 10px 5px 8px; border: 1px solid var(--rule); border-radius: 999px; font: 500 12px/1 var(--sans); color: var(--ink-3); user-select: none; }
+.parts label::before { content: ""; width: 8px; height: 8px; border-radius: 50%; border: 1.5px solid var(--ink-3); }
+.parts input { position: absolute; opacity: 0; pointer-events: none; }
+.parts label:has(input:checked) { background: var(--surface); color: var(--ink); border-color: var(--ink-3); }
+.parts label:has(input:checked)::before { background: var(--blue); border-color: var(--blue); }
+.levels button:focus-visible, .parts label:has(input:focus-visible) { outline: 2px solid var(--blue); outline-offset: 1px; }
+
+.d-stage { overflow: hidden; min-width: 560px; --h: var(--h3); --room-on: var(--room); aspect-ratio: 920 / calc(var(--h) + var(--room-on)); }
 .d-stage svg { min-width: 0; }
-.d-lane-g, .d-lab { transform: translateY(var(--y3)); }
-.d-stretch { transform-box: fill-box; transform-origin: 50% 0; }
+.d-lane-g { --y: var(--y3); transform: translateY(calc(var(--y) + var(--room-on) * 1px)); }
+.d-lab { --ly: var(--y3); transform: translateY(var(--ly)); }
+.d-stretch { --s: 1; transform-box: fill-box; transform-origin: 50% 0; transform: scaleY(var(--s)); }
 @media (prefers-reduced-motion: no-preference) {
   .d-stage { transition: aspect-ratio 420ms cubic-bezier(.3, 0, .2, 1); }
-  .d-lane-g, .lv2, .lv3 { transition: transform 420ms cubic-bezier(.3, 0, .2, 1), opacity 260ms ease; }
+  .d-stage svg, .d-lane-g, .d-lab, .d-stretch, .d-bold, .d-gfx, .d-ascii, [class*="p-"] { transition: transform 420ms cubic-bezier(.3, 0, .2, 1), opacity 260ms ease; }
+  .figure:has(.d-stage) { transition: padding 420ms cubic-bezier(.3, 0, .2, 1); }
 }
-.page:has(#lv1:checked) .d-stage { aspect-ratio: 920 / var(--h1); }
-.page:has(#lv1:checked) .d-lane-g { transform: translateY(var(--y1)); }
-.page:has(#lv1:checked) .d-lab,
-.page:has(#lv2:checked) .d-lab { transform: translateY(var(--y2)); }
-.page:has(#lv1:checked) .d-stretch,
-.page:has(#lv2:checked) .d-stretch { transform: scaleY(var(--s2)); }
-.page:has(#lv1:checked) :is(.lv2, .lv3) { opacity: 0; }
-.page:has(#lv2:checked) .d-stage { aspect-ratio: 920 / var(--h2); }
-.page:has(#lv2:checked) .d-lane-g { transform: translateY(var(--y2)); }
-.page:has(#lv2:checked) .lv3 { opacity: 0; }
-.page:has(#lv1:checked) .note, .page:has(#lv2:checked) .note { display: none; }
+/* each part, off */
+.page:not(:has(#p-letters:checked)) .d-stage .p-letters,
+.page:not(:has(#p-lanes:checked)) .d-stage .p-lanes,
+.page:not(:has(#p-ticks:checked)) .d-stage .p-ticks,
+.page:not(:has(#p-bars:checked)) .d-stage .p-bars,
+.page:not(:has(#p-names:checked)) .d-stage .p-names,
+.page:not(:has(#p-axis:checked)) .d-stage .p-axis,
+.page:not(:has(#p-grid:checked)) .d-stage .p-grid,
+.page:not(:has(#p-details:checked)) .d-stage .p-details { opacity: 0; }
+.page:not(:has(#p-bars:checked)) .d-stage .d-bold { opacity: 1; }
+.legend, .legend + .note, .note { overflow: hidden; max-height: 240px; }
+.page:not(:has(#p-legend:checked)) .legend, .page:not(:has(#p-note:checked)) .note { max-height: 0; margin-block: 0; opacity: 0; }
+@media (prefers-reduced-motion: no-preference) { .legend, .note { transition: max-height 420ms cubic-bezier(.3, 0, .2, 1), margin 420ms cubic-bezier(.3, 0, .2, 1), opacity 260ms ease; } }
+/* no lane names: the lanes take the room on the left */
+.page:not(:has(#p-lanes:checked)) .d-stage svg { transform: translateX(-5.6%); }
+/* no time axis and no grid: no room for them on top */
+.page:not(:has(:is(#p-axis, #p-grid):checked)) .d-stage { --room-on: 0; }
+/* the layout, loosest first; a later rule wins (all have the same weight) */
+.page:not(:has(#p-details:checked)) .d-stage, .page:not(:has(#p-names:checked)) .d-stage { --h: var(--h2); }
+.page:not(:has(#p-details:checked)) .d-lane-g, .page:not(:has(#p-names:checked)) .d-lane-g { --y: var(--y2); }
+.page:not(:has(#p-details:checked)) .d-lab, .page:not(:has(#p-names:checked)) .d-lab { --ly: var(--y2); }
+.page:not(:has(#p-details:checked)) .d-stretch, .page:not(:has(#p-names:checked)) .d-stretch { --s: var(--s2); }
+.page:not(:has(#p-names:checked)) .d-stage { --h: var(--h1); }
+.page:not(:has(#p-names:checked)) .d-lane-g { --y: var(--y1); }
+.page:not(:has(#p-names:checked)) .d-stretch { --s: var(--s1, var(--s2)); }
+.page:not(:has(:is(#p-names, #p-bars, #p-details):checked)) .d-stage { --h: var(--h0); }
+.page:not(:has(:is(#p-names, #p-bars, #p-details):checked)) .d-lane-g { --y: var(--y0); }
+.page:not(:has(:is(#p-names, #p-bars, #p-details):checked)) .d-stretch { --s: var(--s0, var(--s2)); }
+.page:not(:has(:is(#p-names, #p-bars, #p-details):checked)) .figure { padding-block: calc(var(--space) * 2); }
+/* not drawn: the text view */
+.page:not(:has(#p-drawn:checked)) .d-stage { --h: var(--ht); --room-on: 0; }
+.page:not(:has(#p-drawn:checked)) .d-lane-g { --y: var(--yt); }
+.page:not(:has(#p-drawn:checked)) .d-stage svg { transform: none; }
+.page:not(:has(#p-drawn:checked)):not(:has(#p-lanes:checked)) .d-stage svg { transform: translateX(calc(var(--tshift) * -1)); }  /* text without names: re-centre the rows */
+.page:not(:has(#p-drawn:checked)) .figure { padding-block: calc(var(--space) * 2); }
+.page:not(:has(#p-drawn:checked)) .d-gfx { opacity: 0; }
+.page:not(:has(#p-drawn:checked)) .d-ascii, .page:not(:has(#p-drawn:checked)) .d-ascii-name { opacity: 1; }
 
 .g-box    { fill: var(--t); stroke: var(--h); stroke-width: 1.5; }
 .g-box.dashed, .g-group { stroke-dasharray: 5 5; }
@@ -338,7 +381,7 @@ term  Cloud session — Claude Code running on a remote machine (for example fro
 term  Tokens — the units a conversation is measured in; a token is roughly three quarters of a word. &quot;120k&quot; is 120,000 tokens.</pre></details>
 <nav class="more">
 <p><i>This diagram</i><span><a href="why.svg">as an SVG</a> · <a href="https://github.com/nitsanavni/claude-code-idle-compact/blob/main/docs/humans/diagrams/why.zones">its source on GitHub</a></span></p>
-<p><i>More diagrams</i><span><a href="overview.html">Overview</a> · <b>Why it exists</b> · <a href="timer.html">The timer</a> · <a href="config.html">Settings</a> · <a href="architecture.html">Code architecture</a> · <a href="../../diagrams/a-idle-compact.html">Timeline: idle, then compacted</a> · <a href="../../diagrams/b-user-returns.html">Timeline: coming back early</a> · <a href="../../diagrams/c-small-context-skip.html">Timeline: too small to compact</a> · <a href="../../diagrams/d-compact-after-turn.html">Timeline: compacting on request</a></span></p>
+<p><i>More diagrams</i><span><a href="story.html">The story</a> · <a href="overview.html">Overview</a> · <b>Why it exists</b> · <a href="timer.html">The timer</a> · <a href="config.html">Settings</a> · <a href="architecture.html">Code architecture</a> · <a href="../../diagrams/a-idle-compact.html">Timeline: idle, then compacted</a> · <a href="../../diagrams/b-user-returns.html">Timeline: coming back early</a> · <a href="../../diagrams/c-small-context-skip.html">Timeline: too small to compact</a> · <a href="../../diagrams/d-compact-after-turn.html">Timeline: compacting on request</a></span></p>
 <p><i>The project</i><span><a href="https://github.com/nitsanavni/claude-code-idle-compact#readme">idle-compact on GitHub</a> · <a href="https://github.com/nitsanavni/claude-code-idle-compact/blob/main/docs/humans/README.md">docs for people</a></span></p>
 </nav>
 </main>

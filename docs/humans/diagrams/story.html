@@ -1,0 +1,368 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Use Claude Code in the cloud without paying to re-read a big conversation</title>
+<style>/* Diagram style guide: shared by every human-facing diagram in docs/.
+   Clear and vivid on a cool white page: Inter for words, JetBrains Mono for source,
+   six saturated series hues with a fixed role each. Flat marks: no gradients, no glows.
+   Tokens first; components below. Generators inline this file, so keep it small. */
+
+:root {
+  /* surfaces */
+  --bg:        #f4f6fb;
+  --surface:   #ffffff;
+  --rule:      #dfe4ee;
+  --grid:      #eceff6;
+  /* text */
+  --ink:       #151a2d;
+  --ink-2:     #4a5268;
+  --ink-3:     #687087;
+  /* series hues, each with a tint. Fixed roles across all diagrams:
+     blue = user, violet = timer, green = compact fired, coral = cancel, amber = warning/threshold, teal = system */
+  --blue:   #2563eb;  --blue-tint:   #e8effe;
+  --green:  #0b8457;  --green-tint:  #e0f5ec;
+  --amber:  #b45309;  --amber-tint:  #fdf0d9;
+  --coral:  #d92d4f;  --coral-tint:  #fde7ec;
+  --violet: #7c3aed;  --violet-tint: #efe9fe;
+  --teal:   #0e7c9a;  --teal-tint:   #def3f8;
+  --on-hue: #ffffff;  /* glyphs inside a marble */
+
+  --sans:  Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+  --serif: var(--sans);   /* kept for older generators: everything is Inter now */
+  --mono:  "JetBrains Mono", ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+
+  --radius: 16px;
+  --space:  8px;            /* everything is a multiple of this */
+  --measure: 62ch;          /* comfortable line length for prose */
+  --shadow: 0 1px 2px rgb(20 26 45 / .04), 0 8px 24px -12px rgb(20 26 45 / .12);
+  color-scheme: light;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #121622; --surface: #1a1f2e; --rule: #2c3347; --grid: #232a3b;
+    --ink: #eef1f8; --ink-2: #aab3c7; --ink-3: #8791a8;
+    --blue: #6ea8ff; --green: #3ddc97; --amber: #ffb84d; --coral: #ff7a90; --violet: #b79bff; --teal: #3fd0e6;
+    --blue-tint:   color-mix(in srgb, var(--blue) 16%, var(--surface));
+    --green-tint:  color-mix(in srgb, var(--green) 16%, var(--surface));
+    --amber-tint:  color-mix(in srgb, var(--amber) 16%, var(--surface));
+    --coral-tint:  color-mix(in srgb, var(--coral) 16%, var(--surface));
+    --violet-tint: color-mix(in srgb, var(--violet) 16%, var(--surface));
+    --teal-tint:   color-mix(in srgb, var(--teal) 16%, var(--surface));
+    --on-hue: var(--bg);
+    --shadow: none;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #121622; --surface: #1a1f2e; --rule: #2c3347; --grid: #232a3b;
+  --ink: #eef1f8; --ink-2: #aab3c7; --ink-3: #8791a8;
+  --blue: #6ea8ff; --green: #3ddc97; --amber: #ffb84d; --coral: #ff7a90; --violet: #b79bff; --teal: #3fd0e6;
+  --blue-tint:   color-mix(in srgb, var(--blue) 16%, var(--surface));
+  --green-tint:  color-mix(in srgb, var(--green) 16%, var(--surface));
+  --amber-tint:  color-mix(in srgb, var(--amber) 16%, var(--surface));
+  --coral-tint:  color-mix(in srgb, var(--coral) 16%, var(--surface));
+  --violet-tint: color-mix(in srgb, var(--violet) 16%, var(--surface));
+  --teal-tint:   color-mix(in srgb, var(--teal) 16%, var(--surface));
+  --on-hue: var(--bg);
+  --shadow: none;
+  color-scheme: dark;
+}
+
+/* page */
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0; background: var(--bg); color: var(--ink);
+  font: 400 16px/1.6 var(--sans);
+  -webkit-font-smoothing: antialiased;
+}
+.page { max-width: 960px; margin: 0 auto; padding: calc(var(--space) * 9) calc(var(--space) * 2) calc(var(--space) * 8); }
+
+/* type */
+.eyebrow { font: 600 12px/1 var(--sans); letter-spacing: .08em; text-transform: uppercase; color: var(--h, var(--ink-3)); margin: 0 0 calc(var(--space) * 2); }
+h1 { font: 650 clamp(28px, 4vw, 36px)/1.15 var(--sans); letter-spacing: -.02em; margin: 0 0 calc(var(--space) * 2); text-wrap: balance; }
+.lede { font: 400 18px/1.6 var(--sans); color: var(--ink-2); max-width: var(--measure); margin: 0 0 calc(var(--space) * 5); text-wrap: pretty; }
+.note { font-size: 14px; color: var(--ink-2); max-width: var(--measure); margin: calc(var(--space) * 4) 0 0; }
+
+/* the figure card */
+.figure {
+  margin: 0;
+  background: var(--surface); border: 1px solid var(--rule); border-radius: var(--radius);
+  padding: calc(var(--space) * 4);
+  box-shadow: var(--shadow);
+  overflow-x: auto;
+}
+.figure svg { display: block; width: 100%; height: auto; min-width: 560px; }
+
+/* always-visible mini legend under the figure */
+.legend { display: flex; flex-wrap: wrap; gap: calc(var(--space) * 1.25) calc(var(--space) * 2.5); list-style: none; padding: 0; margin: calc(var(--space) * 2) 0 0; }
+.legend li { display: flex; align-items: center; gap: var(--space); font-size: 13px; line-height: 18px; color: var(--ink-2); }
+.legend svg { flex: none; height: 18px; width: auto; }
+.legend + .note { margin-top: calc(var(--space) * 4); }
+
+/* links: quiet until hovered; the footer lists this diagram's files and the other diagrams */
+a { color: inherit; text-decoration: underline; text-decoration-color: color-mix(in srgb, currentColor 35%, transparent); text-underline-offset: 3px; }
+a:hover { color: var(--blue); text-decoration-color: currentColor; }
+.eyebrow a { text-decoration: none; }
+nav.more { margin-top: calc(var(--space) * 5); padding-top: calc(var(--space) * 3); border-top: 1px solid var(--rule); font-size: 14px; color: var(--ink-2); }
+nav.more p { margin: 0 0 var(--space); display: grid; grid-template-columns: 136px 1fr; align-items: baseline; }
+nav.more i { font: 600 12px/1 var(--sans); letter-spacing: .08em; text-transform: uppercase; color: var(--ink-3); }
+nav.more b { font-weight: 600; color: var(--ink); }
+
+/* agent-readable source, tucked away */
+details.source { margin-top: var(--space); }
+details.source summary::-webkit-details-marker { display: none; }
+details.source summary::before { content: "+ "; }
+details.source[open] summary::before { content: "– "; }
+details.source pre {
+  margin: calc(var(--space) * 2) 0 0; padding: calc(var(--space) * 2.5); overflow-x: auto;
+  background: var(--surface); border: 1px solid var(--rule); border-radius: 10px;
+  font: 400 13px/1.55 var(--mono); color: var(--ink-2); font-variant-ligatures: none;
+}
+
+/* svg vocabulary (diagram generators emit these classes) */
+.d-grid   { stroke: var(--grid); stroke-width: 1; }
+.d-tick   { font: 500 11px var(--sans); fill: var(--ink-3); font-variant-numeric: tabular-nums; }
+.d-lane   { font: 600 12px var(--sans); fill: var(--ink-2); }
+.d-lane-bar { fill: var(--h); }
+.d-line   { stroke: var(--rule); stroke-width: 2; stroke-linecap: round; }
+.d-end    { stroke: var(--ink-2); stroke-width: 2; stroke-linecap: round; }
+.d-label  { font: 600 13px var(--sans); fill: var(--ink); }
+.d-sub    { font: 400 12px var(--sans); fill: var(--ink-2); }
+.d-span-label { font: 600 12px var(--sans); fill: var(--ink); }
+
+/* hue helpers: .h-blue etc. set --h / --t for marks. The older names map onto the new roles. */
+.h-ink    { --h: var(--ink-2);  --t: var(--grid); }
+.h-mute   { --h: var(--ink-3);  --t: var(--grid); }
+.h-blue,   .h-sky  { --h: var(--blue);   --t: var(--blue-tint); }
+.h-green,  .h-sage { --h: var(--green);  --t: var(--green-tint); }
+.h-amber,  .h-sand { --h: var(--amber);  --t: var(--amber-tint); }
+.h-coral,  .h-rose { --h: var(--coral);  --t: var(--coral-tint); }
+.h-violet, .h-plum { --h: var(--violet); --t: var(--violet-tint); }
+.h-teal   { --h: var(--teal);   --t: var(--teal-tint); }
+.d-dot      { fill: var(--h); stroke: var(--surface); stroke-width: 3; }
+.d-dot-core { fill: var(--h); }
+.d-glyph    { font: 700 10px var(--sans); fill: var(--on-hue); }
+.d-halo     { fill: var(--t); }
+.d-span     { fill: var(--t); stroke: var(--h); stroke-width: 1.5; }
+.d-bold     { stroke: var(--h); stroke-width: 5; stroke-linecap: round; opacity: 0; }  /* a span at the schematic level */
+.d-ascii    { font: 500 18px var(--mono); fill: var(--ink-3); opacity: 0; font-variant-ligatures: none; }  /* the text level: the source, wordless */
+.d-ascii-name { font: 500 18px var(--mono); fill: var(--ink-2); opacity: 0; }
+.d-ascii .a-span { fill: var(--h); font-weight: 800; }
+.d-ascii .a-dot  { fill: var(--h); }
+.d-ascii .a-x    { fill: var(--coral); font-weight: 800; }
+.d-ghost    { fill: none; stroke: var(--ink-3); stroke-width: 1.5; stroke-dasharray: 4 4; }
+.d-cancel   { stroke: var(--coral); stroke-width: 2.5; stroke-linecap: round; }
+.d-arrow    { fill: var(--h); }
+.d-bg       { fill: var(--surface); stroke: var(--rule); }
+.d-break-gap   { fill: var(--surface); }
+.d-break-mark  { fill: none; stroke: var(--ink-3); stroke-width: 1.5; stroke-linecap: round; }
+.d-break-label { font: 500 11px var(--sans); fill: var(--ink-3); }
+@media (prefers-reduced-motion: no-preference) {
+  .d-mark { animation: d-pop 150ms ease-out both; animation-delay: calc(var(--i, 0) * 70ms); transform-box: fill-box; transform-origin: center; }
+  @keyframes d-pop { from { opacity: 0; transform: scale(.6); } }
+}
+
+/* "How to read this diagram": a quiet, expandable key */
+details.key { margin-top: calc(var(--space) * 3); max-width: var(--measure); }
+details.key summary, details.source summary { cursor: pointer; font: 600 12px/1 var(--sans); letter-spacing: .08em; text-transform: uppercase; color: var(--ink-3); list-style: none; padding: var(--space) 0; }
+details.key summary::-webkit-details-marker { display: none; }
+details.key summary::before { content: "+ "; }
+details.key[open] summary::before { content: "– "; }
+details.key p { font-size: 15px; color: var(--ink-2); margin: calc(var(--space) * 1.5) 0; }
+details.key ul { list-style: none; padding: 0; margin: var(--space) 0 calc(var(--space) * 2); }
+details.key li { display: flex; align-items: baseline; gap: calc(var(--space) * 1.5); font-size: 15px; color: var(--ink-2); padding: calc(var(--space) * .5) 0; }
+details.key li svg { flex: none; width: 34px; height: 18px; align-self: center; }
+details.key li b { font-weight: 600; color: var(--ink); }
+details.key ul.terms li { display: block; }
+
+/* parts (timeline pages): a checkbox per part (#p-<part>) shows or hides the marks classed .p-<part>, and the
+   layout follows from what is on: text (not drawn) < beads only < room for bars < room for names < room for details.
+   Each lane carries its place in every layout (--yt --y0 --y1 --y2 --y3); the time axis adds --room on top.
+   With everything on, nothing below applies, so the default is the full figure. */
+.view { display: flex; flex-direction: column; align-items: flex-start; gap: var(--space); margin: 0 0 calc(var(--space) * 2); }
+.view span { padding: 0 var(--space) 0 calc(var(--space) * 1.5); min-width: 72px; font: 600 12px/1 var(--sans); letter-spacing: .08em; text-transform: uppercase; color: var(--ink-3); }
+.levels { display: inline-flex; align-items: center; gap: 2px; padding: 3px; background: var(--grid); border-radius: 999px; }
+.levels button { cursor: pointer; border: 0; background: none; padding: 7px 14px; border-radius: 999px; font: 600 13px/1 var(--sans); color: var(--ink-2); }
+.levels button[aria-pressed="true"] { background: var(--surface); color: var(--ink); box-shadow: var(--shadow); }
+.parts { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; padding: 0 3px; }
+.parts label { cursor: pointer; display: inline-flex; align-items: center; gap: 6px; padding: 5px 10px 5px 8px; border: 1px solid var(--rule); border-radius: 999px; font: 500 12px/1 var(--sans); color: var(--ink-3); user-select: none; }
+.parts label::before { content: ""; width: 8px; height: 8px; border-radius: 50%; border: 1.5px solid var(--ink-3); }
+.parts input { position: absolute; opacity: 0; pointer-events: none; }
+.parts label:has(input:checked) { background: var(--surface); color: var(--ink); border-color: var(--ink-3); }
+.parts label:has(input:checked)::before { background: var(--blue); border-color: var(--blue); }
+.levels button:focus-visible, .parts label:has(input:focus-visible) { outline: 2px solid var(--blue); outline-offset: 1px; }
+
+.d-stage { overflow: hidden; min-width: 560px; --h: var(--h3); --room-on: var(--room); aspect-ratio: 920 / calc(var(--h) + var(--room-on)); }
+.d-stage svg { min-width: 0; }
+.d-lane-g { --y: var(--y3); transform: translateY(calc(var(--y) + var(--room-on) * 1px)); }
+.d-lab { --ly: var(--y3); transform: translateY(var(--ly)); }
+.d-stretch { --s: 1; transform-box: fill-box; transform-origin: 50% 0; transform: scaleY(var(--s)); }
+@media (prefers-reduced-motion: no-preference) {
+  .d-stage { transition: aspect-ratio 420ms cubic-bezier(.3, 0, .2, 1); }
+  .d-stage svg, .d-lane-g, .d-lab, .d-stretch, .d-bold, .d-gfx, .d-ascii, [class*="p-"] { transition: transform 420ms cubic-bezier(.3, 0, .2, 1), opacity 260ms ease; }
+  .figure:has(.d-stage) { transition: padding 420ms cubic-bezier(.3, 0, .2, 1); }
+}
+/* each part, off */
+.page:not(:has(#p-letters:checked)) .d-stage .p-letters,
+.page:not(:has(#p-lanes:checked)) .d-stage .p-lanes,
+.page:not(:has(#p-ticks:checked)) .d-stage .p-ticks,
+.page:not(:has(#p-bars:checked)) .d-stage .p-bars,
+.page:not(:has(#p-names:checked)) .d-stage .p-names,
+.page:not(:has(#p-axis:checked)) .d-stage .p-axis,
+.page:not(:has(#p-grid:checked)) .d-stage .p-grid,
+.page:not(:has(#p-details:checked)) .d-stage .p-details { opacity: 0; }
+.page:not(:has(#p-bars:checked)) .d-stage .d-bold { opacity: 1; }
+.legend, .legend + .note, .note { overflow: hidden; max-height: 240px; }
+.page:not(:has(#p-legend:checked)) .legend, .page:not(:has(#p-note:checked)) .note { max-height: 0; margin-block: 0; opacity: 0; }
+@media (prefers-reduced-motion: no-preference) { .legend, .note { transition: max-height 420ms cubic-bezier(.3, 0, .2, 1), margin 420ms cubic-bezier(.3, 0, .2, 1), opacity 260ms ease; } }
+/* no lane names: the lanes take the room on the left */
+.page:not(:has(#p-lanes:checked)) .d-stage svg { transform: translateX(-5.6%); }
+/* no time axis and no grid: no room for them on top */
+.page:not(:has(:is(#p-axis, #p-grid):checked)) .d-stage { --room-on: 0; }
+/* the layout, loosest first; a later rule wins (all have the same weight) */
+.page:not(:has(#p-details:checked)) .d-stage, .page:not(:has(#p-names:checked)) .d-stage { --h: var(--h2); }
+.page:not(:has(#p-details:checked)) .d-lane-g, .page:not(:has(#p-names:checked)) .d-lane-g { --y: var(--y2); }
+.page:not(:has(#p-details:checked)) .d-lab, .page:not(:has(#p-names:checked)) .d-lab { --ly: var(--y2); }
+.page:not(:has(#p-details:checked)) .d-stretch, .page:not(:has(#p-names:checked)) .d-stretch { --s: var(--s2); }
+.page:not(:has(#p-names:checked)) .d-stage { --h: var(--h1); }
+.page:not(:has(#p-names:checked)) .d-lane-g { --y: var(--y1); }
+.page:not(:has(#p-names:checked)) .d-stretch { --s: var(--s1, var(--s2)); }
+.page:not(:has(:is(#p-names, #p-bars, #p-details):checked)) .d-stage { --h: var(--h0); }
+.page:not(:has(:is(#p-names, #p-bars, #p-details):checked)) .d-lane-g { --y: var(--y0); }
+.page:not(:has(:is(#p-names, #p-bars, #p-details):checked)) .d-stretch { --s: var(--s0, var(--s2)); }
+.page:not(:has(:is(#p-names, #p-bars, #p-details):checked)) .figure { padding-block: calc(var(--space) * 2); }
+/* not drawn: the text view */
+.page:not(:has(#p-drawn:checked)) .d-stage { --h: var(--ht); --room-on: 0; }
+.page:not(:has(#p-drawn:checked)) .d-lane-g { --y: var(--yt); }
+.page:not(:has(#p-drawn:checked)) .d-stage svg { transform: none; }
+.page:not(:has(#p-drawn:checked)):not(:has(#p-lanes:checked)) .d-stage svg { transform: translateX(calc(var(--tshift) * -1)); }  /* text without names: re-centre the rows */
+.page:not(:has(#p-drawn:checked)) .figure { padding-block: calc(var(--space) * 2); }
+.page:not(:has(#p-drawn:checked)) .d-gfx { opacity: 0; }
+.page:not(:has(#p-drawn:checked)) .d-ascii, .page:not(:has(#p-drawn:checked)) .d-ascii-name { opacity: 1; }
+
+.g-box    { fill: var(--t); stroke: var(--h); stroke-width: 1.5; }
+.g-box.dashed, .g-group { stroke-dasharray: 5 5; }
+.g-group  { fill: none; stroke: var(--ink-3); stroke-width: 1.25; stroke-opacity: .6; }
+.g-title  { font: 600 13px var(--sans); fill: var(--ink); }
+.g-sub    { font: 400 12px var(--sans); fill: var(--ink-2); }
+.g-mono   { font: 500 12px var(--mono); fill: var(--ink); }
+.g-cap    { font: 600 11px var(--sans); fill: var(--ink-3); letter-spacing: .12em; text-transform: uppercase; }
+.g-edge   { fill: none; stroke: var(--ink-3); stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; }
+.g-edge.dashed { stroke-dasharray: 4 5; }
+.g-head   { fill: none; stroke: var(--ink-3); stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; }
+.g-elabel { font: 500 12px var(--sans); fill: var(--ink-2); paint-order: stroke; stroke: var(--surface); stroke-width: 5px; stroke-linejoin: round; }
+.g-axis   { stroke: var(--ink-3); stroke-width: 1; }
+.g-zone   { fill: var(--t); }
+.g-zone.dashed { fill: url(#hatch); }
+.g-edge-h { fill: none; stroke: var(--h); stroke-width: 2; stroke-linecap: round; }
+.g-hatch  { stroke: var(--h); stroke-width: 1.25; stroke-opacity: .35; }
+.g-unset  { fill: var(--ink-3); opacity: .5; }
+.g-rule   { stroke: var(--rule); stroke-width: 1; }
+.g-start  { fill: var(--ink-3); }
+</style>
+</head>
+<body>
+<main class="page">
+<p class="eyebrow"><a href="https://github.com/nitsanavni/claude-code-idle-compact#readme">idle-compact</a> · the story</p>
+<h1>Use Claude Code in the cloud without paying to re-read a big conversation</h1>
+<p class="lede">You work with Claude in a cloud session and want to spend tokens sensibly. The conversation grows large, you step away and forget it, and idle-compact compacts it while you are gone, so coming back costs a short summary instead of the whole thing.</p>
+<figure class="figure"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 920 412" width="920" height="412" role="img" font-family="Inter, system-ui, sans-serif"><title>Use Claude Code in the cloud without paying to re-read a big conversation</title>
+<g class="h-blue"><circle cx="117.6" cy="56" r="30" style="fill: var(--t)"/><g transform="translate(117.6 56)"><path d="M-13 -5 a7 7 0 0 1 6.5 -9 a9 9 0 0 1 17 2 a6 6 0 0 1 2 11.5 h-24 a5 5 0 0 1 -1.5 -4.500 Z" transform="translate(1 -3)" style="fill: var(--h)"/><circle cx="0" cy="8" r="4" style="fill: var(--h)"/><path d="M-8 20 a8 7 0 0 1 16 0 Z" style="fill: var(--h)"/></g>
+<circle cx="91.6" cy="32" r="10" style="fill: var(--h); stroke: var(--surface); stroke-width: 3"/><text x="91.6" y="36" text-anchor="middle" style="font: 700 11px var(--sans); fill: var(--on-hue)">1</text></g>
+<text class="g-title" x="117.6" y="112" text-anchor="middle" style="font-size: 14px">You, using Claude</text>
+<text class="g-title" x="117.6" y="129" text-anchor="middle" style="font-size: 14px">Code in the cloud</text>
+<text class="g-sub" x="117.6" y="149" text-anchor="middle">You work with Claude in a</text>
+<text class="g-sub" x="117.6" y="165" text-anchor="middle">cloud session, and you</text>
+<text class="g-sub" x="117.6" y="181" text-anchor="middle">would rather not waste</text>
+<text class="g-sub" x="117.6" y="197" text-anchor="middle">tokens.</text>
+<g class="h-teal"><circle cx="288.8" cy="56" r="30" style="fill: var(--t)"/><g transform="translate(288.8 56)"><rect x="-18.5" y="8" width="7" height="8" rx="2" style="fill: var(--h)"/><rect x="-8.5" y="0" width="7" height="16" rx="2" style="fill: var(--h)"/><rect x="1.5" y="-8" width="7" height="24" rx="2" style="fill: var(--h)"/><rect x="11.5" y="-16" width="7" height="32" rx="2" style="fill: var(--h)"/></g>
+<circle cx="262.8" cy="32" r="10" style="fill: var(--h); stroke: var(--surface); stroke-width: 3"/><text x="262.8" y="36" text-anchor="middle" style="font: 700 11px var(--sans); fill: var(--on-hue)">2</text></g>
+<path class="g-head" d="M199.2 51 l5 5 l-5 5"/>
+<text class="g-title" x="288.8" y="112" text-anchor="middle" style="font-size: 14px">The conversation gets</text>
+<text class="g-title" x="288.8" y="129" text-anchor="middle" style="font-size: 14px">hefty</text>
+<text class="g-sub" x="288.8" y="149" text-anchor="middle">Every message, file and</text>
+<text class="g-sub" x="288.8" y="165" text-anchor="middle">reply is added to the</text>
+<text class="g-sub" x="288.8" y="181" text-anchor="middle">context. It is now around</text>
+<text class="g-sub" x="288.8" y="197" text-anchor="middle">150k tokens.</text>
+<g class="h-mute"><circle cx="460" cy="56" r="30" style="fill: var(--t)"/><g transform="translate(460 56)"><path d="M5 -15 a15 15 0 1 0 11 24 a12 12 0 0 1 -11 -24 Z" style="fill: var(--h)"/><circle cx="12" cy="-10" r="1.8" style="fill: var(--h)"/><circle cx="17" cy="-1" r="1.2" style="fill: var(--h)"/></g>
+<circle cx="434" cy="32" r="10" style="fill: var(--h); stroke: var(--surface); stroke-width: 3"/><text x="434" y="36" text-anchor="middle" style="font: 700 11px var(--sans); fill: var(--on-hue)">3</text></g>
+<path class="g-head" d="M370.4 51 l5 5 l-5 5"/>
+<text class="g-title" x="460" y="112" text-anchor="middle" style="font-size: 14px">You step away and</text>
+<text class="g-title" x="460" y="129" text-anchor="middle" style="font-size: 14px">forget</text>
+<text class="g-sub" x="460" y="149" text-anchor="middle">Lunch, a meeting, the</text>
+<text class="g-sub" x="460" y="165" text-anchor="middle">weekend. The cache that</text>
+<text class="g-sub" x="460" y="181" text-anchor="middle">made each message cheap</text>
+<text class="g-sub" x="460" y="197" text-anchor="middle">expires.</text>
+<g class="h-green"><circle cx="631.2" cy="56" r="30" style="fill: var(--t)"/><g transform="translate(631.2 56)"><rect x="-17" y="-14" width="14" height="4" rx="1.5" style="fill: var(--h); opacity: .45"/><rect x="-17" y="-8" width="14" height="4" rx="1.5" style="fill: var(--h); opacity: .45"/><rect x="-17" y="-2" width="14" height="4" rx="1.5" style="fill: var(--h); opacity: .45"/><rect x="-17" y="4" width="14" height="4" rx="1.5" style="fill: var(--h); opacity: .45"/><rect x="-17" y="10" width="14" height="4" rx="1.5" style="fill: var(--h); opacity: .45"/><path d="M0 0 h7 m-4 -4 l4 4 l-4 4" style="fill: none; stroke: var(--h); stroke-width: 2; stroke-linecap: round; stroke-linejoin: round"/><rect x="10" y="-2" width="9" height="4" rx="1.5" style="fill: var(--h)"/></g>
+<circle cx="605.2" cy="32" r="10" style="fill: var(--h); stroke: var(--surface); stroke-width: 3"/><text x="605.2" y="36" text-anchor="middle" style="font: 700 11px var(--sans); fill: var(--on-hue)">4</text></g>
+<path class="g-head" d="M541.6 51 l5 5 l-5 5"/>
+<text class="g-title" x="631.2" y="112" text-anchor="middle" style="font-size: 14px">It is compacted for</text>
+<text class="g-title" x="631.2" y="129" text-anchor="middle" style="font-size: 14px">you</text>
+<text class="g-sub" x="631.2" y="149" text-anchor="middle">After 20 quiet minutes</text>
+<text class="g-sub" x="631.2" y="165" text-anchor="middle">idle-compact has Claude</text>
+<text class="g-sub" x="631.2" y="181" text-anchor="middle">Code swap the history for</text>
+<text class="g-sub" x="631.2" y="197" text-anchor="middle">a short summary.</text>
+<g class="h-green"><circle cx="802.4" cy="56" r="30" style="fill: var(--t)"/><g transform="translate(802.4 56)"><circle cx="0" cy="-7" r="7" style="fill: var(--h)"/><path d="M-13 15 a13 12 0 0 1 26 0 Z" style="fill: var(--h)"/></g>
+<circle cx="776.4" cy="32" r="10" style="fill: var(--h); stroke: var(--surface); stroke-width: 3"/><text x="776.4" y="36" text-anchor="middle" style="font: 700 11px var(--sans); fill: var(--on-hue)">5</text></g>
+<path class="g-head" d="M712.8 51 l5 5 l-5 5"/>
+<text class="g-title" x="802.4" y="112" text-anchor="middle" style="font-size: 14px">You return to a small</text>
+<text class="g-title" x="802.4" y="129" text-anchor="middle" style="font-size: 14px">context</text>
+<text class="g-sub" x="802.4" y="149" text-anchor="middle">Your next message reads a</text>
+<text class="g-sub" x="802.4" y="165" text-anchor="middle">summary, not 150k</text>
+<text class="g-sub" x="802.4" y="181" text-anchor="middle">uncached tokens: faster,</text>
+<text class="g-sub" x="802.4" y="197" text-anchor="middle">and far cheaper.</text>
+<rect x="374.4" y="226" width="342.4" height="158" rx="10" style="fill: var(--bg)"/>
+<text class="g-cap" x="545.6" y="243" text-anchor="middle">you are away</text>
+<text class="g-cap" x="32" y="243">Context size</text>
+<clipPath id="before"><rect x="0" y="0" width="631.2" height="386"/></clipPath><clipPath id="after"><rect x="631.2" y="0" width="920" height="386"/></clipPath>
+<g class="h-teal" clip-path="url(#before)"><path d="M32 376.1 C117.6 376.1 117.6 331.2 203.2 331.2 C288.8 331.2 288.8 270.5 374.4 270.5 C460 270.5 460 270.5 545.6 270.5 H617.2 C631.2 270.5 631.2 370.8 645.2 370.8 H716.8 C802.4 370.8 802.4 362.9 888 362.9 V384 H32 Z" style="fill: var(--t)"/><path d="M32 376.1 C117.6 376.1 117.6 331.2 203.2 331.2 C288.8 331.2 288.8 270.5 374.4 270.5 C460 270.5 460 270.5 545.6 270.5 H617.2 C631.2 270.5 631.2 370.8 645.2 370.8 H716.8 C802.4 370.8 802.4 362.9 888 362.9" style="fill: none; stroke: var(--h); stroke-width: 2.5"/></g>
+<g class="h-green" clip-path="url(#after)"><path d="M32 376.1 C117.6 376.1 117.6 331.2 203.2 331.2 C288.8 331.2 288.8 270.5 374.4 270.5 C460 270.5 460 270.5 545.6 270.5 H617.2 C631.2 270.5 631.2 370.8 645.2 370.8 H716.8 C802.4 370.8 802.4 362.9 888 362.9 V384 H32 Z" style="fill: var(--t)"/><path d="M32 376.1 C117.6 376.1 117.6 331.2 203.2 331.2 C288.8 331.2 288.8 270.5 374.4 270.5 C460 270.5 460 270.5 545.6 270.5 H617.2 C631.2 270.5 631.2 370.8 645.2 370.8 H716.8 C802.4 370.8 802.4 362.9 888 362.9" style="fill: none; stroke: var(--h); stroke-width: 2.5"/></g>
+<g class="h-coral"><path d="M631.2 270.5 H880" style="fill: none; stroke: var(--h); stroke-width: 2.5; stroke-dasharray: 2 7; stroke-linecap: round"/>
+<circle cx="880" cy="270.5" r="6" style="fill: var(--h); stroke: var(--surface); stroke-width: 3"/>
+<text class="g-sub" x="888" y="292.5" text-anchor="end" style="fill: var(--h); font-weight: 500">without it: your next message re-reads</text>
+<text class="g-sub" x="888" y="307.5" text-anchor="end" style="fill: var(--h); font-weight: 500">about 150k tokens, uncached</text>
+</g><g class="h-green"><circle cx="880" cy="362.9" r="6" style="fill: var(--h); stroke: var(--surface); stroke-width: 3"/>
+<text class="g-title" x="866" y="350.9" text-anchor="end" style="fill: var(--h)">with idle-compact</text></g>
+<line class="g-axis" x1="32" y1="384" x2="888" y2="384"/>
+</svg></figure>
+<p class="note">Compacting replaces the details of the old conversation with a summary. This story is for when that trade is fine with you; if it is not, raise the thresholds or switch the mod off.</p>
+<details class="key"><summary>How to read this diagram</summary><p>Read the <b>scenes</b> left to right; they are numbered in the order things happen. The <b>graph</b> underneath follows one thing through the story: context size, which is what every message costs to read. Higher means more to read, so slower and more expensive.</p>
+<ul><li><svg viewBox="0 0 34 18" aria-hidden="true"><g class="h-blue"><circle cx="17" cy="9" r="8" style="fill: var(--h)"/><text x="17" y="12.500" text-anchor="middle" style="font: 700 10px var(--sans); fill: var(--on-hue)">1</text></g></svg><span><b>You, using Claude Code in the cloud</b> — You work with Claude in a cloud session, and you would rather not waste tokens.</span></li><li><svg viewBox="0 0 34 18" aria-hidden="true"><g class="h-teal"><circle cx="17" cy="9" r="8" style="fill: var(--h)"/><text x="17" y="12.500" text-anchor="middle" style="font: 700 10px var(--sans); fill: var(--on-hue)">2</text></g></svg><span><b>The conversation gets hefty</b> — Every message, file and reply is added to the context. It is now around 150k tokens.</span></li><li><svg viewBox="0 0 34 18" aria-hidden="true"><g class="h-mute"><circle cx="17" cy="9" r="8" style="fill: var(--h)"/><text x="17" y="12.500" text-anchor="middle" style="font: 700 10px var(--sans); fill: var(--on-hue)">3</text></g></svg><span><b>You step away and forget</b> — Lunch, a meeting, the weekend. The cache that made each message cheap expires.</span></li><li><svg viewBox="0 0 34 18" aria-hidden="true"><g class="h-green"><circle cx="17" cy="9" r="8" style="fill: var(--h)"/><text x="17" y="12.500" text-anchor="middle" style="font: 700 10px var(--sans); fill: var(--on-hue)">4</text></g></svg><span><b>It is compacted for you</b> — After 20 quiet minutes idle-compact has Claude Code swap the history for a short summary.</span></li><li><svg viewBox="0 0 34 18" aria-hidden="true"><g class="h-green"><circle cx="17" cy="9" r="8" style="fill: var(--h)"/><text x="17" y="12.500" text-anchor="middle" style="font: 700 10px var(--sans); fill: var(--on-hue)">5</text></g></svg><span><b>You return to a small context</b> — Your next message reads a summary, not 150k uncached tokens: faster, and far cheaper.</span></li></ul>
+<ul><li><svg viewBox="0 0 34 18" aria-hidden="true"><g class="h-teal"><path d="M2 14 C12 14 18 4 32 4 V17 H2 Z" style="fill: var(--t)"/><path d="M2 14 C12 14 18 4 32 4" style="fill: none; stroke: var(--h); stroke-width: 2"/></g></svg><span><b>Rising line</b> — the conversation growing as you work.</span></li>
+<li><svg viewBox="0 0 34 18" aria-hidden="true"><g class="h-green"><path d="M2 4 H12 C17 4 17 14 22 14 H32 V17 H2 Z" style="fill: var(--t)"/><path d="M2 4 H12 C17 4 17 14 22 14 H32" style="fill: none; stroke: var(--h); stroke-width: 2"/></g></svg><span><b>The drop</b> — the compaction. From here the line is green: the story with idle-compact.</span></li>
+<li><svg viewBox="0 0 34 18" aria-hidden="true"><g class="h-coral"><path d="M2 9 H26" style="fill: none; stroke: var(--h); stroke-width: 2; stroke-dasharray: 2 6; stroke-linecap: round"/><circle cx="29" cy="9" r="4" style="fill: var(--h)"/></g></svg><span><b>Dotted line</b> — what would happen without it: your next message re-reads about 150k tokens, uncached.</span></li>
+<li><svg viewBox="0 0 34 18" aria-hidden="true"><rect x="2" y="2" width="30" height="14" rx="4" style="fill: var(--bg); stroke: var(--rule)"/></svg><span><b>Shaded band</b> — the stretch of the story in which you are away.</span></li></ul>
+<p>The words used here:</p><ul class="terms"><li><span><b>Cloud session</b> — Claude Code running on a remote machine that you reach from the web or your phone. Claude Code's own idle compaction is switched off there, which is why idle-compact exists.</span></li><li><span><b>Context window</b> — everything Claude reads to answer you: the whole conversation so far. It is measured in tokens; a token is roughly three quarters of a word.</span></li><li><span><b>Cache</b> — while you are actively working, Claude Code keeps the conversation cached, so each new message only pays for what is new. After a pause the cache expires (a &quot;cache miss&quot;), and the next message pays for the entire conversation again.</span></li><li><span><b>Compact</b> — replace the conversation so far with a short summary of it and carry on from there. Details that are not in the summary are gone from Claude's view.</span></li></ul></details>
+<details class="source"><summary>Diagram source</summary><pre># The story idle-compact was made for, in five scenes, over a graph of how big the conversation is.
+title:   Use Claude Code in the cloud without paying to re-read a big conversation
+caption: You work with Claude in a cloud session and want to spend tokens sensibly. The conversation grows large, you step away and forget it, and idle-compact compacts it while you are gone, so coming back costs a short summary instead of the whole thing.
+note:    Compacting replaces the details of the old conversation with a summary. This story is for when that trade is fine with you; if it is not, raise the thresholds or switch the mod off.
+
+# scene  &lt;icon&gt;  &lt;hue&gt;  &lt;size from&gt;-&lt;size to&gt;  &lt;title&gt; — &lt;text&gt;      sizes are percent of the graph's height
+scene  cloud    blue    6-40    You, using Claude Code in the cloud — You work with Claude in a cloud session, and you would rather not waste tokens.
+scene  grow     teal    40-86   The conversation gets hefty — Every message, file and reply is added to the context. It is now around 150k tokens.
+scene  away     mute    86-86   You step away and forget — Lunch, a meeting, the weekend. The cache that made each message cheap expires.
+scene  compact  green   86-10   It is compacted for you — After 20 quiet minutes idle-compact has Claude Code swap the history for a short summary.
+scene  back     green   10-16   You return to a small context — Your next message reads a summary, not 150k uncached tokens: faster, and far cheaper.
+
+graph    Context size — what every message costs to read
+away     3 4  you are away
+with     with idle-compact
+without  without it: your next message re-reads about 150k tokens, uncached
+
+term  Cloud session — Claude Code running on a remote machine that you reach from the web or your phone. Claude Code's own idle compaction is switched off there, which is why idle-compact exists.
+term  Context window — everything Claude reads to answer you: the whole conversation so far. It is measured in tokens; a token is roughly three quarters of a word.
+term  Cache — while you are actively working, Claude Code keeps the conversation cached, so each new message only pays for what is new. After a pause the cache expires (a &quot;cache miss&quot;), and the next message pays for the entire conversation again.
+term  Compact — replace the conversation so far with a short summary of it and carry on from there. Details that are not in the summary are gone from Claude's view.</pre></details>
+<nav class="more">
+<p><i>This diagram</i><span><a href="story.svg">as an SVG</a> · <a href="https://github.com/nitsanavni/claude-code-idle-compact/blob/main/docs/humans/diagrams/story.scenes">its source on GitHub</a></span></p>
+<p><i>More diagrams</i><span><b>The story</b> · <a href="overview.html">Overview</a> · <a href="why.html">Why it exists</a> · <a href="timer.html">The timer</a> · <a href="config.html">Settings</a> · <a href="architecture.html">Code architecture</a> · <a href="../../diagrams/a-idle-compact.html">Timeline: idle, then compacted</a> · <a href="../../diagrams/b-user-returns.html">Timeline: coming back early</a> · <a href="../../diagrams/c-small-context-skip.html">Timeline: too small to compact</a> · <a href="../../diagrams/d-compact-after-turn.html">Timeline: compacting on request</a></span></p>
+<p><i>The project</i><span><a href="https://github.com/nitsanavni/claude-code-idle-compact#readme">idle-compact on GitHub</a> · <a href="https://github.com/nitsanavni/claude-code-idle-compact/blob/main/docs/humans/README.md">docs for people</a></span></p>
+</nav>
+</main>
+</body>
+</html>

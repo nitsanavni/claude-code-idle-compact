@@ -1,8 +1,12 @@
 # idle-compact
 
-Claude Code already compacts an idle conversation on your own computer, but in **cloud sessions** that's turned off. idle-compact fills that gap: it compacts after you've been idle for a while, before the prompt cache expires, in cloud and local sessions alike. And you can **configure** it: how long to wait, how big the conversation must be, and how you're told, all changeable live.
+You use Claude Code in a cloud session, and you'd like to spend tokens sensibly. You and Claude build up a hefty conversation, then you step away and forget about it. By the time you return, the prompt cache has expired, so your next message would pay to re-read all of it, uncached. If you're fine with that work being summarized, idle-compact compacts it while you're away, and you come back to a small, fresh context.
 
-When you come back, the next turn starts from a small, fresh context instead of re-reading a large, uncached one.
+Claude Code already compacts an idle conversation on your own computer, but in **cloud sessions** that's turned off. idle-compact fills that gap, in cloud and local sessions alike. And you can **configure** it: how long to wait, how big the conversation must be, and how you're told, all changeable live.
+
+![Use Claude Code in the cloud without paying to re-read a big conversation](docs/humans/diagrams/story.svg)
+
+[Open the story as a page](https://raw.githack.com/nitsanavni/claude-code-idle-compact/main/docs/humans/diagrams/story.html), with every term explained.
 
 ![idle-compact at a glance: the parts, and how they work together](docs/humans/diagrams/overview.svg)
 

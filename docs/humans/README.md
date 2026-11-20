@@ -2,6 +2,12 @@
 
 idle-compact is a Claude Code mod. When you step away from a conversation, it compacts it for you, so the next message you send starts from a small, fresh context instead of re-reading a large one.
 
+## The story
+
+![Use Claude Code in the cloud without paying to re-read a big conversation](diagrams/story.svg)
+
+[Open the interactive page](https://raw.githack.com/nitsanavni/claude-code-idle-compact/main/docs/humans/diagrams/story.html)
+
 ## The big picture
 
 ![idle-compact at a glance: the parts, and how they work together](diagrams/overview.svg)

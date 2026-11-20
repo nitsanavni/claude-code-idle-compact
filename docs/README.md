@@ -2,7 +2,7 @@
 
 ## For people
 
-- [What idle-compact is, and why](humans/README.md): start here, with the [overview diagram](https://raw.githack.com/nitsanavni/claude-code-idle-compact/main/docs/humans/diagrams/overview.html)
+- [What idle-compact is, and why](humans/README.md): start here, with [the story](https://raw.githack.com/nitsanavni/claude-code-idle-compact/main/docs/humans/diagrams/story.html) and the [overview diagram](https://raw.githack.com/nitsanavni/claude-code-idle-compact/main/docs/humans/diagrams/overview.html)
 - [Configuration](humans/configuration.md)
 - [The timer](humans/timer.md)
 - [Architecture](humans/architecture.md): the code's internals
