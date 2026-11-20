@@ -12,7 +12,7 @@ type Config = {
   afterPrompt: string // testing: if set, submitted (as the plugin) after a compaction, to wake Claude
 }
 
-const DEFAULTS: Config = { enabled: true, idleSeconds: 20 * 60, minTokens: 100_000, dryRun: false, instructions: '', announce: 'log,toast,notify', afterPrompt: '' }
+const DEFAULTS: Config = { enabled: true, idleSeconds: 20 * 60, minTokens: 120_000, dryRun: false, instructions: '', announce: 'log,toast,notify', afterPrompt: '' }
 const KEYS = Object.keys(DEFAULTS) as (keyof Config)[]
 
 let timer: { cancel: () => void } | null = null

@@ -31,7 +31,7 @@ Settings, which persist across sessions:
 | --- | --- | --- |
 | `enabled` | `true` | Master switch |
 | `idleSeconds` | `1200` | How long to wait after a turn ends before compacting |
-| `minTokens` | `100000` | Skip compaction when the context is smaller than this |
+| `minTokens` | `120000` | Skip compaction when the context is smaller than this |
 | `dryRun` | `false` | Only report what would happen |
 | `instructions` | `""` | Optional focus for the compaction summary |
 | `announce` | `log,toast,notify` | Where to announce: `log`, `toast`, `notify` (push), `prompt` (a message in the chat) |
