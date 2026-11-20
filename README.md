@@ -10,7 +10,7 @@ A Claude Code mod that compacts the conversation after you've been idle for a wh
 
 ## How it works
 
-- When a turn ends, the mod starts a timer. By default it waits 50 minutes, just under the 1-hour cache TTL.
+- When a turn ends, the mod starts a timer. By default it waits 20 minutes.
 - When the timer fires, the mod checks the context size. If the context is at least `minTokens`, it runs `/compact`.
 - It then announces the compaction with a toast, a log line and a push notification, so you can see it happened.
 - Starting a new turn resets the timer.
@@ -30,7 +30,7 @@ Settings, which persist across sessions:
 | Field | Default | Meaning |
 | --- | --- | --- |
 | `enabled` | `true` | Master switch |
-| `idleSeconds` | `3000` | How long to wait after a turn ends before compacting |
+| `idleSeconds` | `1200` | How long to wait after a turn ends before compacting |
 | `minTokens` | `100000` | Skip compaction when the context is smaller than this |
 | `dryRun` | `false` | Only report what would happen |
 | `instructions` | `""` | Optional focus for the compaction summary |
