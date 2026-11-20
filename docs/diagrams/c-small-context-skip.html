@@ -149,6 +149,10 @@ details.source pre {
 .d-halo     { fill: var(--t); }
 .d-span     { fill: var(--t); stroke: var(--h); stroke-width: 1.5; }
 .d-bold     { stroke: var(--h); stroke-width: 5; stroke-linecap: round; opacity: 0; }  /* a span at the schematic level */
+.d-ascii    { font: 500 18px var(--mono); fill: var(--ink-3); opacity: 0; font-variant-ligatures: none; }  /* the text level: the source, wordless */
+.d-ascii .a-span { fill: var(--h); font-weight: 800; }
+.d-ascii .a-dot  { fill: var(--h); }
+.d-ascii .a-x    { fill: var(--coral); font-weight: 800; }
 .d-ghost    { fill: none; stroke: var(--ink-3); stroke-width: 1.5; stroke-dasharray: 4 4; }
 .d-cancel   { stroke: var(--coral); stroke-width: 2.5; stroke-linecap: round; }
 .d-arrow    { fill: var(--h); }
@@ -174,7 +178,7 @@ details.key li svg { flex: none; width: 34px; height: 18px; align-self: center; 
 details.key li b { font-weight: 600; color: var(--ink); }
 details.key ul.terms li { display: block; }
 
-/* detail levels (timeline pages): four radios step the figure from a wordless schematic (0) to full detail (3).
+/* detail levels (timeline pages): five radios step the figure from wordless text (t) and a wordless schematic (0) to full detail (3).
    The SVG is drawn at level 3; each lane carries its place at every level as --y1 --y2 --y3. */
 .levels { display: inline-flex; align-items: center; gap: 2px; border: 0; padding: 3px; margin: 0 0 calc(var(--space) * 2); background: var(--grid); border-radius: 999px; }
 .levels legend { float: left; padding: 0 var(--space) 0 calc(var(--space) * 1.5); font: 600 12px/1 var(--sans); letter-spacing: .08em; text-transform: uppercase; color: var(--ink-3); }
@@ -188,22 +192,30 @@ details.key ul.terms li { display: block; }
 .d-stretch { transform-box: fill-box; transform-origin: 50% 0; }
 @media (prefers-reduced-motion: no-preference) {
   .d-stage { transition: aspect-ratio 420ms cubic-bezier(.3, 0, .2, 1); }
-  .d-lane-g, .d-bold, .lv1, .lv2, .lv3 { transition: transform 420ms cubic-bezier(.3, 0, .2, 1), opacity 260ms ease; }
+  .d-lane-g, .d-bold, .d-gfx, .d-ascii, .lv1, .lv2, .lv3 { transition: transform 420ms cubic-bezier(.3, 0, .2, 1), opacity 260ms ease; }
 }
-.page:has(:is(#lv0, #lv1):checked) .d-stage { aspect-ratio: 920 / var(--h1); }
-.page:has(:is(#lv0, #lv1):checked) .d-lane-g { transform: translateY(var(--y1)); }
-.page:has(:is(#lv0, #lv1):checked) .d-lab,
+.page:has(:is(#lvt, #lv0, #lv1):checked) .d-stage { aspect-ratio: 920 / var(--h1); }
+.page:has(:is(#lvt, #lv0, #lv1):checked) .d-lane-g { transform: translateY(var(--y1)); }
+.page:has(:is(#lvt, #lv0, #lv1):checked) .d-lab,
 .page:has(#lv2:checked) .d-lab { transform: translateY(var(--y2)); }
-.page:has(:is(#lv0, #lv1):checked) .d-stretch,
+.page:has(:is(#lvt, #lv0, #lv1):checked) .d-stretch,
 .page:has(#lv2:checked) .d-stretch { transform: scaleY(var(--s2)); }
-.page:has(:is(#lv0, #lv1):checked) :is(.lv2, .lv3) { opacity: 0; }
-.page:has(#lv0:checked) .d-stage .lv1 { opacity: 0; }
+.page:has(:is(#lvt, #lv0, #lv1):checked) :is(.lv2, .lv3) { opacity: 0; }
+.page:has(:is(#lvt, #lv0):checked) .d-stage .lv1 { opacity: 0; }
 .page:has(#lv0:checked) .d-stage .d-bold { opacity: 1; }
-.page:has(#lv0:checked) .legend { display: none; }
+.page:has(:is(#lvt, #lv0):checked) .legend { display: none; }
 .page:has(#lv2:checked) .d-stage { aspect-ratio: 920 / var(--h2); }
 .page:has(#lv2:checked) .d-lane-g { transform: translateY(var(--y2)); }
 .page:has(#lv2:checked) .lv3 { opacity: 0; }
-.page:has(:is(#lv0, #lv1, #lv2):checked) .note { display: none; }
+.page:has(:is(#lvt, #lv0, #lv1, #lv2):checked) .note { display: none; }
+.page:has(#lvt:checked) .d-stage { aspect-ratio: 920 / var(--ht); }
+.page:has(#lvt:checked) .d-lane-g { transform: translateY(var(--yt)); }
+.page:has(#lvt:checked) .d-gfx { opacity: 0; }
+.page:has(#lvt:checked) .d-ascii { opacity: 1; }
+.page:has(#lv0:checked) .d-stage { aspect-ratio: 920 / var(--h0); }
+.page:has(#lv0:checked) .d-lane-g { transform: translateY(var(--y0)); }
+.page:has(:is(#lvt, #lv0):checked) .figure { padding-block: calc(var(--space) * 2); }
+@media (prefers-reduced-motion: no-preference) { .figure:has(.d-stage) { transition: padding 420ms cubic-bezier(.3, 0, .2, 1); } }
 </style>
 </head>
 <body>
@@ -211,8 +223,8 @@ details.key ul.terms li { display: block; }
 <p class="eyebrow h-amber"><a href="https://github.com/nitsanavni/claude-code-idle-compact#readme">idle-compact</a> · timeline</p>
 <h1>A small context is left alone</h1>
 <p class="lede">The countdown runs out as usual, but the conversation holds only 64k tokens, under the 120k minimum. Re-reading something that small is cheap, so idle-compact leaves it exactly as it was.</p>
-<fieldset class="levels"><legend>Detail</legend><label title="No words: just lanes and beads"><input type="radio" name="lv" id="lv0" checked>Schematic</label><label title="Adds lane names, a letter in each marble, and spans as bars"><input type="radio" name="lv" id="lv1">Simple</label><label title="Adds names and the time scale"><input type="radio" name="lv" id="lv2">More</label><label title="Adds a line of detail under each name"><input type="radio" name="lv" id="lv3">Full</label></fieldset>
-<figure class="figure"><div class="d-stage" style="--h1:176;--h2:284;--h3:340"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 920 340" width="920" height="340" role="img" font-family="Inter, system-ui, sans-serif"><title>A small context is left alone</title>
+<fieldset class="levels"><legend>Detail</legend><label title="The diagram as plain characters, like its source, with no words"><input type="radio" name="lv" id="lvt" checked>Text</label><label title="No words: just lanes and beads"><input type="radio" name="lv" id="lv0">Schematic</label><label title="Adds lane names, a letter in each marble, and spans as bars"><input type="radio" name="lv" id="lv1">Simple</label><label title="Adds names and the time scale"><input type="radio" name="lv" id="lv2">More</label><label title="Adds a line of detail under each name"><input type="radio" name="lv" id="lv3">Full</label></fieldset>
+<figure class="figure"><div class="d-stage" style="--ht:84;--h0:106;--h1:176;--h2:284;--h3:340"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 920 340" width="920" height="340" role="img" font-family="Inter, system-ui, sans-serif"><title>A small context is left alone</title>
 <line class="d-grid d-stretch lv2" style="--s2:0.8" x1="222.9" y1="46" x2="222.9" y2="316"/>
 <text class="d-tick lv2" x="222.9" y="36" text-anchor="middle">0</text>
 <line class="d-grid d-stretch lv2" style="--s2:0.8" x1="354.3" y1="46" x2="354.3" y2="316"/>
@@ -223,9 +235,11 @@ details.key ul.terms li { display: block; }
 <text class="d-tick lv2" x="617.1" y="36" text-anchor="middle">15m</text>
 <line class="d-grid d-stretch lv2" style="--s2:0.8" x1="748.6" y1="46" x2="748.6" y2="316"/>
 <text class="d-tick lv2" x="748.6" y="36" text-anchor="middle">20m</text>
-<g class="d-lane-g" transform="translate(0 104)" style="--y1:44px;--y2:90px;--y3:104px">
-<g class="h-teal"><rect class="d-lane-bar" x="65.8" y="-7" width="3" height="14" rx="1.5"/></g>
-<text class="d-lane lv1" x="120" y="4" text-anchor="end">Claude</text>
+<g class="d-lane-g" transform="translate(0 104)" style="--yt:18px;--y0:23px;--y1:44px;--y2:90px;--y3:104px">
+<text class="d-ascii" y="6" text-anchor="middle"><tspan x="292">-</tspan><tspan class="a-dot h-blue" x="304">●</tspan><tspan class="a-span h-teal" x="316">=</tspan><tspan class="a-dot h-teal" x="328">●</tspan><tspan x="340 352 364 376 388 400 412 424 436 448 460 472 484 496 508 520 532 544 556 568 580 592 604 616 628">-------------------------</tspan></text>
+<g class="d-gfx">
+<g class="h-teal"><rect class="d-lane-bar" x="124" y="-7" width="3" height="14" rx="1.5"/></g>
+<text class="d-lane lv1" x="114" y="4" text-anchor="end">Claude</text>
 <line class="d-line" x1="144" y1="0" x2="880" y2="0"/>
 <g class="h-teal">
 <line class="d-bold" x1="170.3" y1="0" x2="222.9" y2="0"/>
@@ -245,10 +259,12 @@ details.key ul.terms li { display: block; }
 <text class="d-label lv2" x="222.9" y="0" text-anchor="middle">reply done</text>
 <text class="d-sub lv3" x="222.9" y="16" text-anchor="middle">the countdown starts</text>
 </g>
-</g>
-<g class="d-lane-g" transform="translate(0 188)" style="--y1:92px;--y2:160px;--y3:188px">
-<g class="h-violet"><rect class="d-lane-bar" x="44.2" y="-7" width="3" height="14" rx="1.5"/></g>
-<text class="d-lane lv1" x="120" y="4" text-anchor="end">Countdown</text>
+</g></g>
+<g class="d-lane-g" transform="translate(0 188)" style="--yt:42px;--y0:53px;--y1:92px;--y2:160px;--y3:188px">
+<text class="d-ascii" y="6" text-anchor="middle"><tspan class="a-span h-violet" x="328 340 352 364 376 388 400 412 424 436 448 460 472 484 496 508 520 532 544 556">====================</tspan><tspan class="a-dot h-violet" x="568">●</tspan></text>
+<g class="d-gfx">
+<g class="h-violet"><rect class="d-lane-bar" x="124" y="-7" width="3" height="14" rx="1.5"/></g>
+<text class="d-lane lv1" x="114" y="4" text-anchor="end">Countdown</text>
 <line class="d-line" x1="222.9" y1="0" x2="748.6" y2="0"/>
 <g class="h-violet">
 <line class="d-bold" x1="222.9" y1="0" x2="748.6" y2="0"/>
@@ -262,10 +278,12 @@ details.key ul.terms li { display: block; }
 <text class="d-label lv2" x="748.6" y="0" text-anchor="middle">time is up</text>
 <text class="d-sub lv3" x="748.6" y="16" text-anchor="middle">only 64k tokens</text>
 </g>
-</g>
-<g class="d-lane-g" transform="translate(0 272)" style="--y1:140px;--y2:230px;--y3:272px">
-<g class="h-amber"><rect class="d-lane-bar" x="37" y="-7" width="3" height="14" rx="1.5"/></g>
-<text class="d-lane lv1" x="120" y="4" text-anchor="end">Compaction</text>
+</g></g>
+<g class="d-lane-g" transform="translate(0 272)" style="--yt:66px;--y0:83px;--y1:140px;--y2:230px;--y3:272px">
+<text class="d-ascii" y="6" text-anchor="middle"><tspan x="292 304 316 328 340 352 364 376 388 400 412 424 436 448 460 472 484 496 508 520 532 544 556 568">------------------------</tspan><tspan class="a-dot h-amber" x="580">●</tspan><tspan x="592 604 616 628">----</tspan></text>
+<g class="d-gfx">
+<g class="h-amber"><rect class="d-lane-bar" x="124" y="-7" width="3" height="14" rx="1.5"/></g>
+<text class="d-lane lv1" x="114" y="4" text-anchor="end">Compaction</text>
 <line class="d-line" x1="144" y1="0" x2="880" y2="0"/>
 <g class="d-mark h-amber" style="--i:3">
 <circle class="d-halo lv2" cx="774.9" cy="0" r="16"/>
@@ -275,7 +293,7 @@ details.key ul.terms li { display: block; }
 <text class="d-label lv2" x="774.9" y="0" text-anchor="middle">left alone</text>
 <text class="d-sub lv3" x="774.9" y="16" text-anchor="middle">64k is under the 120k minimum</text>
 </g>
-</g>
+</g></g>
 </svg></div></figure>
 <ul class="legend"><li><svg viewBox="0 0 18 18" aria-hidden="true"><g class="h-blue"><circle class="d-dot" cx="9" cy="9" r="8"/><text class="d-glyph lv1" x="9" y="12.6" text-anchor="middle">S</text></g></svg><span>message sent</span></li><li><svg viewBox="0 0 30 18" aria-hidden="true"><g class="h-teal"><rect class="d-span" x="1" y="3" width="28" height="12" rx="6"/></g></svg><span>Claude working</span></li><li><svg viewBox="0 0 18 18" aria-hidden="true"><g class="h-teal"><circle class="d-dot" cx="9" cy="9" r="8"/><text class="d-glyph lv1" x="9" y="12.6" text-anchor="middle">E</text></g></svg><span>reply done</span></li><li><svg viewBox="0 0 30 18" aria-hidden="true"><g class="h-violet"><rect class="d-span" x="1" y="3" width="28" height="12" rx="6"/></g></svg><span>idle countdown · 20 min</span></li><li><svg viewBox="0 0 18 18" aria-hidden="true"><g class="h-violet"><circle class="d-dot" cx="9" cy="9" r="8"/><text class="d-glyph lv1" x="9" y="12.6" text-anchor="middle">F</text></g></svg><span>time is up</span></li><li><svg viewBox="0 0 18 18" aria-hidden="true"><g class="h-amber"><circle class="d-dot" cx="9" cy="9" r="8"/><text class="d-glyph lv1" x="9" y="12.6" text-anchor="middle">s</text></g></svg><span>left alone</span></li></ul>
 <p class="note">1 column = 1 minute. The minimum is the minTokens setting; set it to 0 to always compact.</p>
@@ -283,7 +301,7 @@ details.key ul.terms li { display: block; }
 <p>A <b>marble</b> (a round dot) is a moment, something that happens at one instant. Each marble carries a letter; this is what the letters stand for:</p><ul><li><svg viewBox="0 0 18 18" aria-hidden="true"><g class="h-blue"><circle class="d-dot" cx="9" cy="9" r="8"/><text class="d-glyph lv1" x="9" y="12.6" text-anchor="middle">S</text></g></svg><span><b>message sent</b> — you ask, Claude starts</span></li><li><svg viewBox="0 0 18 18" aria-hidden="true"><g class="h-teal"><circle class="d-dot" cx="9" cy="9" r="8"/><text class="d-glyph lv1" x="9" y="12.6" text-anchor="middle">E</text></g></svg><span><b>reply done</b> — the countdown starts</span></li><li><svg viewBox="0 0 18 18" aria-hidden="true"><g class="h-violet"><circle class="d-dot" cx="9" cy="9" r="8"/><text class="d-glyph lv1" x="9" y="12.6" text-anchor="middle">F</text></g></svg><span><b>time is up</b> — only 64k tokens</span></li><li><svg viewBox="0 0 18 18" aria-hidden="true"><g class="h-amber"><circle class="d-dot" cx="9" cy="9" r="8"/><text class="d-glyph lv1" x="9" y="12.6" text-anchor="middle">s</text></g></svg><span><b>left alone</b> — 64k is under the 120k minimum</span></li></ul>
 <p>A <b>pill</b> is a span, something that lasts. Its length is its duration:</p><ul><li><svg viewBox="0 0 30 18" aria-hidden="true"><g class="h-teal"><rect class="d-span" x="1" y="3" width="28" height="12" rx="6"/></g></svg><span><b>Claude working</b></span></li><li><svg viewBox="0 0 30 18" aria-hidden="true"><g class="h-violet"><rect class="d-span" x="1" y="3" width="28" height="12" rx="6"/></g></svg><span><b>idle countdown · 20 min</b></span></li></ul>
 <ul><li><svg viewBox="0 0 34 18" aria-hidden="true"><line class="d-line" x1="1" y1="9" x2="33" y2="9"/></svg><span><b>Thin line</b> — time passing with nothing happening. A gap in a lane means that actor is inactive.</span></li></ul>
-<p>The <b>Detail</b> buttons above the figure show less or more: <b>Schematic</b> is the bare picture with no words, where something that lasts is just a bolder stretch of its lane, <b>Simple</b> adds the lane names and a letter in each marble, <b>More</b> adds each marble's name and the time scale, and <b>Full</b> adds a line of detail under each name.</p>
+<p>The <b>Detail</b> buttons above the figure show less or more: <b>Text</b> is the diagram typed out in plain characters, the way its source is written (<code>-</code> a lane, <code>●</code> a marble, bold <code>=</code> something that lasts, <code>≈</code> a time break), <b>Schematic</b> is the same thing drawn, still with no words, where something that lasts is just a bolder stretch of its lane, <b>Simple</b> adds the lane names and a letter in each marble, <b>More</b> adds each marble's name and the time scale, and <b>Full</b> adds a line of detail under each name.</p>
 <p>The words used here:</p><ul class="terms"><li><span><b>Context</b> — everything Claude reads to answer you: the whole conversation so far.</span></li><li><span><b>Tokens</b> — the units a conversation is measured in; a token is roughly three quarters of a word. 64k is 64,000 tokens.</span></li></ul></details>
 <details class="source"><summary>ASCII source</summary><pre># (c) The countdown ends but the conversation is under 120k tokens: it is left alone.
 title:   A small context is left alone

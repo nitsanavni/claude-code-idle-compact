@@ -80,17 +80,18 @@ test('term: lines are explained in the key', () => {
 
 test('detail levels: each level is no taller than the next, and lanes carry their place at every level', () => {
   const doc = parse(DOC)
-  const [, l1, l2, l3] = geometry(doc).levels
-  assert.ok(l1.H < l2.H && l2.H < l3.H, `${l1.H} < ${l2.H} < ${l3.H}`)
+  const [l0, l1, l2, l3] = geometry(doc).levels
+  assert.ok(l0.H < l1.H && l1.H < l2.H && l2.H < l3.H, `${l0.H} < ${l1.H} < ${l2.H} < ${l3.H}`)
+  assert.ok(l0.ys[1] - l0.ys[0] < l1.ys[1] - l1.ys[0]) // the wordless schematic packs its lanes tighter
   const out = svg(doc)
   // the SVG is drawn at full detail: a lane's transform is its level-3 place
-  assert.ok(out.includes(`<g class="d-lane-g" transform="translate(0 ${l3.ys[0]})" style="--y1:${l1.ys[0]}px;--y2:${l2.ys[0]}px;--y3:${l3.ys[0]}px">`))
+  assert.ok(out.includes(`<g class="d-lane-g" transform="translate(0 ${l3.ys[0]})" style="--yt:${geometry(doc).text.ys[0]}px;--y0:${l0.ys[0]}px;--y1:${l1.ys[0]}px;--y2:${l2.ys[0]}px;--y3:${l3.ys[0]}px">`))
   assert.match(out, /class="d-lab lv2"/)   // names appear from level 2
   assert.match(out, /class="d-sub lv3"/)   // detail lines only at level 3
   assert.match(out, /class="d-tick lv2"/)  // so does the time axis
   assert.match(out, /class="d-lane lv1"/)  // lane names and marble letters from level 1: level 0 has no words
   assert.match(out, /class="d-glyph lv1"/)
-  assert.equal(out.match(/<text class="(?![^"]*\blv[123]\b)/g), null) // every word on the figure belongs to a level above 0
+  assert.equal(out.match(/<text class="(?!d-ascii)(?![^"]*\blv[123]\b)/g), null) // every word on the figure belongs to a level above 0
   assert.doesNotMatch(out, /class="d-dot[^"]*lv/) // marbles show at every level
   // a span is a filled pill from level 1, and a bold stretch of the lane line (same ends) at level 0
   const bar = out.match(/<rect class="d-span lv1" x="([\d.]+)" y="-10" width="([\d.]+)"/)
@@ -99,10 +100,32 @@ test('detail levels: each level is no taller than the next, and lanes carry thei
   assert.ok(bold.some(b => b[1] === bar[1] && Math.abs(+b[2] - (+bar[1] + +bar[2])) < 0.2))
 })
 
-test('the page has a four-step detail control, starting at the wordless schematic', () => {
+test('the page has a five-step detail control, starting at the wordless text level', () => {
   const page = html(parse(DOC), DOC, '')
-  assert.equal(page.match(/<input type="radio" name="lv"/g).length, 4)
-  assert.match(page, /id="lv0" checked>Schematic/)
-  assert.match(page, /class="d-stage" style="--h1:\d+;--h2:\d+;--h3:\d+"/)
+  assert.equal(page.match(/<input type="radio" name="lv"/g).length, 5)
+  assert.match(page, /id="lvt" checked>Text/)
+  assert.match(page, /class="d-stage" style="--ht:\d+;--h0:\d+;--h1:\d+;--h2:\d+;--h3:\d+"/)
   assert.match(page, /How to read this diagram/)
+})
+
+test('text level: each lane as a row of the source with the words removed', () => {
+  const doc = parse(`break: +10 min
+time     0     ≈  20m
+claude   -S~E--≈-----
+timer       [==≈=x [>
+
+legend
+S  sent  blue
+=  countdown  violet`)
+  const out = svg(doc)
+  const rows = [...out.matchAll(/<text class="d-ascii"[^>]*>(.*?)<\/text>/g)].map(m => m[1].replace(/<[^>]+>/g, ''))
+  assert.deepEqual(rows, ['-●=●--≈-----', '===≈=×=&gt;'])   // idle columns carry no character
+  assert.match(out, /<tspan class="a-span h-violet" x="[\d. ]+">===<\/tspan><tspan class="a-break"/) // a span is a bold run, cut by the break
+  assert.match(out, /<tspan class="a-dot h-blue" x="[\d.]+">●<\/tspan>/)
+  // one fixed advance per column, shared by every lane
+  const xs = [...out.matchAll(/<tspan[^>]* x="([\d. ]+)"/g)].flatMap(m => m[1].split(' ').map(Number))
+  assert.deepEqual([...new Set(xs.map(v => Math.round((v - Math.min(...xs)) * 10) % 120))], [0])
+  const g = geometry(doc)
+  assert.ok(g.text.H <= g.levels[0].H)
+  assert.ok(out.includes(`style="--yt:${g.text.ys[1]}px;`))
 })

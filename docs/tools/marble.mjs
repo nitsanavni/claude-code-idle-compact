@@ -131,7 +131,8 @@ export function leadHue(doc) {
   return first ? g(first.sym).hue : 'ink'
 }
 
-// Detail levels: 0 = schematic, no words at all (lanes and beads; a span is a bolder stretch of line), 1 = + lane names and marble letters,
+// Detail levels: text = the ASCII source with the words taken out (monospace: - lane, ● marble, bold = span, ≈ break),
+// 0 = schematic, no words at all (lanes and beads; a span is a bolder stretch of line), 1 = + lane names and marble letters,
 // 2 = + names and the time axis, 3 = + the detail under each name. Level 0 shares level 1's geometry.
 // The SVG is drawn at level 3. Each lane is a group placed by a transform, and carries its place at every
 // level as CSS variables (--y1 --y2 --y3); marks that only show from a level up are classed lv1 / lv2 / lv3.
@@ -168,25 +169,46 @@ export function geometry(doc) {
   // row 0 of labels sits below the lane, row 1 above it, rows 2+ further below. Level 2 has no sub-lines, so it packs tighter.
   const level = lv => {
     const pitch = lv === 3 ? 40 : 24
-    let y = lv === 1 ? M - 4 : top + 14
+    let y = lv === 0 ? M - 16 : lv === 1 ? M - 4 : top + 14
     const ys = lanes.map(l => {
       const above = l.rows > 1, below = l.rows === 0 ? 0 : l.rows === 1 ? 1 : l.rows - 1
-      const up = lv === 1 ? 24 : above ? (lv === 3 ? 54 : 40) : 28
-      const down = lv === 1 ? 24 : below ? (lv === 3 ? 56 : 42) + (below - 1) * pitch : 28
+      const up = lv === 0 ? 15 : lv === 1 ? 24 : above ? (lv === 3 ? 54 : 40) : 28
+      const down = lv === 0 ? 15 : lv === 1 ? 24 : below ? (lv === 3 ? 56 : 42) + (below - 1) * pitch : 28
       const ly = y + up
       y += up + down
       return ly
     })
-    return { ys, H: Math.ceil(y + M - 12), labelDy: r => r === 1 ? (lv === 3 ? -40 : -24) : 31 + Math.max(0, r - 1) * pitch }
+    return { ys, H: Math.ceil(y + (lv === 0 ? M - 16 : M - 12)), labelDy: r => r === 1 ? (lv === 3 ? -40 : -24) : 31 + Math.max(0, r - 1) * pitch }
   }
-  return { W, M, L, x, legend, top, labelY, lanes, levels: [null, level(1), level(2), level(3)] }
+  // the text level: one monospace row per lane, at a source-like line height
+  const text = { ys: lanes.map((_, i) => 18 + i * 24), H: 36 + (lanes.length - 1) * 24 }
+  // the wordless levels (text, 0) are packed tight; levels[0] is the schematic
+  return { W, M, L, x, legend, top, labelY, lanes, text, levels: [level(0), level(1), level(2), level(3)] }
+}
+
+// one lane as a row of the source, without words: an array of { ch, cls } per column
+export function asciiRow(ln, doc, legend) {
+  const row = Array.from({ length: doc.cols }, () => ({ ch: ' ', cls: '' }))
+  for (const s of ln.segs) for (let c = s.from; c <= s.to; c++) row[c] = { ch: '-', cls: '' }
+  for (const it of ln.items) if (it.kind === 'span') {
+    for (let c = it.from; c <= it.to; c++) row[c] = { ch: '=', cls: `a-span h-${legend(it.fill).hue}` }
+    if (it.end === 'open') row[it.to] = { ch: '>', cls: `a-span h-${legend(it.fill).hue}` }
+  }
+  for (const b of doc.breaks) if (row[b.col] && row[b.col].ch !== ' ') row[b.col] = { ch: BREAK, cls: 'a-break' }
+  for (const it of ln.items) {
+    if (it.kind === 'event') row[it.col] = { ch: '●', cls: `a-dot h-${legend(it.sym).hue}` }
+    else if (it.kind === 'cancel') row[it.col] = { ch: '×', cls: 'a-x' }
+    else if (it.kind === 'end') row[it.col] = { ch: '|', cls: 'a-end' }
+  }
+  return row
 }
 
 export function svg(doc, { css = '' } = {}) {
-  const { W, M, L, x, legend, top, labelY, lanes, levels } = geometry(doc)
-  const [, g1, g2, g3] = levels, H = g3.H
+  const { W, M, L, x, legend, top, labelY, lanes, text, levels } = geometry(doc)
+  const [g0, g1, g2, g3] = levels, H = g3.H
+  const ADV = 12, ax0 = (W - (doc.cols - 1) * ADV) / 2 // the text level: a fixed advance per column, centred
   const out = []
-  const vars = (k, f) => `--${k}1:${f(g1)}px;--${k}2:${f(g2)}px;--${k}3:${f(g3)}px`
+  const vars = (k, f) => `--${k}0:${f(g0)}px;--${k}1:${f(g1)}px;--${k}2:${f(g2)}px;--${k}3:${f(g3)}px`
 
   // marbles appear in time order (only animates where motion is welcome)
   const marks = doc.lanes.flatMap(l => l.items).filter(i => i.kind === 'event' || i.kind === 'cancel')
@@ -203,10 +225,15 @@ export function svg(doc, { css = '' } = {}) {
   for (const b of doc.breaks) if (b.label) out.push(`<text class="d-break-label lv2" x="${n1(x(b.col))}" y="${labelY}" text-anchor="middle">${esc(b.label)}</text>`)
   lanes.forEach(({ ln, placed, hue }, li) => {
     const ly = 0, front = []
-    out.push(`<g class="d-lane-g" transform="translate(0 ${g3.ys[li]})" style="${vars('y', g => g.ys[li])}">`)
+    out.push(`<g class="d-lane-g" transform="translate(0 ${g3.ys[li]})" style="--yt:${text.ys[li]}px;${vars('y', g => g.ys[li])}">`)
+    // the text level: this lane as a row of the source, every character on its own grid cell
+    const runs = []
+    asciiRow(ln, doc, legend).forEach((c, i) => { if (c.ch !== ' ') (runs.at(-1)?.cls === c.cls && runs.at(-1).to === i - 1 ? runs.at(-1) : runs[runs.push({ cls: c.cls, from: i, chs: '' }) - 1]).chs += c.ch, runs.at(-1).to = i })
+    out.push(`<text class="d-ascii" y="6" text-anchor="middle">${runs.map(r => `<tspan${r.cls ? ` class="${r.cls}"` : ''} x="${[...r.chs].map((_, k) => n1(ax0 + (r.from + k) * ADV)).join(' ')}">${esc(r.chs)}</tspan>`).join('')}</text>`, `<g class="d-gfx">`)
     const name = sentence(ln.name), nx = L - 24
-    out.push(`<g class="h-${hue}"><rect class="d-lane-bar" x="${n1(nx - textW(name, 12, 0.6) - 11)}" y="${ly - 7}" width="3" height="14" rx="1.5"/></g>`)
-    out.push(`<text class="d-lane lv1" x="${nx}" y="${ly + 4}" text-anchor="end">${esc(name)}</text>`)
+    // the lane's colour tick sits at the head of the lane, in one column whatever the name's length
+    out.push(`<g class="h-${hue}"><rect class="d-lane-bar" x="${nx + 4}" y="${ly - 7}" width="3" height="14" rx="1.5"/></g>`)
+    out.push(`<text class="d-lane lv1" x="${nx - 6}" y="${ly + 4}" text-anchor="end">${esc(name)}</text>`)
     for (const s of ln.segs) if (s.to > s.from) out.push(`<line class="d-line" x1="${n1(x(s.from))}" y1="${ly}" x2="${n1(x(s.to))}" y2="${ly}"/>`)
     for (const it of ln.items) {
       if (it.kind === 'span') {
@@ -251,7 +278,7 @@ export function svg(doc, { css = '' } = {}) {
       if (g.sub) front.push(`<text class="d-sub lv3" x="${n1(cx)}" y="16" text-anchor="middle">${esc(g.sub)}</text>`)
       front.push(`</g>`)
     }
-    out.push(...front, `</g>`)
+    out.push(...front, `</g></g>`)
   })
   const title = doc.title ? `<title>${esc(doc.title)}</title>` : ''
   return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${W} ${H}" width="${W}" height="${H}" role="img" font-family="Inter, system-ui, sans-serif">${title}\n${out.join('\n')}\n</svg>`
@@ -309,15 +336,16 @@ export function key(doc) {
   if (all.some(i => i.kind === 'end')) extra.push(li(mini.end(), 'Bar', ' — the lane ends.'))
   extra.push(li('<svg viewBox="0 0 34 18" aria-hidden="true"><line class="d-line" x1="1" y1="9" x2="33" y2="9"/></svg>', 'Thin line', ' — time passing with nothing happening. A gap in a lane means that actor is inactive.'))
   parts.push(`<ul>${extra.join('')}</ul>`)
-  parts.push(`<p>The <b>Detail</b> buttons above the figure show less or more: <b>Schematic</b> is the bare picture with no words, where something that lasts is just a bolder stretch of its lane, <b>Simple</b> adds the lane names and a letter in each marble, <b>More</b> adds each marble's name and the time scale, and <b>Full</b> adds a line of detail under each name.</p>`)
+  parts.push(`<p>The <b>Detail</b> buttons above the figure show less or more: <b>Text</b> is the diagram typed out in plain characters, the way its source is written (<code>-</code> a lane, <code>●</code> a marble, bold <code>=</code> something that lasts, <code>≈</code> a time break), <b>Schematic</b> is the same thing drawn, still with no words, where something that lasts is just a bolder stretch of its lane, <b>Simple</b> adds the lane names and a letter in each marble, <b>More</b> adds each marble's name and the time scale, and <b>Full</b> adds a line of detail under each name.</p>`)
   if (doc.terms.length) parts.push(`<p>The words used here:</p><ul class="terms">${doc.terms.map(t => `<li><span><b>${esc(t.word)}</b> — ${esc(t.meaning)}</span></li>`).join('')}</ul>`)
   return `<details class="key"><summary>How to read this diagram</summary>${parts.join('\n')}</details>`
 }
 
 // the control that steps between detail levels: three radios, wired to the figure by CSS alone
-export const LEVELS = [['Schematic', 'no words: just lanes and beads'], ['Simple', 'adds lane names, a letter in each marble, and spans as bars'], ['More', 'adds names and the time scale'], ['Full', 'adds a line of detail under each name']]
+export const LEVELS = [['Text', 'the diagram as plain characters, like its source, with no words'], ['Schematic', 'no words: just lanes and beads'], ['Simple', 'adds lane names, a letter in each marble, and spans as bars'], ['More', 'adds names and the time scale'], ['Full', 'adds a line of detail under each name']]
+// ids: lvt (text), then lv0..lv3
 const levelControl = (start = 0) => `<fieldset class="levels"><legend>Detail</legend>${LEVELS.map(([name, what], i) =>
-  `<label title="${esc(sentence(what))}"><input type="radio" name="lv" id="lv${i}"${i === start ? ' checked' : ''}>${name}</label>`).join('')}</fieldset>`
+  `<label title="${esc(sentence(what))}"><input type="radio" name="lv" id="lv${i ? i - 1 : 't'}"${i === start ? ' checked' : ''}>${name}</label>`).join('')}</fieldset>`
 
 export function html(doc, src, css, file = '') {
   const { levels } = geometry(doc)
@@ -335,7 +363,7 @@ export function html(doc, src, css, file = '') {
 <h1>${esc(doc.title)}</h1>
 ${doc.caption ? `<p class="lede">${esc(doc.caption)}</p>` : ''}
 ${levelControl()}
-<figure class="figure"><div class="d-stage" style="--h1:${levels[1].H};--h2:${levels[2].H};--h3:${levels[3].H}">${svg(doc)}</div></figure>
+<figure class="figure"><div class="d-stage" style="--ht:${geometry(doc).text.H};--h0:${levels[0].H};--h1:${levels[1].H};--h2:${levels[2].H};--h3:${levels[3].H}">${svg(doc)}</div></figure>
 ${legendRow(doc)}
 ${doc.note ? `<p class="note">${esc(doc.note)}</p>` : ''}
 ${key(doc)}

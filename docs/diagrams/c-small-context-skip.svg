@@ -92,6 +92,10 @@
 .d-halo     { fill: var(--t); }
 .d-span     { fill: var(--t); stroke: var(--h); stroke-width: 1.5; }
 .d-bold     { stroke: var(--h); stroke-width: 5; stroke-linecap: round; opacity: 0; }  /* a span at the schematic level */
+.d-ascii    { font: 500 18px var(--mono); fill: var(--ink-3); opacity: 0; font-variant-ligatures: none; }  /* the text level: the source, wordless */
+.d-ascii .a-span { fill: var(--h); font-weight: 800; }
+.d-ascii .a-dot  { fill: var(--h); }
+.d-ascii .a-x    { fill: var(--coral); font-weight: 800; }
 .d-ghost    { fill: none; stroke: var(--ink-3); stroke-width: 1.5; stroke-dasharray: 4 4; }
 .d-cancel   { stroke: var(--coral); stroke-width: 2.5; stroke-linecap: round; }
 .d-arrow    { fill: var(--h); }
@@ -116,9 +120,11 @@
 <text class="d-tick lv2" x="617.1" y="36" text-anchor="middle">15m</text>
 <line class="d-grid d-stretch lv2" style="--s2:0.8" x1="748.6" y1="46" x2="748.6" y2="316"/>
 <text class="d-tick lv2" x="748.6" y="36" text-anchor="middle">20m</text>
-<g class="d-lane-g" transform="translate(0 104)" style="--y1:44px;--y2:90px;--y3:104px">
-<g class="h-teal"><rect class="d-lane-bar" x="65.8" y="-7" width="3" height="14" rx="1.5"/></g>
-<text class="d-lane lv1" x="120" y="4" text-anchor="end">Claude</text>
+<g class="d-lane-g" transform="translate(0 104)" style="--yt:18px;--y0:23px;--y1:44px;--y2:90px;--y3:104px">
+<text class="d-ascii" y="6" text-anchor="middle"><tspan x="292">-</tspan><tspan class="a-dot h-blue" x="304">●</tspan><tspan class="a-span h-teal" x="316">=</tspan><tspan class="a-dot h-teal" x="328">●</tspan><tspan x="340 352 364 376 388 400 412 424 436 448 460 472 484 496 508 520 532 544 556 568 580 592 604 616 628">-------------------------</tspan></text>
+<g class="d-gfx">
+<g class="h-teal"><rect class="d-lane-bar" x="124" y="-7" width="3" height="14" rx="1.5"/></g>
+<text class="d-lane lv1" x="114" y="4" text-anchor="end">Claude</text>
 <line class="d-line" x1="144" y1="0" x2="880" y2="0"/>
 <g class="h-teal">
 <line class="d-bold" x1="170.3" y1="0" x2="222.9" y2="0"/>
@@ -138,10 +144,12 @@
 <text class="d-label lv2" x="222.9" y="0" text-anchor="middle">reply done</text>
 <text class="d-sub lv3" x="222.9" y="16" text-anchor="middle">the countdown starts</text>
 </g>
-</g>
-<g class="d-lane-g" transform="translate(0 188)" style="--y1:92px;--y2:160px;--y3:188px">
-<g class="h-violet"><rect class="d-lane-bar" x="44.2" y="-7" width="3" height="14" rx="1.5"/></g>
-<text class="d-lane lv1" x="120" y="4" text-anchor="end">Countdown</text>
+</g></g>
+<g class="d-lane-g" transform="translate(0 188)" style="--yt:42px;--y0:53px;--y1:92px;--y2:160px;--y3:188px">
+<text class="d-ascii" y="6" text-anchor="middle"><tspan class="a-span h-violet" x="328 340 352 364 376 388 400 412 424 436 448 460 472 484 496 508 520 532 544 556">====================</tspan><tspan class="a-dot h-violet" x="568">●</tspan></text>
+<g class="d-gfx">
+<g class="h-violet"><rect class="d-lane-bar" x="124" y="-7" width="3" height="14" rx="1.5"/></g>
+<text class="d-lane lv1" x="114" y="4" text-anchor="end">Countdown</text>
 <line class="d-line" x1="222.9" y1="0" x2="748.6" y2="0"/>
 <g class="h-violet">
 <line class="d-bold" x1="222.9" y1="0" x2="748.6" y2="0"/>
@@ -155,10 +163,12 @@
 <text class="d-label lv2" x="748.6" y="0" text-anchor="middle">time is up</text>
 <text class="d-sub lv3" x="748.6" y="16" text-anchor="middle">only 64k tokens</text>
 </g>
-</g>
-<g class="d-lane-g" transform="translate(0 272)" style="--y1:140px;--y2:230px;--y3:272px">
-<g class="h-amber"><rect class="d-lane-bar" x="37" y="-7" width="3" height="14" rx="1.5"/></g>
-<text class="d-lane lv1" x="120" y="4" text-anchor="end">Compaction</text>
+</g></g>
+<g class="d-lane-g" transform="translate(0 272)" style="--yt:66px;--y0:83px;--y1:140px;--y2:230px;--y3:272px">
+<text class="d-ascii" y="6" text-anchor="middle"><tspan x="292 304 316 328 340 352 364 376 388 400 412 424 436 448 460 472 484 496 508 520 532 544 556 568">------------------------</tspan><tspan class="a-dot h-amber" x="580">●</tspan><tspan x="592 604 616 628">----</tspan></text>
+<g class="d-gfx">
+<g class="h-amber"><rect class="d-lane-bar" x="124" y="-7" width="3" height="14" rx="1.5"/></g>
+<text class="d-lane lv1" x="114" y="4" text-anchor="end">Compaction</text>
 <line class="d-line" x1="144" y1="0" x2="880" y2="0"/>
 <g class="d-mark h-amber" style="--i:3">
 <circle class="d-halo lv2" cx="774.9" cy="0" r="16"/>
@@ -168,5 +178,5 @@
 <text class="d-label lv2" x="774.9" y="0" text-anchor="middle">left alone</text>
 <text class="d-sub lv3" x="774.9" y="16" text-anchor="middle">64k is under the 120k minimum</text>
 </g>
-</g>
+</g></g>
 </svg>
