@@ -1,6 +1,6 @@
 # Diagrams
 
-Timelines of the idle-compact mod. Each `.marble` file is the ASCII source (read it directly if you are an agent); `docs/tools/marble.mjs` renders it to an `.html` page and an `.svg`. GitHub does not render HTML, so the page links below go through raw.githack.com. Regenerate with `node docs/tools/marble.mjs docs/diagrams/*.marble`.
+Timelines of the idle-compact mod. Each `.marble` file is the ASCII source (read it directly if you are an agent); `docs/tools/marble.mjs` renders it to an `.html` page and an `.svg`. The pictures below show full detail. Each page opens with just the lanes and marbles, and its Detail buttons (Simple, More, Full) add the names and then the fine print; its "How to read this diagram" explains every lettered marble. GitHub does not render HTML, so the page links below go through raw.githack.com. Regenerate with `node docs/tools/marble.mjs docs/diagrams/*.marble`.
 
 ## Twenty quiet minutes, then a compact
 

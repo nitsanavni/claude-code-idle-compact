@@ -1,20 +1,22 @@
-# (d) Claude calls compact_after_turn during a turn: the mod compacts ~1 s after the turn completes.
+# (d) Claude calls compact_after_turn while replying: the mod compacts about 1 s after the reply ends.
 title:   Compacting on request, right after the turn
-caption: Claude can ask for a compact itself with the compact_after_turn tool. The mod waits for the turn to finish, gives it a one-second beat, then compacts, with no idle wait and no token threshold.
-note:    1 column = 0.25 s. The one-second delay lets the turn settle before /compact runs.
+caption: You can ask Claude to compact without waiting. Claude passes the request to idle-compact, which lets the current reply finish, waits one second, then compacts: no 20-minute wait and no size check.
+note:    1 column = a quarter of a second. The one-second wait lets the reply settle before Claude Code compacts.
 focus:   C
+term:    Turn — one round of the conversation: your message, and everything Claude does until its reply is done.
+term:    compact_after_turn — the tool idle-compact gives Claude for this. You just say "compact after this turn".
 
-time                    0   1s  2s
-claude   -S~~~~~~~~~~~~~E-----------
-tool     ------t--------------------
-clock                   [===F
-compact  --------------------C------
+time                       0   1s  2s
+claude      -S~~~~~~~~~~~~~E-----------
+request     ------t--------------------
+wait                       [===F
+compaction  --------------------C------
 
 legend
-S  turn.start      blue
-~  turn            teal
-t  compact_after_turn — tool call  teal
-E  turn.complete  teal
-=  1 s — clock.after(1000)  violet
-F  fires — 1 s later  violet
-C  compact  green
+S  message sent — you ask, Claude starts  blue
+~  Claude working  teal
+t  compact requested — Claude uses compact_after_turn  teal
+E  reply done  teal
+=  1 s wait  violet
+F  wait over — 1 second later  violet
+C  compacted — now a short summary  green

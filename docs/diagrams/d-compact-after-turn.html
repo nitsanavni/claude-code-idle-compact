@@ -103,6 +103,15 @@ h1 { font: 650 clamp(28px, 4vw, 36px)/1.15 var(--sans); letter-spacing: -.02em; 
 .legend svg { flex: none; height: 18px; width: auto; }
 .legend + .note { margin-top: calc(var(--space) * 4); }
 
+/* links: quiet until hovered; the footer lists this diagram's files and the other diagrams */
+a { color: inherit; text-decoration: underline; text-decoration-color: color-mix(in srgb, currentColor 35%, transparent); text-underline-offset: 3px; }
+a:hover { color: var(--blue); text-decoration-color: currentColor; }
+.eyebrow a { text-decoration: none; }
+nav.more { margin-top: calc(var(--space) * 5); padding-top: calc(var(--space) * 3); border-top: 1px solid var(--rule); font-size: 14px; color: var(--ink-2); }
+nav.more p { margin: 0 0 var(--space); display: grid; grid-template-columns: 136px 1fr; align-items: baseline; }
+nav.more i { font: 600 12px/1 var(--sans); letter-spacing: .08em; text-transform: uppercase; color: var(--ink-3); }
+nav.more b { font-weight: 600; color: var(--ink); }
+
 /* agent-readable source, tucked away */
 details.source { margin-top: var(--space); }
 details.source summary::-webkit-details-marker { display: none; }
@@ -162,90 +171,149 @@ details.key ul { list-style: none; padding: 0; margin: var(--space) 0 calc(var(-
 details.key li { display: flex; align-items: baseline; gap: calc(var(--space) * 1.5); font-size: 15px; color: var(--ink-2); padding: calc(var(--space) * .5) 0; }
 details.key li svg { flex: none; width: 34px; height: 18px; align-self: center; }
 details.key li b { font-weight: 600; color: var(--ink); }
+details.key ul.terms li { display: block; }
+
+/* detail levels (timeline pages): three radios step the figure from marbles only (1) to full detail (3).
+   The SVG is drawn at level 3; each lane carries its place at every level as --y1 --y2 --y3. */
+.levels { display: inline-flex; align-items: center; gap: 2px; border: 0; padding: 3px; margin: 0 0 calc(var(--space) * 2); background: var(--grid); border-radius: 999px; }
+.levels legend { float: left; padding: 0 var(--space) 0 calc(var(--space) * 1.5); font: 600 12px/1 var(--sans); letter-spacing: .08em; text-transform: uppercase; color: var(--ink-3); }
+.levels label { cursor: pointer; padding: 7px 14px; border-radius: 999px; font: 600 13px/1 var(--sans); color: var(--ink-2); }
+.levels input { position: absolute; opacity: 0; pointer-events: none; }
+.levels label:has(input:checked) { background: var(--surface); color: var(--ink); box-shadow: var(--shadow); }
+.levels label:has(input:focus-visible) { outline: 2px solid var(--blue); outline-offset: 1px; }
+.d-stage { overflow: hidden; min-width: 560px; aspect-ratio: 920 / var(--h3); }
+.d-stage svg { min-width: 0; }
+.d-lane-g, .d-lab { transform: translateY(var(--y3)); }
+.d-stretch { transform-box: fill-box; transform-origin: 50% 0; }
+@media (prefers-reduced-motion: no-preference) {
+  .d-stage { transition: aspect-ratio 420ms cubic-bezier(.3, 0, .2, 1); }
+  .d-lane-g, .lv2, .lv3 { transition: transform 420ms cubic-bezier(.3, 0, .2, 1), opacity 260ms ease; }
+}
+.page:has(#lv1:checked) .d-stage { aspect-ratio: 920 / var(--h1); }
+.page:has(#lv1:checked) .d-lane-g { transform: translateY(var(--y1)); }
+.page:has(#lv1:checked) .d-lab,
+.page:has(#lv2:checked) .d-lab { transform: translateY(var(--y2)); }
+.page:has(#lv1:checked) .d-stretch,
+.page:has(#lv2:checked) .d-stretch { transform: scaleY(var(--s2)); }
+.page:has(#lv1:checked) :is(.lv2, .lv3) { opacity: 0; }
+.page:has(#lv2:checked) .d-stage { aspect-ratio: 920 / var(--h2); }
+.page:has(#lv2:checked) .d-lane-g { transform: translateY(var(--y2)); }
+.page:has(#lv2:checked) .lv3 { opacity: 0; }
+.page:has(#lv1:checked) .note, .page:has(#lv2:checked) .note { display: none; }
 </style>
 </head>
 <body>
 <main class="page">
-<p class="eyebrow h-green">idle-compact · timeline</p>
+<p class="eyebrow h-green"><a href="https://github.com/nitsanavni/claude-code-idle-compact#readme">idle-compact</a> · timeline</p>
 <h1>Compacting on request, right after the turn</h1>
-<p class="lede">Claude can ask for a compact itself with the compact_after_turn tool. The mod waits for the turn to finish, gives it a one-second beat, then compacts, with no idle wait and no token threshold.</p>
-<figure class="figure"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 920 398" width="920" height="398" role="img" font-family="Inter, system-ui, sans-serif"><title>Compacting on request, right after the turn</title>
-<line class="d-grid" x1="568.6" y1="46" x2="568.6" y2="374"/>
-<text class="d-tick" x="568.6" y="36" text-anchor="middle">0</text>
-<line class="d-grid" x1="681.8" y1="46" x2="681.8" y2="374"/>
-<text class="d-tick" x="681.8" y="36" text-anchor="middle">1s</text>
-<line class="d-grid" x1="795.1" y1="46" x2="795.1" y2="374"/>
-<text class="d-tick" x="795.1" y="36" text-anchor="middle">2s</text>
-<g class="h-teal"><rect class="d-lane-bar" x="65.8" y="71" width="3" height="14" rx="1.5"/></g>
-<text class="d-lane" x="120" y="82" text-anchor="end">Claude</text>
-<line class="d-line" x1="144" y1="78" x2="880" y2="78"/>
+<p class="lede">You can ask Claude to compact without waiting. Claude passes the request to idle-compact, which lets the current reply finish, waits one second, then compacts: no 20-minute wait and no size check.</p>
+<fieldset class="levels"><legend>Detail</legend><label title="Lanes and marbles only"><input type="radio" name="lv" id="lv1" checked>Simple</label><label title="Adds names and the time scale"><input type="radio" name="lv" id="lv2">More</label><label title="Adds a line of detail under each name"><input type="radio" name="lv" id="lv3">Full</label></fieldset>
+<figure class="figure"><div class="d-stage" style="--h1:224;--h2:342;--h3:398"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 920 398" width="920" height="398" role="img" font-family="Inter, system-ui, sans-serif"><title>Compacting on request, right after the turn</title>
+<line class="d-grid d-stretch lv2" style="--s2:0.8" x1="568.6" y1="46" x2="568.6" y2="374"/>
+<text class="d-tick lv2" x="568.6" y="36" text-anchor="middle">0</text>
+<line class="d-grid d-stretch lv2" style="--s2:0.8" x1="681.8" y1="46" x2="681.8" y2="374"/>
+<text class="d-tick lv2" x="681.8" y="36" text-anchor="middle">1s</text>
+<line class="d-grid d-stretch lv2" style="--s2:0.8" x1="795.1" y1="46" x2="795.1" y2="374"/>
+<text class="d-tick lv2" x="795.1" y="36" text-anchor="middle">2s</text>
+<g class="d-lane-g" transform="translate(0 78)" style="--y1:44px;--y2:78px;--y3:78px">
+<g class="h-teal"><rect class="d-lane-bar" x="65.8" y="-7" width="3" height="14" rx="1.5"/></g>
+<text class="d-lane" x="120" y="4" text-anchor="end">Claude</text>
+<line class="d-line" x1="144" y1="0" x2="880" y2="0"/>
 <g class="h-teal">
-<rect class="d-span" x="172.3" y="68" width="396.3" height="20" rx="10"/>
-<text class="d-span-label" x="370.5" y="82" text-anchor="middle">turn</text>
+<rect class="d-span" x="172.3" y="-10" width="396.3" height="20" rx="10"/>
+<text class="d-span-label lv2" x="370.5" y="4" text-anchor="middle">Claude working</text>
 </g>
-<g class="h-teal"><rect class="d-lane-bar" x="80.2" y="155" width="3" height="14" rx="1.5"/></g>
-<text class="d-lane" x="120" y="166" text-anchor="end">Tool</text>
-<line class="d-line" x1="144" y1="162" x2="880" y2="162"/>
-<g class="h-violet"><rect class="d-lane-bar" x="73" y="239" width="3" height="14" rx="1.5"/></g>
-<text class="d-lane" x="120" y="250" text-anchor="end">Clock</text>
-<line class="d-line" x1="568.6" y1="246" x2="681.8" y2="246"/>
-<g class="h-violet">
-<rect class="d-span" x="568.6" y="236" width="113.2" height="20" rx="10"/>
-<text class="d-span-label" x="625.2" y="250" text-anchor="middle">1 s</text>
-</g>
-<g class="h-green"><rect class="d-lane-bar" x="58.6" y="323" width="3" height="14" rx="1.5"/></g>
-<text class="d-lane" x="120" y="334" text-anchor="end">Compact</text>
-<line class="d-line" x1="144" y1="330" x2="880" y2="330"/>
 <g class="d-mark h-blue" style="--i:0">
-<circle class="d-dot" cx="172.3" cy="78" r="9"/><text class="d-glyph" x="172.3" y="81.6" text-anchor="middle">S</text>
+<circle class="d-dot" cx="172.3" cy="0" r="9"/><text class="d-glyph" x="172.3" y="3.6" text-anchor="middle">S</text>
 </g>
-<text class="d-label" x="172.3" y="109" text-anchor="middle">turn.start</text>
+<g class="d-lab lv2" transform="translate(0 31)" style="--y2:31px;--y3:31px">
+<text class="d-label" x="206.6" y="0" text-anchor="middle">message sent</text>
+<text class="d-sub lv3" x="206.6" y="16" text-anchor="middle">you ask, Claude starts</text>
+</g>
 <g class="d-mark h-teal" style="--i:2">
-<circle class="d-dot" cx="568.6" cy="78" r="9"/><text class="d-glyph" x="568.6" y="81.6" text-anchor="middle">E</text>
+<circle class="d-dot" cx="568.6" cy="0" r="9"/><text class="d-glyph" x="568.6" y="3.6" text-anchor="middle">E</text>
 </g>
-<text class="d-label" x="568.6" y="109" text-anchor="middle">turn.complete</text>
+<g class="d-lab lv2" transform="translate(0 31)" style="--y2:31px;--y3:31px">
+<text class="d-label" x="568.6" y="0" text-anchor="middle">reply done</text>
+</g>
+</g>
+<g class="d-lane-g" transform="translate(0 162)" style="--y1:92px;--y2:148px;--y3:162px">
+<g class="h-teal"><rect class="d-lane-bar" x="58.6" y="-7" width="3" height="14" rx="1.5"/></g>
+<text class="d-lane" x="120" y="4" text-anchor="end">Request</text>
+<line class="d-line" x1="144" y1="0" x2="880" y2="0"/>
 <g class="d-mark h-teal" style="--i:1">
-<circle class="d-dot" cx="313.8" cy="162" r="9"/><text class="d-glyph" x="313.8" y="165.6" text-anchor="middle">t</text>
+<circle class="d-dot" cx="313.8" cy="0" r="9"/><text class="d-glyph" x="313.8" y="3.6" text-anchor="middle">t</text>
 </g>
-<text class="d-label" x="313.8" y="193" text-anchor="middle">compact_after_turn</text>
-<text class="d-sub" x="313.8" y="209" text-anchor="middle">tool call</text>
+<g class="d-lab lv2" transform="translate(0 31)" style="--y2:31px;--y3:31px">
+<text class="d-label" x="313.8" y="0" text-anchor="middle">compact requested</text>
+<text class="d-sub lv3" x="313.8" y="16" text-anchor="middle">Claude uses compact_after_turn</text>
+</g>
+</g>
+<g class="d-lane-g" transform="translate(0 246)" style="--y1:140px;--y2:218px;--y3:246px">
+<g class="h-violet"><rect class="d-lane-bar" x="80.2" y="-7" width="3" height="14" rx="1.5"/></g>
+<text class="d-lane" x="120" y="4" text-anchor="end">Wait</text>
+<line class="d-line" x1="568.6" y1="0" x2="681.8" y2="0"/>
+<g class="h-violet">
+<rect class="d-span" x="568.6" y="-10" width="113.2" height="20" rx="10"/>
+<text class="d-span-label lv2" x="625.2" y="4" text-anchor="middle">1 s wait</text>
+</g>
 <g class="d-mark h-violet" style="--i:3">
-<circle class="d-dot" cx="681.8" cy="246" r="9"/><text class="d-glyph" x="681.8" y="249.6" text-anchor="middle">F</text>
+<circle class="d-dot" cx="681.8" cy="0" r="9"/><text class="d-glyph" x="681.8" y="3.6" text-anchor="middle">F</text>
 </g>
-<text class="d-label" x="681.8" y="277" text-anchor="middle">fires</text>
-<text class="d-sub" x="681.8" y="293" text-anchor="middle">1 s later</text>
+<g class="d-lab lv2" transform="translate(0 31)" style="--y2:31px;--y3:31px">
+<text class="d-label" x="681.8" y="0" text-anchor="middle">wait over</text>
+<text class="d-sub lv3" x="681.8" y="16" text-anchor="middle">1 second later</text>
+</g>
+</g>
+<g class="d-lane-g" transform="translate(0 330)" style="--y1:188px;--y2:288px;--y3:330px">
+<g class="h-green"><rect class="d-lane-bar" x="37" y="-7" width="3" height="14" rx="1.5"/></g>
+<text class="d-lane" x="120" y="4" text-anchor="end">Compaction</text>
+<line class="d-line" x1="144" y1="0" x2="880" y2="0"/>
 <g class="d-mark h-green" style="--i:4">
-<circle class="d-halo" cx="710.2" cy="330" r="16"/>
-<circle class="d-dot" cx="710.2" cy="330" r="9"/><text class="d-glyph" x="710.2" y="333.6" text-anchor="middle">C</text>
+<circle class="d-halo lv2" cx="710.2" cy="0" r="16"/>
+<circle class="d-dot" cx="710.2" cy="0" r="9"/><text class="d-glyph" x="710.2" y="3.6" text-anchor="middle">C</text>
 </g>
-<text class="d-label" x="710.2" y="361" text-anchor="middle">compact</text>
-</svg></figure>
-<ul class="legend"><li><svg viewBox="0 0 18 18" aria-hidden="true"><g class="h-blue"><circle class="d-dot" cx="9" cy="9" r="7"/></g></svg><span>turn.start</span></li><li><svg viewBox="0 0 30 18" aria-hidden="true"><g class="h-teal"><rect class="d-span" x="1" y="3" width="28" height="12" rx="6"/></g></svg><span>turn</span></li><li><svg viewBox="0 0 18 18" aria-hidden="true"><g class="h-teal"><circle class="d-dot" cx="9" cy="9" r="7"/></g></svg><span>compact_after_turn</span></li><li><svg viewBox="0 0 18 18" aria-hidden="true"><g class="h-teal"><circle class="d-dot" cx="9" cy="9" r="7"/></g></svg><span>turn.complete</span></li><li><svg viewBox="0 0 30 18" aria-hidden="true"><g class="h-violet"><rect class="d-span" x="1" y="3" width="28" height="12" rx="6"/></g></svg><span>1 s</span></li><li><svg viewBox="0 0 18 18" aria-hidden="true"><g class="h-violet"><circle class="d-dot" cx="9" cy="9" r="7"/></g></svg><span>fires</span></li><li><svg viewBox="0 0 18 18" aria-hidden="true"><g class="h-green"><circle class="d-dot" cx="9" cy="9" r="7"/></g></svg><span>compact</span></li></ul>
-<p class="note">1 column = 0.25 s. The one-second delay lets the turn settle before /compact runs.</p>
-<details class="key"><summary>How to read this diagram</summary><p>Each row is a <b>lane</b>: the timeline of one actor (Claude, Tool, Clock, Compact), read left to right. The numbers along the top mark elapsed time; the faint vertical lines let you line moments up across lanes.</p>
-<p>A <b>marble</b> is a moment, something that happens at one instant. The letter in it is its symbol in the ASCII source:</p><ul><li><svg viewBox="0 0 18 18" aria-hidden="true"><g class="h-blue"><circle class="d-dot" cx="9" cy="9" r="7"/></g></svg><span><b>turn.start</b></span></li><li><svg viewBox="0 0 18 18" aria-hidden="true"><g class="h-teal"><circle class="d-dot" cx="9" cy="9" r="7"/></g></svg><span><b>turn.complete</b></span></li><li><svg viewBox="0 0 18 18" aria-hidden="true"><g class="h-teal"><circle class="d-dot" cx="9" cy="9" r="7"/></g></svg><span><b>compact_after_turn</b> — tool call</span></li><li><svg viewBox="0 0 18 18" aria-hidden="true"><g class="h-violet"><circle class="d-dot" cx="9" cy="9" r="7"/></g></svg><span><b>fires</b> — 1 s later</span></li><li><svg viewBox="0 0 18 18" aria-hidden="true"><g class="h-green"><circle class="d-dot" cx="9" cy="9" r="7"/></g></svg><span><b>compact</b></span></li></ul>
-<p>A <b>pill</b> is a span, something that lasts. Its length is its duration:</p><ul><li><svg viewBox="0 0 30 18" aria-hidden="true"><g class="h-teal"><rect class="d-span" x="1" y="3" width="28" height="12" rx="6"/></g></svg><span><b>turn</b></span></li><li><svg viewBox="0 0 30 18" aria-hidden="true"><g class="h-violet"><rect class="d-span" x="1" y="3" width="28" height="12" rx="6"/></g></svg><span><b>1 s</b> — clock.after(1000)</span></li></ul>
-<ul><li><svg viewBox="0 0 34 18" aria-hidden="true"><line class="d-line" x1="1" y1="9" x2="33" y2="9"/></svg><span><b>Thin line</b> — time passing with nothing happening. A gap in a lane means that actor is inactive.</span></li></ul></details>
-<details class="source"><summary>ASCII source</summary><pre># (d) Claude calls compact_after_turn during a turn: the mod compacts ~1 s after the turn completes.
+<g class="d-lab lv2" transform="translate(0 31)" style="--y2:31px;--y3:31px">
+<text class="d-label" x="710.2" y="0" text-anchor="middle">compacted</text>
+<text class="d-sub lv3" x="710.2" y="16" text-anchor="middle">now a short summary</text>
+</g>
+</g>
+</svg></div></figure>
+<ul class="legend"><li><svg viewBox="0 0 18 18" aria-hidden="true"><g class="h-blue"><circle class="d-dot" cx="9" cy="9" r="8"/><text class="d-glyph" x="9" y="12.6" text-anchor="middle">S</text></g></svg><span>message sent</span></li><li><svg viewBox="0 0 30 18" aria-hidden="true"><g class="h-teal"><rect class="d-span" x="1" y="3" width="28" height="12" rx="6"/></g></svg><span>Claude working</span></li><li><svg viewBox="0 0 18 18" aria-hidden="true"><g class="h-teal"><circle class="d-dot" cx="9" cy="9" r="8"/><text class="d-glyph" x="9" y="12.6" text-anchor="middle">t</text></g></svg><span>compact requested</span></li><li><svg viewBox="0 0 18 18" aria-hidden="true"><g class="h-teal"><circle class="d-dot" cx="9" cy="9" r="8"/><text class="d-glyph" x="9" y="12.6" text-anchor="middle">E</text></g></svg><span>reply done</span></li><li><svg viewBox="0 0 30 18" aria-hidden="true"><g class="h-violet"><rect class="d-span" x="1" y="3" width="28" height="12" rx="6"/></g></svg><span>1 s wait</span></li><li><svg viewBox="0 0 18 18" aria-hidden="true"><g class="h-violet"><circle class="d-dot" cx="9" cy="9" r="8"/><text class="d-glyph" x="9" y="12.6" text-anchor="middle">F</text></g></svg><span>wait over</span></li><li><svg viewBox="0 0 18 18" aria-hidden="true"><g class="h-green"><circle class="d-dot" cx="9" cy="9" r="8"/><text class="d-glyph" x="9" y="12.6" text-anchor="middle">C</text></g></svg><span>compacted</span></li></ul>
+<p class="note">1 column = a quarter of a second. The one-second wait lets the reply settle before Claude Code compacts.</p>
+<details class="key"><summary>How to read this diagram</summary><p>Each row is a <b>lane</b>: the timeline of one actor (Claude, Request, Wait, Compaction), read left to right. The numbers along the top mark elapsed time; the faint vertical lines let you line moments up across lanes.</p>
+<p>A <b>marble</b> (a round dot) is a moment, something that happens at one instant. Each marble carries a letter; this is what the letters stand for:</p><ul><li><svg viewBox="0 0 18 18" aria-hidden="true"><g class="h-blue"><circle class="d-dot" cx="9" cy="9" r="8"/><text class="d-glyph" x="9" y="12.6" text-anchor="middle">S</text></g></svg><span><b>message sent</b> — you ask, Claude starts</span></li><li><svg viewBox="0 0 18 18" aria-hidden="true"><g class="h-teal"><circle class="d-dot" cx="9" cy="9" r="8"/><text class="d-glyph" x="9" y="12.6" text-anchor="middle">E</text></g></svg><span><b>reply done</b></span></li><li><svg viewBox="0 0 18 18" aria-hidden="true"><g class="h-teal"><circle class="d-dot" cx="9" cy="9" r="8"/><text class="d-glyph" x="9" y="12.6" text-anchor="middle">t</text></g></svg><span><b>compact requested</b> — Claude uses compact_after_turn</span></li><li><svg viewBox="0 0 18 18" aria-hidden="true"><g class="h-violet"><circle class="d-dot" cx="9" cy="9" r="8"/><text class="d-glyph" x="9" y="12.6" text-anchor="middle">F</text></g></svg><span><b>wait over</b> — 1 second later</span></li><li><svg viewBox="0 0 18 18" aria-hidden="true"><g class="h-green"><circle class="d-dot" cx="9" cy="9" r="8"/><text class="d-glyph" x="9" y="12.6" text-anchor="middle">C</text></g></svg><span><b>compacted</b> — now a short summary</span></li></ul>
+<p>A <b>pill</b> is a span, something that lasts. Its length is its duration:</p><ul><li><svg viewBox="0 0 30 18" aria-hidden="true"><g class="h-teal"><rect class="d-span" x="1" y="3" width="28" height="12" rx="6"/></g></svg><span><b>Claude working</b></span></li><li><svg viewBox="0 0 30 18" aria-hidden="true"><g class="h-violet"><rect class="d-span" x="1" y="3" width="28" height="12" rx="6"/></g></svg><span><b>1 s wait</b></span></li></ul>
+<ul><li><svg viewBox="0 0 34 18" aria-hidden="true"><line class="d-line" x1="1" y1="9" x2="33" y2="9"/></svg><span><b>Thin line</b> — time passing with nothing happening. A gap in a lane means that actor is inactive.</span></li></ul>
+<p>The <b>Detail</b> buttons above the figure show less or more: <b>Simple</b> is just the lanes and marbles, <b>More</b> adds each marble's name and the time scale, and <b>Full</b> adds a line of detail under each name.</p>
+<p>The words used here:</p><ul class="terms"><li><span><b>Turn</b> — one round of the conversation: your message, and everything Claude does until its reply is done.</span></li><li><span><b>compact_after_turn</b> — the tool idle-compact gives Claude for this. You just say &quot;compact after this turn&quot;.</span></li></ul></details>
+<details class="source"><summary>ASCII source</summary><pre># (d) Claude calls compact_after_turn while replying: the mod compacts about 1 s after the reply ends.
 title:   Compacting on request, right after the turn
-caption: Claude can ask for a compact itself with the compact_after_turn tool. The mod waits for the turn to finish, gives it a one-second beat, then compacts, with no idle wait and no token threshold.
-note:    1 column = 0.25 s. The one-second delay lets the turn settle before /compact runs.
+caption: You can ask Claude to compact without waiting. Claude passes the request to idle-compact, which lets the current reply finish, waits one second, then compacts: no 20-minute wait and no size check.
+note:    1 column = a quarter of a second. The one-second wait lets the reply settle before Claude Code compacts.
 focus:   C
+term:    Turn — one round of the conversation: your message, and everything Claude does until its reply is done.
+term:    compact_after_turn — the tool idle-compact gives Claude for this. You just say &quot;compact after this turn&quot;.
 
-time                    0   1s  2s
-claude   -S~~~~~~~~~~~~~E-----------
-tool     ------t--------------------
-clock                   [===F
-compact  --------------------C------
+time                       0   1s  2s
+claude      -S~~~~~~~~~~~~~E-----------
+request     ------t--------------------
+wait                       [===F
+compaction  --------------------C------
 
 legend
-S  turn.start      blue
-~  turn            teal
-t  compact_after_turn — tool call  teal
-E  turn.complete  teal
-=  1 s — clock.after(1000)  violet
-F  fires — 1 s later  violet
-C  compact  green</pre></details>
+S  message sent — you ask, Claude starts  blue
+~  Claude working  teal
+t  compact requested — Claude uses compact_after_turn  teal
+E  reply done  teal
+=  1 s wait  violet
+F  wait over — 1 second later  violet
+C  compacted — now a short summary  green</pre></details>
+<nav class="more">
+<p><i>This diagram</i><span><a href="d-compact-after-turn.svg">as an SVG</a> · <a href="https://github.com/nitsanavni/claude-code-idle-compact/blob/main/docs/diagrams/d-compact-after-turn.marble">its source on GitHub</a></span></p>
+<p><i>More diagrams</i><span><a href="../humans/diagrams/overview.html">Overview</a> · <a href="../humans/diagrams/why.html">Why it exists</a> · <a href="../humans/diagrams/timer.html">The timer</a> · <a href="../humans/diagrams/config.html">Settings</a> · <a href="../humans/diagrams/architecture.html">Code architecture</a> · <a href="a-idle-compact.html">Timeline: idle, then compacted</a> · <a href="b-user-returns.html">Timeline: coming back early</a> · <a href="c-small-context-skip.html">Timeline: too small to compact</a> · <b>Timeline: compacting on request</b></span></p>
+<p><i>The project</i><span><a href="https://github.com/nitsanavni/claude-code-idle-compact#readme">idle-compact on GitHub</a> · <a href="https://github.com/nitsanavni/claude-code-idle-compact/blob/main/docs/humans/README.md">docs for people</a></span></p>
+</nav>
 </main>
 </body>
 </html>

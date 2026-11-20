@@ -1,19 +1,21 @@
-# (a) A turn ends, 20 idle minutes pass, the timer fires, context is big, so the mod compacts.
+# (a) Claude finishes a reply, 20 idle minutes pass, the countdown ends, the conversation is big, so the mod compacts it.
 title:   Twenty quiet minutes, then a compact
-caption: When a turn ends, the mod arms a 20-minute timer. Nobody comes back, the timer fires, the context is still at least 120k tokens, so the conversation is compacted before the prompt cache goes cold.
-note:    1 column = 1 minute; the ≈ break skips ten quiet minutes. idleSeconds (1200) and minTokens (120000) are live-tunable.
+caption: When Claude finishes a reply, idle-compact starts a 20-minute countdown. Nobody sends a message, the countdown runs out, and the conversation is big enough, so it is compacted into a short summary before you come back.
+note:    1 column = 1 minute; the ≈ break skips ten quiet minutes. Both numbers are settings: idleSeconds (1200, which is 20 minutes) and minTokens (120000).
 focus:   C
 break:   +10 min
+term:    Compact — Claude Code replaces the conversation so far with a short summary of it, so the next message has far less to re-read.
+term:    Tokens — the units a conversation is measured in; a token is roughly three quarters of a word. 120k is 120,000 tokens.
 
-time        0    5m ≈   20m
-claude   -S~E-------≈--------
-timer       [=======≈===F
-compact  -----------≈----C---
+time           0    5m ≈   20m
+claude      -S~E-------≈--------
+countdown      [=======≈===F
+compaction  -----------≈----C---
 
 legend
-S  turn.start      blue
-~  turn            teal
-E  turn.complete — arms the timer  teal
-=  idle timer · 20 min  violet
-F  timer fires — context ≥ 120k  violet
-C  compact — fresh, small context  green
+S  message sent — you ask, Claude starts  blue
+~  Claude working  teal
+E  reply done — the countdown starts  teal
+=  idle countdown · 20 min  violet
+F  time is up — big enough: over 120k tokens  violet
+C  compacted — now a short summary  green

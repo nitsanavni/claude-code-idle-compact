@@ -1,18 +1,20 @@
-# (c) The timer fires but context is under 120k: skip.
+# (c) The countdown ends but the conversation is under 120k tokens: it is left alone.
 title:   A small context is left alone
-caption: The timer fires as usual, but the context holds only 64k tokens, below minTokens. Re-reading it would be cheap, so the mod skips the compact and the conversation stays exactly as it was.
-note:    1 column = 1 minute. Set minTokens to 0 to always compact.
+caption: The countdown runs out as usual, but the conversation holds only 64k tokens, under the 120k minimum. Re-reading something that small is cheap, so idle-compact leaves it exactly as it was.
+note:    1 column = 1 minute. The minimum is the minTokens setting; set it to 0 to always compact.
 focus:   s
+term:    Context — everything Claude reads to answer you: the whole conversation so far.
+term:    Tokens — the units a conversation is measured in; a token is roughly three quarters of a word. 64k is 64,000 tokens.
 
-time        0    5m   10m  15m  20m
-claude   -S~E-------------------------
-timer       [===================F
-compact  ------------------------s----
+time           0    5m   10m  15m  20m
+claude      -S~E-------------------------
+countdown      [===================F
+compaction  ------------------------s----
 
 legend
-S  turn.start      blue
-~  turn            teal
-E  turn.complete — arms the timer  teal
-=  idle timer · 20 min  violet
-F  timer fires — context 64k  violet
-s  skip — 64k < 120k  amber
+S  message sent — you ask, Claude starts  blue
+~  Claude working  teal
+E  reply done — the countdown starts  teal
+=  idle countdown · 20 min  violet
+F  time is up — only 64k tokens  violet
+s  left alone — 64k is under the 120k minimum  amber

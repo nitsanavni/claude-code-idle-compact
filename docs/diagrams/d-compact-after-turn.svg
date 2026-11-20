@@ -105,53 +105,73 @@
 
 </style>
 <rect class="d-bg" x="0.5" y="0.5" width="919" height="397" rx="16"/>
-<line class="d-grid" x1="568.6" y1="46" x2="568.6" y2="374"/>
-<text class="d-tick" x="568.6" y="36" text-anchor="middle">0</text>
-<line class="d-grid" x1="681.8" y1="46" x2="681.8" y2="374"/>
-<text class="d-tick" x="681.8" y="36" text-anchor="middle">1s</text>
-<line class="d-grid" x1="795.1" y1="46" x2="795.1" y2="374"/>
-<text class="d-tick" x="795.1" y="36" text-anchor="middle">2s</text>
-<g class="h-teal"><rect class="d-lane-bar" x="65.8" y="71" width="3" height="14" rx="1.5"/></g>
-<text class="d-lane" x="120" y="82" text-anchor="end">Claude</text>
-<line class="d-line" x1="144" y1="78" x2="880" y2="78"/>
+<line class="d-grid d-stretch lv2" style="--s2:0.8" x1="568.6" y1="46" x2="568.6" y2="374"/>
+<text class="d-tick lv2" x="568.6" y="36" text-anchor="middle">0</text>
+<line class="d-grid d-stretch lv2" style="--s2:0.8" x1="681.8" y1="46" x2="681.8" y2="374"/>
+<text class="d-tick lv2" x="681.8" y="36" text-anchor="middle">1s</text>
+<line class="d-grid d-stretch lv2" style="--s2:0.8" x1="795.1" y1="46" x2="795.1" y2="374"/>
+<text class="d-tick lv2" x="795.1" y="36" text-anchor="middle">2s</text>
+<g class="d-lane-g" transform="translate(0 78)" style="--y1:44px;--y2:78px;--y3:78px">
+<g class="h-teal"><rect class="d-lane-bar" x="65.8" y="-7" width="3" height="14" rx="1.5"/></g>
+<text class="d-lane" x="120" y="4" text-anchor="end">Claude</text>
+<line class="d-line" x1="144" y1="0" x2="880" y2="0"/>
 <g class="h-teal">
-<rect class="d-span" x="172.3" y="68" width="396.3" height="20" rx="10"/>
-<text class="d-span-label" x="370.5" y="82" text-anchor="middle">turn</text>
+<rect class="d-span" x="172.3" y="-10" width="396.3" height="20" rx="10"/>
+<text class="d-span-label lv2" x="370.5" y="4" text-anchor="middle">Claude working</text>
 </g>
-<g class="h-teal"><rect class="d-lane-bar" x="80.2" y="155" width="3" height="14" rx="1.5"/></g>
-<text class="d-lane" x="120" y="166" text-anchor="end">Tool</text>
-<line class="d-line" x1="144" y1="162" x2="880" y2="162"/>
-<g class="h-violet"><rect class="d-lane-bar" x="73" y="239" width="3" height="14" rx="1.5"/></g>
-<text class="d-lane" x="120" y="250" text-anchor="end">Clock</text>
-<line class="d-line" x1="568.6" y1="246" x2="681.8" y2="246"/>
-<g class="h-violet">
-<rect class="d-span" x="568.6" y="236" width="113.2" height="20" rx="10"/>
-<text class="d-span-label" x="625.2" y="250" text-anchor="middle">1 s</text>
-</g>
-<g class="h-green"><rect class="d-lane-bar" x="58.6" y="323" width="3" height="14" rx="1.5"/></g>
-<text class="d-lane" x="120" y="334" text-anchor="end">Compact</text>
-<line class="d-line" x1="144" y1="330" x2="880" y2="330"/>
 <g class="d-mark h-blue" style="--i:0">
-<circle class="d-dot" cx="172.3" cy="78" r="9"/><text class="d-glyph" x="172.3" y="81.6" text-anchor="middle">S</text>
+<circle class="d-dot" cx="172.3" cy="0" r="9"/><text class="d-glyph" x="172.3" y="3.6" text-anchor="middle">S</text>
 </g>
-<text class="d-label" x="172.3" y="109" text-anchor="middle">turn.start</text>
+<g class="d-lab lv2" transform="translate(0 31)" style="--y2:31px;--y3:31px">
+<text class="d-label" x="206.6" y="0" text-anchor="middle">message sent</text>
+<text class="d-sub lv3" x="206.6" y="16" text-anchor="middle">you ask, Claude starts</text>
+</g>
 <g class="d-mark h-teal" style="--i:2">
-<circle class="d-dot" cx="568.6" cy="78" r="9"/><text class="d-glyph" x="568.6" y="81.6" text-anchor="middle">E</text>
+<circle class="d-dot" cx="568.6" cy="0" r="9"/><text class="d-glyph" x="568.6" y="3.6" text-anchor="middle">E</text>
 </g>
-<text class="d-label" x="568.6" y="109" text-anchor="middle">turn.complete</text>
+<g class="d-lab lv2" transform="translate(0 31)" style="--y2:31px;--y3:31px">
+<text class="d-label" x="568.6" y="0" text-anchor="middle">reply done</text>
+</g>
+</g>
+<g class="d-lane-g" transform="translate(0 162)" style="--y1:92px;--y2:148px;--y3:162px">
+<g class="h-teal"><rect class="d-lane-bar" x="58.6" y="-7" width="3" height="14" rx="1.5"/></g>
+<text class="d-lane" x="120" y="4" text-anchor="end">Request</text>
+<line class="d-line" x1="144" y1="0" x2="880" y2="0"/>
 <g class="d-mark h-teal" style="--i:1">
-<circle class="d-dot" cx="313.8" cy="162" r="9"/><text class="d-glyph" x="313.8" y="165.6" text-anchor="middle">t</text>
+<circle class="d-dot" cx="313.8" cy="0" r="9"/><text class="d-glyph" x="313.8" y="3.6" text-anchor="middle">t</text>
 </g>
-<text class="d-label" x="313.8" y="193" text-anchor="middle">compact_after_turn</text>
-<text class="d-sub" x="313.8" y="209" text-anchor="middle">tool call</text>
+<g class="d-lab lv2" transform="translate(0 31)" style="--y2:31px;--y3:31px">
+<text class="d-label" x="313.8" y="0" text-anchor="middle">compact requested</text>
+<text class="d-sub lv3" x="313.8" y="16" text-anchor="middle">Claude uses compact_after_turn</text>
+</g>
+</g>
+<g class="d-lane-g" transform="translate(0 246)" style="--y1:140px;--y2:218px;--y3:246px">
+<g class="h-violet"><rect class="d-lane-bar" x="80.2" y="-7" width="3" height="14" rx="1.5"/></g>
+<text class="d-lane" x="120" y="4" text-anchor="end">Wait</text>
+<line class="d-line" x1="568.6" y1="0" x2="681.8" y2="0"/>
+<g class="h-violet">
+<rect class="d-span" x="568.6" y="-10" width="113.2" height="20" rx="10"/>
+<text class="d-span-label lv2" x="625.2" y="4" text-anchor="middle">1 s wait</text>
+</g>
 <g class="d-mark h-violet" style="--i:3">
-<circle class="d-dot" cx="681.8" cy="246" r="9"/><text class="d-glyph" x="681.8" y="249.6" text-anchor="middle">F</text>
+<circle class="d-dot" cx="681.8" cy="0" r="9"/><text class="d-glyph" x="681.8" y="3.6" text-anchor="middle">F</text>
 </g>
-<text class="d-label" x="681.8" y="277" text-anchor="middle">fires</text>
-<text class="d-sub" x="681.8" y="293" text-anchor="middle">1 s later</text>
+<g class="d-lab lv2" transform="translate(0 31)" style="--y2:31px;--y3:31px">
+<text class="d-label" x="681.8" y="0" text-anchor="middle">wait over</text>
+<text class="d-sub lv3" x="681.8" y="16" text-anchor="middle">1 second later</text>
+</g>
+</g>
+<g class="d-lane-g" transform="translate(0 330)" style="--y1:188px;--y2:288px;--y3:330px">
+<g class="h-green"><rect class="d-lane-bar" x="37" y="-7" width="3" height="14" rx="1.5"/></g>
+<text class="d-lane" x="120" y="4" text-anchor="end">Compaction</text>
+<line class="d-line" x1="144" y1="0" x2="880" y2="0"/>
 <g class="d-mark h-green" style="--i:4">
-<circle class="d-halo" cx="710.2" cy="330" r="16"/>
-<circle class="d-dot" cx="710.2" cy="330" r="9"/><text class="d-glyph" x="710.2" y="333.6" text-anchor="middle">C</text>
+<circle class="d-halo lv2" cx="710.2" cy="0" r="16"/>
+<circle class="d-dot" cx="710.2" cy="0" r="9"/><text class="d-glyph" x="710.2" y="3.6" text-anchor="middle">C</text>
 </g>
-<text class="d-label" x="710.2" y="361" text-anchor="middle">compact</text>
+<g class="d-lab lv2" transform="translate(0 31)" style="--y2:31px;--y3:31px">
+<text class="d-label" x="710.2" y="0" text-anchor="middle">compacted</text>
+<text class="d-sub lv3" x="710.2" y="16" text-anchor="middle">now a short summary</text>
+</g>
+</g>
 </svg>

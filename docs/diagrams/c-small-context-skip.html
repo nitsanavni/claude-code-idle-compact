@@ -103,6 +103,15 @@ h1 { font: 650 clamp(28px, 4vw, 36px)/1.15 var(--sans); letter-spacing: -.02em; 
 .legend svg { flex: none; height: 18px; width: auto; }
 .legend + .note { margin-top: calc(var(--space) * 4); }
 
+/* links: quiet until hovered; the footer lists this diagram's files and the other diagrams */
+a { color: inherit; text-decoration: underline; text-decoration-color: color-mix(in srgb, currentColor 35%, transparent); text-underline-offset: 3px; }
+a:hover { color: var(--blue); text-decoration-color: currentColor; }
+.eyebrow a { text-decoration: none; }
+nav.more { margin-top: calc(var(--space) * 5); padding-top: calc(var(--space) * 3); border-top: 1px solid var(--rule); font-size: 14px; color: var(--ink-2); }
+nav.more p { margin: 0 0 var(--space); display: grid; grid-template-columns: 136px 1fr; align-items: baseline; }
+nav.more i { font: 600 12px/1 var(--sans); letter-spacing: .08em; text-transform: uppercase; color: var(--ink-3); }
+nav.more b { font-weight: 600; color: var(--ink); }
+
 /* agent-readable source, tucked away */
 details.source { margin-top: var(--space); }
 details.source summary::-webkit-details-marker { display: none; }
@@ -162,85 +171,139 @@ details.key ul { list-style: none; padding: 0; margin: var(--space) 0 calc(var(-
 details.key li { display: flex; align-items: baseline; gap: calc(var(--space) * 1.5); font-size: 15px; color: var(--ink-2); padding: calc(var(--space) * .5) 0; }
 details.key li svg { flex: none; width: 34px; height: 18px; align-self: center; }
 details.key li b { font-weight: 600; color: var(--ink); }
+details.key ul.terms li { display: block; }
+
+/* detail levels (timeline pages): three radios step the figure from marbles only (1) to full detail (3).
+   The SVG is drawn at level 3; each lane carries its place at every level as --y1 --y2 --y3. */
+.levels { display: inline-flex; align-items: center; gap: 2px; border: 0; padding: 3px; margin: 0 0 calc(var(--space) * 2); background: var(--grid); border-radius: 999px; }
+.levels legend { float: left; padding: 0 var(--space) 0 calc(var(--space) * 1.5); font: 600 12px/1 var(--sans); letter-spacing: .08em; text-transform: uppercase; color: var(--ink-3); }
+.levels label { cursor: pointer; padding: 7px 14px; border-radius: 999px; font: 600 13px/1 var(--sans); color: var(--ink-2); }
+.levels input { position: absolute; opacity: 0; pointer-events: none; }
+.levels label:has(input:checked) { background: var(--surface); color: var(--ink); box-shadow: var(--shadow); }
+.levels label:has(input:focus-visible) { outline: 2px solid var(--blue); outline-offset: 1px; }
+.d-stage { overflow: hidden; min-width: 560px; aspect-ratio: 920 / var(--h3); }
+.d-stage svg { min-width: 0; }
+.d-lane-g, .d-lab { transform: translateY(var(--y3)); }
+.d-stretch { transform-box: fill-box; transform-origin: 50% 0; }
+@media (prefers-reduced-motion: no-preference) {
+  .d-stage { transition: aspect-ratio 420ms cubic-bezier(.3, 0, .2, 1); }
+  .d-lane-g, .lv2, .lv3 { transition: transform 420ms cubic-bezier(.3, 0, .2, 1), opacity 260ms ease; }
+}
+.page:has(#lv1:checked) .d-stage { aspect-ratio: 920 / var(--h1); }
+.page:has(#lv1:checked) .d-lane-g { transform: translateY(var(--y1)); }
+.page:has(#lv1:checked) .d-lab,
+.page:has(#lv2:checked) .d-lab { transform: translateY(var(--y2)); }
+.page:has(#lv1:checked) .d-stretch,
+.page:has(#lv2:checked) .d-stretch { transform: scaleY(var(--s2)); }
+.page:has(#lv1:checked) :is(.lv2, .lv3) { opacity: 0; }
+.page:has(#lv2:checked) .d-stage { aspect-ratio: 920 / var(--h2); }
+.page:has(#lv2:checked) .d-lane-g { transform: translateY(var(--y2)); }
+.page:has(#lv2:checked) .lv3 { opacity: 0; }
+.page:has(#lv1:checked) .note, .page:has(#lv2:checked) .note { display: none; }
 </style>
 </head>
 <body>
 <main class="page">
-<p class="eyebrow h-amber">idle-compact · timeline</p>
+<p class="eyebrow h-amber"><a href="https://github.com/nitsanavni/claude-code-idle-compact#readme">idle-compact</a> · timeline</p>
 <h1>A small context is left alone</h1>
-<p class="lede">The timer fires as usual, but the context holds only 64k tokens, below minTokens. Re-reading it would be cheap, so the mod skips the compact and the conversation stays exactly as it was.</p>
-<figure class="figure"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 920 340" width="920" height="340" role="img" font-family="Inter, system-ui, sans-serif"><title>A small context is left alone</title>
-<line class="d-grid" x1="222.9" y1="46" x2="222.9" y2="316"/>
-<text class="d-tick" x="222.9" y="36" text-anchor="middle">0</text>
-<line class="d-grid" x1="354.3" y1="46" x2="354.3" y2="316"/>
-<text class="d-tick" x="354.3" y="36" text-anchor="middle">5m</text>
-<line class="d-grid" x1="485.7" y1="46" x2="485.7" y2="316"/>
-<text class="d-tick" x="485.7" y="36" text-anchor="middle">10m</text>
-<line class="d-grid" x1="617.1" y1="46" x2="617.1" y2="316"/>
-<text class="d-tick" x="617.1" y="36" text-anchor="middle">15m</text>
-<line class="d-grid" x1="748.6" y1="46" x2="748.6" y2="316"/>
-<text class="d-tick" x="748.6" y="36" text-anchor="middle">20m</text>
-<g class="h-teal"><rect class="d-lane-bar" x="65.8" y="97" width="3" height="14" rx="1.5"/></g>
-<text class="d-lane" x="120" y="108" text-anchor="end">Claude</text>
-<line class="d-line" x1="144" y1="104" x2="880" y2="104"/>
+<p class="lede">The countdown runs out as usual, but the conversation holds only 64k tokens, under the 120k minimum. Re-reading something that small is cheap, so idle-compact leaves it exactly as it was.</p>
+<fieldset class="levels"><legend>Detail</legend><label title="Lanes and marbles only"><input type="radio" name="lv" id="lv1" checked>Simple</label><label title="Adds names and the time scale"><input type="radio" name="lv" id="lv2">More</label><label title="Adds a line of detail under each name"><input type="radio" name="lv" id="lv3">Full</label></fieldset>
+<figure class="figure"><div class="d-stage" style="--h1:176;--h2:284;--h3:340"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 920 340" width="920" height="340" role="img" font-family="Inter, system-ui, sans-serif"><title>A small context is left alone</title>
+<line class="d-grid d-stretch lv2" style="--s2:0.8" x1="222.9" y1="46" x2="222.9" y2="316"/>
+<text class="d-tick lv2" x="222.9" y="36" text-anchor="middle">0</text>
+<line class="d-grid d-stretch lv2" style="--s2:0.8" x1="354.3" y1="46" x2="354.3" y2="316"/>
+<text class="d-tick lv2" x="354.3" y="36" text-anchor="middle">5m</text>
+<line class="d-grid d-stretch lv2" style="--s2:0.8" x1="485.7" y1="46" x2="485.7" y2="316"/>
+<text class="d-tick lv2" x="485.7" y="36" text-anchor="middle">10m</text>
+<line class="d-grid d-stretch lv2" style="--s2:0.8" x1="617.1" y1="46" x2="617.1" y2="316"/>
+<text class="d-tick lv2" x="617.1" y="36" text-anchor="middle">15m</text>
+<line class="d-grid d-stretch lv2" style="--s2:0.8" x1="748.6" y1="46" x2="748.6" y2="316"/>
+<text class="d-tick lv2" x="748.6" y="36" text-anchor="middle">20m</text>
+<g class="d-lane-g" transform="translate(0 104)" style="--y1:44px;--y2:90px;--y3:104px">
+<g class="h-teal"><rect class="d-lane-bar" x="65.8" y="-7" width="3" height="14" rx="1.5"/></g>
+<text class="d-lane" x="120" y="4" text-anchor="end">Claude</text>
+<line class="d-line" x1="144" y1="0" x2="880" y2="0"/>
 <g class="h-teal">
-<rect class="d-span" x="170.3" y="94" width="52.6" height="20" rx="10"/>
+<rect class="d-span" x="170.3" y="-10" width="52.6" height="20" rx="10"/>
 </g>
-<g class="h-violet"><rect class="d-lane-bar" x="73" y="181" width="3" height="14" rx="1.5"/></g>
-<text class="d-lane" x="120" y="192" text-anchor="end">Timer</text>
-<line class="d-line" x1="222.9" y1="188" x2="748.6" y2="188"/>
-<g class="h-violet">
-<rect class="d-span" x="222.9" y="178" width="525.7" height="20" rx="10"/>
-<text class="d-span-label" x="485.7" y="192" text-anchor="middle">idle timer · 20 min</text>
-</g>
-<g class="h-amber"><rect class="d-lane-bar" x="58.6" y="265" width="3" height="14" rx="1.5"/></g>
-<text class="d-lane" x="120" y="276" text-anchor="end">Compact</text>
-<line class="d-line" x1="144" y1="272" x2="880" y2="272"/>
 <g class="d-mark h-blue" style="--i:0">
-<circle class="d-dot" cx="170.3" cy="104" r="9"/><text class="d-glyph" x="170.3" y="107.6" text-anchor="middle">S</text>
+<circle class="d-dot" cx="170.3" cy="0" r="9"/><text class="d-glyph" x="170.3" y="3.6" text-anchor="middle">S</text>
 </g>
-<text class="d-label" x="170.3" y="135" text-anchor="middle">turn.start</text>
+<g class="d-lab lv2" transform="translate(0 31)" style="--y2:31px;--y3:31px">
+<text class="d-label" x="206.6" y="0" text-anchor="middle">message sent</text>
+<text class="d-sub lv3" x="206.6" y="16" text-anchor="middle">you ask, Claude starts</text>
+</g>
 <g class="d-mark h-teal" style="--i:1">
-<circle class="d-dot" cx="222.9" cy="104" r="9"/><text class="d-glyph" x="222.9" y="107.6" text-anchor="middle">E</text>
+<circle class="d-dot" cx="222.9" cy="0" r="9"/><text class="d-glyph" x="222.9" y="3.6" text-anchor="middle">E</text>
 </g>
-<text class="d-label" x="222.9" y="64" text-anchor="middle">turn.complete</text>
-<text class="d-sub" x="222.9" y="80" text-anchor="middle">arms the timer</text>
+<g class="d-lab lv2" transform="translate(0 -40)" style="--y2:-24px;--y3:-40px">
+<text class="d-label" x="222.9" y="0" text-anchor="middle">reply done</text>
+<text class="d-sub lv3" x="222.9" y="16" text-anchor="middle">the countdown starts</text>
+</g>
+</g>
+<g class="d-lane-g" transform="translate(0 188)" style="--y1:92px;--y2:160px;--y3:188px">
+<g class="h-violet"><rect class="d-lane-bar" x="44.2" y="-7" width="3" height="14" rx="1.5"/></g>
+<text class="d-lane" x="120" y="4" text-anchor="end">Countdown</text>
+<line class="d-line" x1="222.9" y1="0" x2="748.6" y2="0"/>
+<g class="h-violet">
+<rect class="d-span" x="222.9" y="-10" width="525.7" height="20" rx="10"/>
+<text class="d-span-label lv2" x="485.7" y="4" text-anchor="middle">idle countdown · 20 min</text>
+</g>
 <g class="d-mark h-violet" style="--i:2">
-<circle class="d-dot" cx="748.6" cy="188" r="9"/><text class="d-glyph" x="748.6" y="191.6" text-anchor="middle">F</text>
+<circle class="d-dot" cx="748.6" cy="0" r="9"/><text class="d-glyph" x="748.6" y="3.6" text-anchor="middle">F</text>
 </g>
-<text class="d-label" x="748.6" y="219" text-anchor="middle">timer fires</text>
-<text class="d-sub" x="748.6" y="235" text-anchor="middle">context 64k</text>
+<g class="d-lab lv2" transform="translate(0 31)" style="--y2:31px;--y3:31px">
+<text class="d-label" x="748.6" y="0" text-anchor="middle">time is up</text>
+<text class="d-sub lv3" x="748.6" y="16" text-anchor="middle">only 64k tokens</text>
+</g>
+</g>
+<g class="d-lane-g" transform="translate(0 272)" style="--y1:140px;--y2:230px;--y3:272px">
+<g class="h-amber"><rect class="d-lane-bar" x="37" y="-7" width="3" height="14" rx="1.5"/></g>
+<text class="d-lane" x="120" y="4" text-anchor="end">Compaction</text>
+<line class="d-line" x1="144" y1="0" x2="880" y2="0"/>
 <g class="d-mark h-amber" style="--i:3">
-<circle class="d-halo" cx="774.9" cy="272" r="16"/>
-<circle class="d-dot" cx="774.9" cy="272" r="9"/><text class="d-glyph" x="774.9" y="275.6" text-anchor="middle">s</text>
+<circle class="d-halo lv2" cx="774.9" cy="0" r="16"/>
+<circle class="d-dot" cx="774.9" cy="0" r="9"/><text class="d-glyph" x="774.9" y="3.6" text-anchor="middle">s</text>
 </g>
-<text class="d-label" x="774.9" y="303" text-anchor="middle">skip</text>
-<text class="d-sub" x="774.9" y="319" text-anchor="middle">64k &lt; 120k</text>
-</svg></figure>
-<ul class="legend"><li><svg viewBox="0 0 18 18" aria-hidden="true"><g class="h-blue"><circle class="d-dot" cx="9" cy="9" r="7"/></g></svg><span>turn.start</span></li><li><svg viewBox="0 0 30 18" aria-hidden="true"><g class="h-teal"><rect class="d-span" x="1" y="3" width="28" height="12" rx="6"/></g></svg><span>turn</span></li><li><svg viewBox="0 0 18 18" aria-hidden="true"><g class="h-teal"><circle class="d-dot" cx="9" cy="9" r="7"/></g></svg><span>turn.complete</span></li><li><svg viewBox="0 0 30 18" aria-hidden="true"><g class="h-violet"><rect class="d-span" x="1" y="3" width="28" height="12" rx="6"/></g></svg><span>idle timer · 20 min</span></li><li><svg viewBox="0 0 18 18" aria-hidden="true"><g class="h-violet"><circle class="d-dot" cx="9" cy="9" r="7"/></g></svg><span>timer fires</span></li><li><svg viewBox="0 0 18 18" aria-hidden="true"><g class="h-amber"><circle class="d-dot" cx="9" cy="9" r="7"/></g></svg><span>skip</span></li></ul>
-<p class="note">1 column = 1 minute. Set minTokens to 0 to always compact.</p>
-<details class="key"><summary>How to read this diagram</summary><p>Each row is a <b>lane</b>: the timeline of one actor (Claude, Timer, Compact), read left to right. The numbers along the top mark elapsed time; the faint vertical lines let you line moments up across lanes.</p>
-<p>A <b>marble</b> is a moment, something that happens at one instant. The letter in it is its symbol in the ASCII source:</p><ul><li><svg viewBox="0 0 18 18" aria-hidden="true"><g class="h-blue"><circle class="d-dot" cx="9" cy="9" r="7"/></g></svg><span><b>turn.start</b></span></li><li><svg viewBox="0 0 18 18" aria-hidden="true"><g class="h-teal"><circle class="d-dot" cx="9" cy="9" r="7"/></g></svg><span><b>turn.complete</b> — arms the timer</span></li><li><svg viewBox="0 0 18 18" aria-hidden="true"><g class="h-violet"><circle class="d-dot" cx="9" cy="9" r="7"/></g></svg><span><b>timer fires</b> — context 64k</span></li><li><svg viewBox="0 0 18 18" aria-hidden="true"><g class="h-amber"><circle class="d-dot" cx="9" cy="9" r="7"/></g></svg><span><b>skip</b> — 64k &lt; 120k</span></li></ul>
-<p>A <b>pill</b> is a span, something that lasts. Its length is its duration:</p><ul><li><svg viewBox="0 0 30 18" aria-hidden="true"><g class="h-teal"><rect class="d-span" x="1" y="3" width="28" height="12" rx="6"/></g></svg><span><b>turn</b></span></li><li><svg viewBox="0 0 30 18" aria-hidden="true"><g class="h-violet"><rect class="d-span" x="1" y="3" width="28" height="12" rx="6"/></g></svg><span><b>idle timer · 20 min</b></span></li></ul>
-<ul><li><svg viewBox="0 0 34 18" aria-hidden="true"><line class="d-line" x1="1" y1="9" x2="33" y2="9"/></svg><span><b>Thin line</b> — time passing with nothing happening. A gap in a lane means that actor is inactive.</span></li></ul></details>
-<details class="source"><summary>ASCII source</summary><pre># (c) The timer fires but context is under 120k: skip.
+<g class="d-lab lv2" transform="translate(0 31)" style="--y2:31px;--y3:31px">
+<text class="d-label" x="774.9" y="0" text-anchor="middle">left alone</text>
+<text class="d-sub lv3" x="774.9" y="16" text-anchor="middle">64k is under the 120k minimum</text>
+</g>
+</g>
+</svg></div></figure>
+<ul class="legend"><li><svg viewBox="0 0 18 18" aria-hidden="true"><g class="h-blue"><circle class="d-dot" cx="9" cy="9" r="8"/><text class="d-glyph" x="9" y="12.6" text-anchor="middle">S</text></g></svg><span>message sent</span></li><li><svg viewBox="0 0 30 18" aria-hidden="true"><g class="h-teal"><rect class="d-span" x="1" y="3" width="28" height="12" rx="6"/></g></svg><span>Claude working</span></li><li><svg viewBox="0 0 18 18" aria-hidden="true"><g class="h-teal"><circle class="d-dot" cx="9" cy="9" r="8"/><text class="d-glyph" x="9" y="12.6" text-anchor="middle">E</text></g></svg><span>reply done</span></li><li><svg viewBox="0 0 30 18" aria-hidden="true"><g class="h-violet"><rect class="d-span" x="1" y="3" width="28" height="12" rx="6"/></g></svg><span>idle countdown · 20 min</span></li><li><svg viewBox="0 0 18 18" aria-hidden="true"><g class="h-violet"><circle class="d-dot" cx="9" cy="9" r="8"/><text class="d-glyph" x="9" y="12.6" text-anchor="middle">F</text></g></svg><span>time is up</span></li><li><svg viewBox="0 0 18 18" aria-hidden="true"><g class="h-amber"><circle class="d-dot" cx="9" cy="9" r="8"/><text class="d-glyph" x="9" y="12.6" text-anchor="middle">s</text></g></svg><span>left alone</span></li></ul>
+<p class="note">1 column = 1 minute. The minimum is the minTokens setting; set it to 0 to always compact.</p>
+<details class="key"><summary>How to read this diagram</summary><p>Each row is a <b>lane</b>: the timeline of one actor (Claude, Countdown, Compaction), read left to right. The numbers along the top mark elapsed time; the faint vertical lines let you line moments up across lanes.</p>
+<p>A <b>marble</b> (a round dot) is a moment, something that happens at one instant. Each marble carries a letter; this is what the letters stand for:</p><ul><li><svg viewBox="0 0 18 18" aria-hidden="true"><g class="h-blue"><circle class="d-dot" cx="9" cy="9" r="8"/><text class="d-glyph" x="9" y="12.6" text-anchor="middle">S</text></g></svg><span><b>message sent</b> — you ask, Claude starts</span></li><li><svg viewBox="0 0 18 18" aria-hidden="true"><g class="h-teal"><circle class="d-dot" cx="9" cy="9" r="8"/><text class="d-glyph" x="9" y="12.6" text-anchor="middle">E</text></g></svg><span><b>reply done</b> — the countdown starts</span></li><li><svg viewBox="0 0 18 18" aria-hidden="true"><g class="h-violet"><circle class="d-dot" cx="9" cy="9" r="8"/><text class="d-glyph" x="9" y="12.6" text-anchor="middle">F</text></g></svg><span><b>time is up</b> — only 64k tokens</span></li><li><svg viewBox="0 0 18 18" aria-hidden="true"><g class="h-amber"><circle class="d-dot" cx="9" cy="9" r="8"/><text class="d-glyph" x="9" y="12.6" text-anchor="middle">s</text></g></svg><span><b>left alone</b> — 64k is under the 120k minimum</span></li></ul>
+<p>A <b>pill</b> is a span, something that lasts. Its length is its duration:</p><ul><li><svg viewBox="0 0 30 18" aria-hidden="true"><g class="h-teal"><rect class="d-span" x="1" y="3" width="28" height="12" rx="6"/></g></svg><span><b>Claude working</b></span></li><li><svg viewBox="0 0 30 18" aria-hidden="true"><g class="h-violet"><rect class="d-span" x="1" y="3" width="28" height="12" rx="6"/></g></svg><span><b>idle countdown · 20 min</b></span></li></ul>
+<ul><li><svg viewBox="0 0 34 18" aria-hidden="true"><line class="d-line" x1="1" y1="9" x2="33" y2="9"/></svg><span><b>Thin line</b> — time passing with nothing happening. A gap in a lane means that actor is inactive.</span></li></ul>
+<p>The <b>Detail</b> buttons above the figure show less or more: <b>Simple</b> is just the lanes and marbles, <b>More</b> adds each marble's name and the time scale, and <b>Full</b> adds a line of detail under each name.</p>
+<p>The words used here:</p><ul class="terms"><li><span><b>Context</b> — everything Claude reads to answer you: the whole conversation so far.</span></li><li><span><b>Tokens</b> — the units a conversation is measured in; a token is roughly three quarters of a word. 64k is 64,000 tokens.</span></li></ul></details>
+<details class="source"><summary>ASCII source</summary><pre># (c) The countdown ends but the conversation is under 120k tokens: it is left alone.
 title:   A small context is left alone
-caption: The timer fires as usual, but the context holds only 64k tokens, below minTokens. Re-reading it would be cheap, so the mod skips the compact and the conversation stays exactly as it was.
-note:    1 column = 1 minute. Set minTokens to 0 to always compact.
+caption: The countdown runs out as usual, but the conversation holds only 64k tokens, under the 120k minimum. Re-reading something that small is cheap, so idle-compact leaves it exactly as it was.
+note:    1 column = 1 minute. The minimum is the minTokens setting; set it to 0 to always compact.
 focus:   s
+term:    Context — everything Claude reads to answer you: the whole conversation so far.
+term:    Tokens — the units a conversation is measured in; a token is roughly three quarters of a word. 64k is 64,000 tokens.
 
-time        0    5m   10m  15m  20m
-claude   -S~E-------------------------
-timer       [===================F
-compact  ------------------------s----
+time           0    5m   10m  15m  20m
+claude      -S~E-------------------------
+countdown      [===================F
+compaction  ------------------------s----
 
 legend
-S  turn.start      blue
-~  turn            teal
-E  turn.complete — arms the timer  teal
-=  idle timer · 20 min  violet
-F  timer fires — context 64k  violet
-s  skip — 64k &lt; 120k  amber</pre></details>
+S  message sent — you ask, Claude starts  blue
+~  Claude working  teal
+E  reply done — the countdown starts  teal
+=  idle countdown · 20 min  violet
+F  time is up — only 64k tokens  violet
+s  left alone — 64k is under the 120k minimum  amber</pre></details>
+<nav class="more">
+<p><i>This diagram</i><span><a href="c-small-context-skip.svg">as an SVG</a> · <a href="https://github.com/nitsanavni/claude-code-idle-compact/blob/main/docs/diagrams/c-small-context-skip.marble">its source on GitHub</a></span></p>
+<p><i>More diagrams</i><span><a href="../humans/diagrams/overview.html">Overview</a> · <a href="../humans/diagrams/why.html">Why it exists</a> · <a href="../humans/diagrams/timer.html">The timer</a> · <a href="../humans/diagrams/config.html">Settings</a> · <a href="../humans/diagrams/architecture.html">Code architecture</a> · <a href="a-idle-compact.html">Timeline: idle, then compacted</a> · <a href="b-user-returns.html">Timeline: coming back early</a> · <b>Timeline: too small to compact</b> · <a href="d-compact-after-turn.html">Timeline: compacting on request</a></span></p>
+<p><i>The project</i><span><a href="https://github.com/nitsanavni/claude-code-idle-compact#readme">idle-compact on GitHub</a> · <a href="https://github.com/nitsanavni/claude-code-idle-compact/blob/main/docs/humans/README.md">docs for people</a></span></p>
+</nav>
 </main>
 </body>
 </html>

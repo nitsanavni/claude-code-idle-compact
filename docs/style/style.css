@@ -166,3 +166,31 @@ details.key li { display: flex; align-items: baseline; gap: calc(var(--space) * 
 details.key li svg { flex: none; width: 34px; height: 18px; align-self: center; }
 details.key li b { font-weight: 600; color: var(--ink); }
 details.key ul.terms li { display: block; }
+
+/* detail levels (timeline pages): three radios step the figure from marbles only (1) to full detail (3).
+   The SVG is drawn at level 3; each lane carries its place at every level as --y1 --y2 --y3. */
+.levels { display: inline-flex; align-items: center; gap: 2px; border: 0; padding: 3px; margin: 0 0 calc(var(--space) * 2); background: var(--grid); border-radius: 999px; }
+.levels legend { float: left; padding: 0 var(--space) 0 calc(var(--space) * 1.5); font: 600 12px/1 var(--sans); letter-spacing: .08em; text-transform: uppercase; color: var(--ink-3); }
+.levels label { cursor: pointer; padding: 7px 14px; border-radius: 999px; font: 600 13px/1 var(--sans); color: var(--ink-2); }
+.levels input { position: absolute; opacity: 0; pointer-events: none; }
+.levels label:has(input:checked) { background: var(--surface); color: var(--ink); box-shadow: var(--shadow); }
+.levels label:has(input:focus-visible) { outline: 2px solid var(--blue); outline-offset: 1px; }
+.d-stage { overflow: hidden; min-width: 560px; aspect-ratio: 920 / var(--h3); }
+.d-stage svg { min-width: 0; }
+.d-lane-g, .d-lab { transform: translateY(var(--y3)); }
+.d-stretch { transform-box: fill-box; transform-origin: 50% 0; }
+@media (prefers-reduced-motion: no-preference) {
+  .d-stage { transition: aspect-ratio 420ms cubic-bezier(.3, 0, .2, 1); }
+  .d-lane-g, .lv2, .lv3 { transition: transform 420ms cubic-bezier(.3, 0, .2, 1), opacity 260ms ease; }
+}
+.page:has(#lv1:checked) .d-stage { aspect-ratio: 920 / var(--h1); }
+.page:has(#lv1:checked) .d-lane-g { transform: translateY(var(--y1)); }
+.page:has(#lv1:checked) .d-lab,
+.page:has(#lv2:checked) .d-lab { transform: translateY(var(--y2)); }
+.page:has(#lv1:checked) .d-stretch,
+.page:has(#lv2:checked) .d-stretch { transform: scaleY(var(--s2)); }
+.page:has(#lv1:checked) :is(.lv2, .lv3) { opacity: 0; }
+.page:has(#lv2:checked) .d-stage { aspect-ratio: 920 / var(--h2); }
+.page:has(#lv2:checked) .d-lane-g { transform: translateY(var(--y2)); }
+.page:has(#lv2:checked) .lv3 { opacity: 0; }
+.page:has(#lv1:checked) .note, .page:has(#lv2:checked) .note { display: none; }

@@ -105,56 +105,68 @@
 
 </style>
 <rect class="d-bg" x="0.5" y="0.5" width="919" height="339" rx="16"/>
-<line class="d-grid" x1="268.9" y1="46" x2="268.9" y2="316"/>
-<text class="d-tick" x="268.9" y="36" text-anchor="middle">0</text>
-<line class="d-grid" x1="477.2" y1="46" x2="477.2" y2="316"/>
-<text class="d-tick" x="477.2" y="36" text-anchor="middle">5m</text>
-<line class="d-grid" x1="713.4" y1="46" x2="713.4" y2="316"/>
-<text class="d-tick" x="713.4" y="36" text-anchor="middle">20m</text>
-<g class="h-teal"><rect class="d-lane-bar" x="65.8" y="97" width="3" height="14" rx="1.5"/></g>
-<text class="d-lane" x="120" y="108" text-anchor="end">Claude</text>
-<line class="d-line" x1="144" y1="104" x2="880" y2="104"/>
+<line class="d-grid d-stretch lv2" style="--s2:0.8" x1="268.9" y1="46" x2="268.9" y2="316"/>
+<text class="d-tick lv2" x="268.9" y="36" text-anchor="middle">0</text>
+<line class="d-grid d-stretch lv2" style="--s2:0.8" x1="477.2" y1="46" x2="477.2" y2="316"/>
+<text class="d-tick lv2" x="477.2" y="36" text-anchor="middle">5m</text>
+<line class="d-grid d-stretch lv2" style="--s2:0.8" x1="713.4" y1="46" x2="713.4" y2="316"/>
+<text class="d-tick lv2" x="713.4" y="36" text-anchor="middle">20m</text>
+<text class="d-break-label lv2" x="574.5" y="36" text-anchor="middle">+10 min</text>
+<g class="d-lane-g" transform="translate(0 104)" style="--y1:44px;--y2:90px;--y3:104px">
+<g class="h-teal"><rect class="d-lane-bar" x="65.8" y="-7" width="3" height="14" rx="1.5"/></g>
+<text class="d-lane" x="120" y="4" text-anchor="end">Claude</text>
+<line class="d-line" x1="144" y1="0" x2="880" y2="0"/>
 <g class="h-teal">
-<rect class="d-span" x="185.6" y="94" width="83.3" height="20" rx="10"/>
-<text class="d-span-label" x="227.3" y="108" text-anchor="middle">turn</text>
+<rect class="d-span" x="185.6" y="-10" width="83.3" height="20" rx="10"/>
 </g>
-<g class="h-violet"><rect class="d-lane-bar" x="73" y="181" width="3" height="14" rx="1.5"/></g>
-<text class="d-lane" x="120" y="192" text-anchor="end">Timer</text>
-<line class="d-line" x1="268.9" y1="188" x2="713.4" y2="188"/>
-<g class="h-violet">
-<rect class="d-span" x="268.9" y="178" width="444.5" height="20" rx="10"/>
-<text class="d-span-label" x="419.7" y="192" text-anchor="middle">idle timer · 20 min</text>
-</g>
-<g class="h-green"><rect class="d-lane-bar" x="58.6" y="265" width="3" height="14" rx="1.5"/></g>
-<text class="d-lane" x="120" y="276" text-anchor="end">Compact</text>
-<line class="d-line" x1="144" y1="272" x2="880" y2="272"/>
-<g class="d-break">
-<rect class="d-break-gap" x="570.5" y="92" width="8" height="24"/>
-<path class="d-break-mark" d="M569 110 L574 98 M575 110 L580 98"/>
-<rect class="d-break-gap" x="570.5" y="176" width="8" height="24"/>
-<path class="d-break-mark" d="M569 194 L574 182 M575 194 L580 182"/>
-<rect class="d-break-gap" x="570.5" y="260" width="8" height="24"/>
-<path class="d-break-mark" d="M569 278 L574 266 M575 278 L580 266"/>
-<text class="d-break-label" x="574.5" y="36" text-anchor="middle">+10 min</text>
-</g>
+<g class="d-break"><rect class="d-break-gap" x="570.5" y="-12" width="8" height="24"/>
+<path class="d-break-mark" d="M569 6 L574 -6 M575 6 L580 -6"/></g>
 <g class="d-mark h-blue" style="--i:0">
-<circle class="d-dot" cx="185.6" cy="104" r="9"/><text class="d-glyph" x="185.6" y="107.6" text-anchor="middle">S</text>
+<circle class="d-dot" cx="185.6" cy="0" r="9"/><text class="d-glyph" x="185.6" y="3.6" text-anchor="middle">S</text>
 </g>
-<text class="d-label" x="185.6" y="135" text-anchor="middle">turn.start</text>
+<g class="d-lab lv2" transform="translate(0 31)" style="--y2:31px;--y3:31px">
+<text class="d-label" x="206.6" y="0" text-anchor="middle">message sent</text>
+<text class="d-sub lv3" x="206.6" y="16" text-anchor="middle">you ask, Claude starts</text>
+</g>
 <g class="d-mark h-teal" style="--i:1">
-<circle class="d-dot" cx="268.9" cy="104" r="9"/><text class="d-glyph" x="268.9" y="107.6" text-anchor="middle">E</text>
+<circle class="d-dot" cx="268.9" cy="0" r="9"/><text class="d-glyph" x="268.9" y="3.6" text-anchor="middle">E</text>
 </g>
-<text class="d-label" x="268.9" y="64" text-anchor="middle">turn.complete</text>
-<text class="d-sub" x="268.9" y="80" text-anchor="middle">arms the timer</text>
+<g class="d-lab lv2" transform="translate(0 -40)" style="--y2:-24px;--y3:-40px">
+<text class="d-label" x="268.9" y="0" text-anchor="middle">reply done</text>
+<text class="d-sub lv3" x="268.9" y="16" text-anchor="middle">the countdown starts</text>
+</g>
+</g>
+<g class="d-lane-g" transform="translate(0 188)" style="--y1:92px;--y2:160px;--y3:188px">
+<g class="h-violet"><rect class="d-lane-bar" x="44.2" y="-7" width="3" height="14" rx="1.5"/></g>
+<text class="d-lane" x="120" y="4" text-anchor="end">Countdown</text>
+<line class="d-line" x1="268.9" y1="0" x2="713.4" y2="0"/>
+<g class="h-violet">
+<rect class="d-span" x="268.9" y="-10" width="444.5" height="20" rx="10"/>
+<text class="d-span-label lv2" x="419.7" y="4" text-anchor="middle">idle countdown · 20 min</text>
+</g>
+<g class="d-break"><rect class="d-break-gap" x="570.5" y="-12" width="8" height="24"/>
+<path class="d-break-mark" d="M569 6 L574 -6 M575 6 L580 -6"/></g>
 <g class="d-mark h-violet" style="--i:2">
-<circle class="d-dot" cx="713.4" cy="188" r="9"/><text class="d-glyph" x="713.4" y="191.6" text-anchor="middle">F</text>
+<circle class="d-dot" cx="713.4" cy="0" r="9"/><text class="d-glyph" x="713.4" y="3.6" text-anchor="middle">F</text>
 </g>
-<text class="d-label" x="713.4" y="219" text-anchor="middle">timer fires</text>
-<text class="d-sub" x="713.4" y="235" text-anchor="middle">context ≥ 120k</text>
+<g class="d-lab lv2" transform="translate(0 31)" style="--y2:31px;--y3:31px">
+<text class="d-label" x="713.4" y="0" text-anchor="middle">time is up</text>
+<text class="d-sub lv3" x="713.4" y="16" text-anchor="middle">big enough: over 120k tokens</text>
+</g>
+</g>
+<g class="d-lane-g" transform="translate(0 272)" style="--y1:140px;--y2:230px;--y3:272px">
+<g class="h-green"><rect class="d-lane-bar" x="37" y="-7" width="3" height="14" rx="1.5"/></g>
+<text class="d-lane" x="120" y="4" text-anchor="end">Compaction</text>
+<line class="d-line" x1="144" y1="0" x2="880" y2="0"/>
+<g class="d-break"><rect class="d-break-gap" x="570.5" y="-12" width="8" height="24"/>
+<path class="d-break-mark" d="M569 6 L574 -6 M575 6 L580 -6"/></g>
 <g class="d-mark h-green" style="--i:3">
-<circle class="d-halo" cx="755.1" cy="272" r="16"/>
-<circle class="d-dot" cx="755.1" cy="272" r="9"/><text class="d-glyph" x="755.1" y="275.6" text-anchor="middle">C</text>
+<circle class="d-halo lv2" cx="755.1" cy="0" r="16"/>
+<circle class="d-dot" cx="755.1" cy="0" r="9"/><text class="d-glyph" x="755.1" y="3.6" text-anchor="middle">C</text>
 </g>
-<text class="d-label" x="755.1" y="303" text-anchor="middle">compact</text>
-<text class="d-sub" x="755.1" y="319" text-anchor="middle">fresh, small context</text>
+<g class="d-lab lv2" transform="translate(0 31)" style="--y2:31px;--y3:31px">
+<text class="d-label" x="755.1" y="0" text-anchor="middle">compacted</text>
+<text class="d-sub lv3" x="755.1" y="16" text-anchor="middle">now a short summary</text>
+</g>
+</g>
 </svg>

@@ -1,6 +1,6 @@
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
-import { parse, lane, svg } from './marble.mjs'
+import { parse, lane, svg, geometry, legendRow, key, html } from './marble.mjs'
 
 test('events, spans closed by an event, cancels and run-on spans', () => {
   const { items, segs } = lane('-a=b--[==x  [==>')
@@ -50,4 +50,51 @@ legend
   assert.match(svg(doc), /d-break-mark/)
   assert.throws(() => parse('a  -≈-\nb  -x-'), /time break at column 1 is not aligned: lane "b"/)
   assert.throws(() => parse('break: one\nbreak: two\na  -≈-'), /2 break: labels but only 1/)
+})
+
+const DOC = `title: T
+term: Turn — one round of the conversation
+time        0    5m
+claude   -S~E----
+timer       [====F
+
+legend
+S  sent — you ask  blue
+E  done — the countdown starts  teal
+=  countdown  violet
+F  time is up  violet`
+
+test('legend and key show each marble with its letter', () => {
+  const doc = parse(DOC)
+  for (const part of [legendRow(doc), key(doc)]) {
+    for (const letter of ['S', 'E', 'F']) assert.match(part, new RegExp(`class="d-glyph"[^>]*>${letter}<`))
+  }
+  assert.match(key(doc), /<b>done<\/b> — the countdown starts/)
+})
+
+test('term: lines are explained in the key', () => {
+  const doc = parse(DOC)
+  assert.deepEqual(doc.terms, [{ word: 'Turn', meaning: 'one round of the conversation' }])
+  assert.match(key(doc), /<b>Turn<\/b> — one round of the conversation/)
+})
+
+test('detail levels: each level is no taller than the next, and lanes carry their place at every level', () => {
+  const doc = parse(DOC)
+  const [, l1, l2, l3] = geometry(doc).levels
+  assert.ok(l1.H < l2.H && l2.H < l3.H, `${l1.H} < ${l2.H} < ${l3.H}`)
+  const out = svg(doc)
+  // the SVG is drawn at full detail: a lane's transform is its level-3 place
+  assert.ok(out.includes(`<g class="d-lane-g" transform="translate(0 ${l3.ys[0]})" style="--y1:${l1.ys[0]}px;--y2:${l2.ys[0]}px;--y3:${l3.ys[0]}px">`))
+  assert.match(out, /class="d-lab lv2"/)   // names appear from level 2
+  assert.match(out, /class="d-sub lv3"/)   // detail lines only at level 3
+  assert.match(out, /class="d-tick lv2"/)  // so does the time axis
+  assert.doesNotMatch(out, /class="d-dot[^"]*lv/) // marbles show at every level
+})
+
+test('the page has a three-step detail control, starting at the simplest', () => {
+  const page = html(parse(DOC), DOC, '')
+  assert.equal(page.match(/<input type="radio" name="lv"/g).length, 3)
+  assert.match(page, /id="lv1" checked/)
+  assert.match(page, /class="d-stage" style="--h1:\d+;--h2:\d+;--h3:\d+"/)
+  assert.match(page, /How to read this diagram/)
 })
