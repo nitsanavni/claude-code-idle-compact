@@ -146,11 +146,12 @@ export class Store {
 type FilesImpl = { exists(p: string): Promise<boolean>; read(p: string): Promise<string> }
 
 export class Files {
-  /** `files` maps a path to its text, or to `{ error }` for a read that fails. */
-  static createNull(files: Record<string, Response<string>> = {}): Files {
+  /** `files` maps a path to its text, `{ error }` for a read that fails, or a list of those read in turn. */
+  static createNull(files: Record<string, Response<string> | Response<string>[]> = {}): Files {
+    const reads = new Map(Object.entries(files).map(([p, r]) => [p, new ConfigurableResponses<string>(`Files.read(${p})`, r)]))
     return new Files({
-      exists: async p => p in files,
-      read: async p => new ConfigurableResponses(`Files.read(${p})`, files[p] ?? { error: `Nulled Files: no such file ${p}` }).next(),
+      exists: async p => reads.has(p),
+      read: async p => (reads.get(p) ?? new ConfigurableResponses<string>(p, { error: `Nulled Files: no such file ${p}` })).next(),
     })
   }
 

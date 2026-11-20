@@ -28,3 +28,17 @@ test('after an idle wait the plugin compacts a large session', async ($, on) => 
   const { result } = (await $.tool.run({ tool: 'mcp__idle-compact__status' } as any)) as any
   expect(JSON.parse(result).status.lastOutcome).toBe('compacted via session.compact (idle) at 200000 tokens')
 })
+
+test('config layers: userConfig options, then the project file', { options: { minTokens: 1, dryRun: true } }, async ($, on) => {
+  mock.store(on)
+  // $.fs resolves a relative path against the working directory before the hooks see it
+  on('fs.exists', (_, e) => ({ value: e.path.endsWith('/.claude/idle-compact.json') }) as any)
+  on('fs.read', () => ({ value: '{"minTokens": 2, "idleSeconds": 30}' }) as any)
+  on('session.usage', () => ({ value: { context: { tokens: 5 } } }) as any)
+
+  const { result } = (await $.tool.run({ tool: 'mcp__idle-compact__status' } as any)) as any
+  const { config, layers, configError } = JSON.parse(result)
+  expect(configError).toBe(undefined)
+  expect(layers.userConfig).toEqual({ minTokens: 1, dryRun: true })
+  expect(config).toEqual(expect.objectContaining({ minTokens: 2, idleSeconds: 30, dryRun: true }))
+})

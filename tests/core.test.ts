@@ -86,7 +86,7 @@ describe('idle timer', () => {
   })
 
   test('disabled: does not arm', async () => {
-    const { app, clock, host } = setup({ tokens: BIG, store: { config: { enabled: false } } })
+    const { app, clock, host } = setup({ tokens: BIG, store: { overrides: { enabled: false } } })
     await app.onTurnComplete(MAIN)
     expect(app.status.armed).toBe(false)
     await clock.advance(IDLE_MS)
@@ -96,7 +96,7 @@ describe('idle timer', () => {
 
 describe('compaction', () => {
   test('dryRun only reports', async () => {
-    const { app, clock, host, ui } = setup({ tokens: BIG, store: { config: { dryRun: true } } })
+    const { app, clock, host, ui } = setup({ tokens: BIG, store: { overrides: { dryRun: true } } })
     await app.onTurnComplete(MAIN)
     await clock.advance(IDLE_MS)
     expect(host.data).toEqual([])
@@ -109,7 +109,7 @@ describe('compaction', () => {
       tokens: BIG,
       sessionCompact: { error: 'not in headless' },
       commandRun: { error: 'no such command' },
-      store: { config: { instructions: 'keep the plan' } },
+      store: { overrides: { instructions: 'keep the plan' } },
     })
     await app.onTurnComplete(MAIN)
     await clock.advance(IDLE_MS)
@@ -139,13 +139,13 @@ describe('compaction', () => {
   })
 
   test('announce=prompt posts a message; afterPrompt wakes Claude instead', async () => {
-    const a = setup({ tokens: BIG, store: { config: { announce: 'prompt' } } })
+    const a = setup({ tokens: BIG, store: { overrides: { announce: 'prompt' } } })
     await a.app.onTurnComplete(MAIN)
     await a.clock.advance(IDLE_MS + 5000)
     expect(a.host.data.at(-1)).toEqual({ call: 'prompt.submit', text: '🗜️ idle-compact: compacted 125k tokens (idle). Reply only "ok".' })
     expect(a.ui.data.map(x => x.kind)).toEqual(['log'])
 
-    const b = setup({ tokens: BIG, store: { config: { announce: 'prompt', afterPrompt: 'check status' } } })
+    const b = setup({ tokens: BIG, store: { overrides: { announce: 'prompt', afterPrompt: 'check status' } } })
     await b.app.onTurnComplete(MAIN)
     await b.clock.advance(IDLE_MS + 5000)
     expect(b.host.data.slice(1)).toEqual([{ call: 'prompt.submit', text: '🗜️ idle-compact: compacted 125k tokens (idle). check status' }])
@@ -154,7 +154,7 @@ describe('compaction', () => {
 
 describe('tools', () => {
   test('compact_after_turn compacts 1s after the turn ends, ignoring minTokens and dryRun', async () => {
-    const { app, clock, host } = setup({ tokens: 10, store: { config: { dryRun: true } } })
+    const { app, clock, host } = setup({ tokens: 10, store: { overrides: { dryRun: true } } })
     expect(app.queueCompact()).toBe('Compaction queued for the end of this turn.')
     await app.onTurnComplete(MAIN)
     expect(app.status.armed).toBe(false)
@@ -172,7 +172,7 @@ describe('tools', () => {
     await app.onTurnComplete(MAIN)
     const out = JSON.parse(await app.setConfig({ idleSeconds: 5, minTokens: 0 }))
     expect(out.config).toEqual({ ...DEFAULTS, idleSeconds: 5, minTokens: 0 })
-    expect(store.data).toEqual([{ key: 'config', value: { ...DEFAULTS, idleSeconds: 5, minTokens: 0 } }])
+    expect(store.data).toEqual([{ key: 'overrides', value: { idleSeconds: 5, minTokens: 0 } }])
     await clock.advance(5000)
     expect(host.data).toEqual([{ call: 'session.compact' }])
   })
@@ -184,7 +184,7 @@ describe('tools', () => {
   })
 
   test('config reset drops live changes, then applies the given fields', async () => {
-    const { app } = setup({ store: { config: { minTokens: 1, dryRun: true } } })
+    const { app } = setup({ store: { overrides: { minTokens: 1, dryRun: true } } })
     const out = JSON.parse(await app.setConfig({ reset: true, announce: 'log' }))
     expect(out.config).toEqual({ ...DEFAULTS, announce: 'log' })
     expect((await status(app)).config).toEqual({ ...DEFAULTS, announce: 'log' })
@@ -192,6 +192,6 @@ describe('tools', () => {
 
   test('status reports config, status and the context size now', async () => {
     const { app } = setup({ tokens: 4242 })
-    expect(await status(app)).toEqual({ config: DEFAULTS, status: { armed: false }, contextTokensNow: 4242 })
+    expect(await status(app)).toEqual({ config: DEFAULTS, layers: { userConfig: {}, projectFile: {}, live: {} }, status: { armed: false }, contextTokensNow: 4242 })
   })
 })

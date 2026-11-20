@@ -1,1 +1,13 @@
-{ "name": "idle-compact", "version": "0.5.1", "description": "Compacts the session after an idle period, before the prompt cache expires; tunable live" }
+{
+  "name": "idle-compact",
+  "version": "0.5.1",
+  "description": "Compacts the session after an idle period, before the prompt cache expires; tunable live",
+  "userConfig": {
+    "enabled": { "type": "boolean", "title": "Enabled", "description": "Master switch" },
+    "idleSeconds": { "type": "number", "title": "Idle seconds", "description": "How long to wait after a turn ends before compacting (default 1200)" },
+    "minTokens": { "type": "number", "title": "Min tokens", "description": "Skip compaction when the context is smaller than this (default 120000)" },
+    "dryRun": { "type": "boolean", "title": "Dry run", "description": "Only report what would happen" },
+    "instructions": { "type": "string", "title": "Instructions", "description": "Optional focus for the compaction summary" },
+    "announce": { "type": "string", "title": "Announce", "description": "Comma list of log, toast, notify, prompt (default log,toast,notify)" }
+  }
+}

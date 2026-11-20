@@ -3,7 +3,7 @@
 // idleSeconds: compact when the context is at least minTokens.
 // Config is re-read at every arm and fire, so changes apply immediately.
 
-import { applyChange, channels, merge, type Config } from './config'
+import { applyChange, channels, fromLegacy, parseProjectFile, pick, resolve, PROJECT_FILE, type Config, type Layers } from './config'
 import { Clock, Files, Host, Store, Ui, type Cancel, type HostNullOptions, type Response } from './infra'
 
 export type Status = Record<string, unknown> & { armed: boolean }
@@ -12,14 +12,15 @@ export type Deps = { clock: Clock; store: Store; files: Files; ui: Ui; host: Hos
 
 export type NullOptions = HostNullOptions & {
   now?: number
+  userConfig?: Record<string, unknown>
   store?: Record<string, unknown>
-  files?: Record<string, Response<string>>
+  files?: Record<string, Response<string> | Response<string>[]>
 }
 
 export class IdleCompact {
   /** Production: hand it the engine's `$` with `use($)` at each hook, before calling it. */
-  static create(): IdleCompact {
-    return new IdleCompact(IdleCompact.createNull().deps)
+  static create(userConfig: Record<string, unknown> = {}): IdleCompact {
+    return new IdleCompact(IdleCompact.createNull().deps, userConfig)
   }
 
   static createNull(o: NullOptions = {}): IdleCompact {
@@ -29,14 +30,19 @@ export class IdleCompact {
       files: Files.createNull(o.files),
       ui: Ui.createNull(),
       host: Host.createNull(o),
-    })
+    }, o.userConfig)
   }
 
   readonly status: Status = { armed: false }
   private timer: Cancel | null = null
   private queued = false
 
-  constructor(public deps: Deps) {}
+  private readonly userConfig: Partial<Config>
+
+  constructor(public deps: Deps, userConfig: Record<string, unknown> = {}) {
+    // The engine hands an unset string option as "": treat it as unset.
+    this.userConfig = pick(Object.fromEntries(Object.entries(userConfig).filter(([, v]) => v !== '')))
+  }
 
   /** Point the infrastructure at this `$`: the latest hook's engine interface. */
   use(deps: Deps): this {
@@ -48,9 +54,34 @@ export class IdleCompact {
     return new Date(this.deps.clock.now()).toISOString()
   }
 
+  // ---- config: defaults < userConfig < project file < live ----
+
+  async layers(): Promise<{ layers: Layers; error?: string }> {
+    let file: { layer: Partial<Config>; error?: string }
+    try {
+      file = parseProjectFile(await this.deps.files.readText(PROJECT_FILE))
+    } catch (err) {
+      file = { layer: {}, error: `${PROJECT_FILE}: ${String(err).slice(0, 200)}` }
+    }
+    const layers = { userConfig: this.userConfig, projectFile: file.layer, live: await this.live() }
+    return file.error ? { layers, error: file.error } : { layers }
+  }
+
   async config(): Promise<Config> {
-    const saved = (await this.deps.store.get('config')) ?? {}
-    return merge(saved as Partial<Config>)
+    return resolve((await this.layers()).layers)
+  }
+
+  /** The live layer, moving a 0.5.x whole-config entry over once. */
+  private async live(): Promise<Partial<Config>> {
+    const { store } = this.deps
+    const saved = await store.get('overrides')
+    if (saved !== undefined) return pick(saved)
+    const legacy = await store.get('config')
+    if (legacy === undefined) return {}
+    const live = fromLegacy(legacy)
+    await store.set('overrides', live)
+    await store.delete('config')
+    return live
   }
 
   // ---- events ----
@@ -73,16 +104,17 @@ export class IdleCompact {
   // ---- tools ----
 
   async setConfig(input: Record<string, unknown>): Promise<string> {
-    const live = (await this.deps.store.get('config')) as Partial<Config> | undefined
-    const cfg = merge(applyChange(live ?? {}, input))
-    await this.deps.store.set('config', cfg)
+    await this.deps.store.set('overrides', applyChange(await this.live(), input))
+    const cfg = await this.config()
     if (this.status.lastTurnEndAt) await this.arm()
     return JSON.stringify({ config: cfg, status: this.status }, null, 2)
   }
 
   async report(): Promise<string> {
     const tokens = await this.deps.host.contextTokens()
-    return JSON.stringify({ config: await this.config(), status: this.status, contextTokensNow: tokens }, null, 2)
+    const { layers, error } = await this.layers()
+    const configError = error ? { configError: error } : {}
+    return JSON.stringify({ config: resolve(layers), layers, ...configError, status: this.status, contextTokensNow: tokens }, null, 2)
   }
 
   queueCompact(): string {
