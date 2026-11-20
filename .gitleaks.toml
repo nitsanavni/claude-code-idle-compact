@@ -1,0 +1,17 @@
+# gitleaks config: default rules plus a generic high-entropy string rule.
+title = "idle-compact gitleaks config"
+
+[extend]
+useDefault = true
+
+[[rules]]
+id = "generic-high-entropy-string"
+description = "High-entropy token or key in a quoted string or assignment"
+regex = '''(?:["'`]|[=:]\s*)([A-Za-z0-9+/_\-]{24,}={0,2})(?:["'`]|\s|$)'''
+secretGroup = 1
+entropy = 4.3
+keywords = []
+
+[[allowlists]]
+description = "Generated Claude Code plugin type definitions"
+paths = ['''^\.claude-plugin/types/''']
