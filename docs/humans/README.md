@@ -2,6 +2,12 @@
 
 idle-compact is a Claude Code mod. When you step away from a conversation, it compacts it for you, so the next message you send starts from a small, fresh context instead of re-reading a large one.
 
+## The big picture
+
+![idle-compact at a glance: the parts, and how they work together](diagrams/overview.svg)
+
+[Open the interactive page](https://raw.githack.com/nitsanavni/claude-code-idle-compact/main/docs/humans/diagrams/overview.html), which explains every word in the picture.
+
 ## Why
 
 Claude Code can compact a conversation that has sat idle, but only when it runs on your computer. In cloud sessions that feature is switched off, so an idle conversation there is never compacted. idle-compact was built to fill that gap: it brings idle compaction to cloud sessions, and it works the same way on your computer.
@@ -18,6 +24,6 @@ Why compact an idle conversation at all? A long conversation is expensive to com
 
 - [Configuration](configuration.md): the settings, and the four places they come from.
 - [The timer](timer.md): what happens between a turn ending and a compaction.
-- [Architecture](architecture.md): how the code is split, and why that makes it easy to test.
+- [Architecture](architecture.md): the internals, how the code is split, and why that makes it easy to test.
 
 Every diagram has a page with a "How to read this diagram" key. The pages are made from small text sources by the scripts in [gen/](gen/README.md).

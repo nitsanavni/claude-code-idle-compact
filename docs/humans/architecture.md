@@ -1,5 +1,7 @@
 # Architecture
 
+This page is about the code inside the mod. For the big picture (you, Claude Code, the conversation and the mod), see the [overview](README.md#the-big-picture).
+
 The mod is about 700 lines of TypeScript in `hooks/`, split so that every decision can be tested without Claude Code running.
 
 ![A small, testable core between two thin layers](diagrams/architecture.svg)

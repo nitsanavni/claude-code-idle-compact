@@ -1,0 +1,25 @@
+# The big picture: who the parts are and how they talk. Steps are numbered in the order they happen.
+title:   idle-compact at a glance: the parts, and how they work together
+caption: You talk with Claude inside Claude Code, and the conversation keeps growing. idle-compact is a small add-on that notices when you have stepped away, and asks Claude Code to shrink the conversation to a summary before you come back.
+note:    Nothing here leaves Claude Code: idle-compact only listens for two events and asks for one thing, a compaction that Claude Code already knows how to do.
+
+host   Claude Code — the app, running on your computer or in a cloud session
+part   you      You — the person typing                                          blue
+part   talk     The conversation — one session: everything said so far            teal
+meter  talk     its context window fills up as you go
+group  Plugin system — lets add-ons ("mods") react to what happens
+part   mod      idle-compact — a mod: waits for quiet, then checks the size      violet
+part   compact  Compaction — the history is swapped for a short summary   green
+
+step  you <-> talk      You and Claude take turns. Every message and reply is added to the conversation, so it keeps growing.
+step  talk -> mod       Claude Code tells its mods whenever Claude finishes a reply, and whenever you send a new message.
+step  mod -> mod        idle-compact starts a countdown when a reply ends (20 minutes by default). A new message cancels it.
+step  mod -> compact    If the countdown runs out and the conversation is big enough, idle-compact asks Claude Code to compact.
+step  compact -> talk   Claude Code replaces the conversation with the summary, so your next message starts small and fast.
+
+term  Claude Code — Anthropic's coding assistant. It runs on your own computer (a local session) or on a remote machine you reach from the web or your phone (a cloud session).
+term  Session — one conversation with Claude Code, from start to finish.
+term  Context window — everything Claude reads to answer you: the whole conversation so far. It is measured in tokens (a token is roughly three quarters of a word) and it has a size limit.
+term  Mod, plugin — an add-on that Claude Code loads. The plugin system tells it about events, such as a reply ending, and lets it ask Claude Code to do things.
+term  Compaction — Claude Code's own feature for shrinking a conversation: it writes a summary and continues from that. idle-compact does not do the summarizing; it decides when to ask.
+term  Idle — nobody has sent a message for a while. That is when a big conversation is worth compacting: by the time you return, re-reading all of it would be slow and costly.

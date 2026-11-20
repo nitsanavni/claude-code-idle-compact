@@ -2,6 +2,10 @@
 
 A Claude Code mod that compacts the conversation after you've been idle for a while, before the prompt cache expires. When you come back, the next turn starts from a small, fresh context instead of re-reading a large, uncached one.
 
+![idle-compact at a glance: the parts, and how they work together](docs/humans/diagrams/overview.svg)
+
+[Open this diagram as a page](https://raw.githack.com/nitsanavni/claude-code-idle-compact/main/docs/humans/diagrams/overview.html), with every term explained.
+
 ## Install
 
 ```

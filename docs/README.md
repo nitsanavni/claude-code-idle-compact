@@ -2,10 +2,10 @@
 
 ## For people
 
-- [What idle-compact is, and why](humans/README.md)
+- [What idle-compact is, and why](humans/README.md): start here, with the [overview diagram](https://raw.githack.com/nitsanavni/claude-code-idle-compact/main/docs/humans/diagrams/overview.html)
 - [Configuration](humans/configuration.md)
 - [The timer](humans/timer.md)
-- [Architecture](humans/architecture.md)
+- [Architecture](humans/architecture.md): the code's internals
 - [Timelines](diagrams/README.md): the timer, minute by minute
 
 ## For agents building the repo

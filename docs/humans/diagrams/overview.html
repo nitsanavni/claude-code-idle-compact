@@ -1,0 +1,300 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>idle-compact at a glance: the parts, and how they work together</title>
+<style>/* Diagram style guide: shared by every human-facing diagram in docs/.
+   Clear and vivid on a cool white page: Inter for words, JetBrains Mono for source,
+   six saturated series hues with a fixed role each. Flat marks: no gradients, no glows.
+   Tokens first; components below. Generators inline this file, so keep it small. */
+
+:root {
+  /* surfaces */
+  --bg:        #f4f6fb;
+  --surface:   #ffffff;
+  --rule:      #dfe4ee;
+  --grid:      #eceff6;
+  /* text */
+  --ink:       #151a2d;
+  --ink-2:     #4a5268;
+  --ink-3:     #687087;
+  /* series hues, each with a tint. Fixed roles across all diagrams:
+     blue = user, violet = timer, green = compact fired, coral = cancel, amber = warning/threshold, teal = system */
+  --blue:   #2563eb;  --blue-tint:   #e8effe;
+  --green:  #0b8457;  --green-tint:  #e0f5ec;
+  --amber:  #b45309;  --amber-tint:  #fdf0d9;
+  --coral:  #d92d4f;  --coral-tint:  #fde7ec;
+  --violet: #7c3aed;  --violet-tint: #efe9fe;
+  --teal:   #0e7c9a;  --teal-tint:   #def3f8;
+  --on-hue: #ffffff;  /* glyphs inside a marble */
+
+  --sans:  Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+  --serif: var(--sans);   /* kept for older generators: everything is Inter now */
+  --mono:  "JetBrains Mono", ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+
+  --radius: 16px;
+  --space:  8px;            /* everything is a multiple of this */
+  --measure: 62ch;          /* comfortable line length for prose */
+  --shadow: 0 1px 2px rgb(20 26 45 / .04), 0 8px 24px -12px rgb(20 26 45 / .12);
+  color-scheme: light;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #121622; --surface: #1a1f2e; --rule: #2c3347; --grid: #232a3b;
+    --ink: #eef1f8; --ink-2: #aab3c7; --ink-3: #8791a8;
+    --blue: #6ea8ff; --green: #3ddc97; --amber: #ffb84d; --coral: #ff7a90; --violet: #b79bff; --teal: #3fd0e6;
+    --blue-tint:   color-mix(in srgb, var(--blue) 16%, var(--surface));
+    --green-tint:  color-mix(in srgb, var(--green) 16%, var(--surface));
+    --amber-tint:  color-mix(in srgb, var(--amber) 16%, var(--surface));
+    --coral-tint:  color-mix(in srgb, var(--coral) 16%, var(--surface));
+    --violet-tint: color-mix(in srgb, var(--violet) 16%, var(--surface));
+    --teal-tint:   color-mix(in srgb, var(--teal) 16%, var(--surface));
+    --on-hue: var(--bg);
+    --shadow: none;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #121622; --surface: #1a1f2e; --rule: #2c3347; --grid: #232a3b;
+  --ink: #eef1f8; --ink-2: #aab3c7; --ink-3: #8791a8;
+  --blue: #6ea8ff; --green: #3ddc97; --amber: #ffb84d; --coral: #ff7a90; --violet: #b79bff; --teal: #3fd0e6;
+  --blue-tint:   color-mix(in srgb, var(--blue) 16%, var(--surface));
+  --green-tint:  color-mix(in srgb, var(--green) 16%, var(--surface));
+  --amber-tint:  color-mix(in srgb, var(--amber) 16%, var(--surface));
+  --coral-tint:  color-mix(in srgb, var(--coral) 16%, var(--surface));
+  --violet-tint: color-mix(in srgb, var(--violet) 16%, var(--surface));
+  --teal-tint:   color-mix(in srgb, var(--teal) 16%, var(--surface));
+  --on-hue: var(--bg);
+  --shadow: none;
+  color-scheme: dark;
+}
+
+/* page */
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0; background: var(--bg); color: var(--ink);
+  font: 400 16px/1.6 var(--sans);
+  -webkit-font-smoothing: antialiased;
+}
+.page { max-width: 960px; margin: 0 auto; padding: calc(var(--space) * 9) calc(var(--space) * 2) calc(var(--space) * 8); }
+
+/* type */
+.eyebrow { font: 600 12px/1 var(--sans); letter-spacing: .08em; text-transform: uppercase; color: var(--h, var(--ink-3)); margin: 0 0 calc(var(--space) * 2); }
+h1 { font: 650 clamp(28px, 4vw, 36px)/1.15 var(--sans); letter-spacing: -.02em; margin: 0 0 calc(var(--space) * 2); text-wrap: balance; }
+.lede { font: 400 18px/1.6 var(--sans); color: var(--ink-2); max-width: var(--measure); margin: 0 0 calc(var(--space) * 5); text-wrap: pretty; }
+.note { font-size: 14px; color: var(--ink-2); max-width: var(--measure); margin: calc(var(--space) * 4) 0 0; }
+
+/* the figure card */
+.figure {
+  margin: 0;
+  background: var(--surface); border: 1px solid var(--rule); border-radius: var(--radius);
+  padding: calc(var(--space) * 4);
+  box-shadow: var(--shadow);
+  overflow-x: auto;
+}
+.figure svg { display: block; width: 100%; height: auto; min-width: 560px; }
+
+/* always-visible mini legend under the figure */
+.legend { display: flex; flex-wrap: wrap; gap: calc(var(--space) * 1.25) calc(var(--space) * 2.5); list-style: none; padding: 0; margin: calc(var(--space) * 2) 0 0; }
+.legend li { display: flex; align-items: center; gap: var(--space); font-size: 13px; line-height: 18px; color: var(--ink-2); }
+.legend svg { flex: none; height: 18px; width: auto; }
+.legend + .note { margin-top: calc(var(--space) * 4); }
+
+/* links: quiet until hovered; the footer lists this diagram's files and the other diagrams */
+a { color: inherit; text-decoration: underline; text-decoration-color: color-mix(in srgb, currentColor 35%, transparent); text-underline-offset: 3px; }
+a:hover { color: var(--blue); text-decoration-color: currentColor; }
+.eyebrow a { text-decoration: none; }
+nav.more { margin-top: calc(var(--space) * 5); padding-top: calc(var(--space) * 3); border-top: 1px solid var(--rule); font-size: 14px; color: var(--ink-2); }
+nav.more p { margin: 0 0 var(--space); display: grid; grid-template-columns: 136px 1fr; align-items: baseline; }
+nav.more i { font: 600 12px/1 var(--sans); letter-spacing: .08em; text-transform: uppercase; color: var(--ink-3); }
+nav.more b { font-weight: 600; color: var(--ink); }
+
+/* agent-readable source, tucked away */
+details.source { margin-top: var(--space); }
+details.source summary::-webkit-details-marker { display: none; }
+details.source summary::before { content: "+ "; }
+details.source[open] summary::before { content: "– "; }
+details.source pre {
+  margin: calc(var(--space) * 2) 0 0; padding: calc(var(--space) * 2.5); overflow-x: auto;
+  background: var(--surface); border: 1px solid var(--rule); border-radius: 10px;
+  font: 400 13px/1.55 var(--mono); color: var(--ink-2); font-variant-ligatures: none;
+}
+
+/* svg vocabulary (diagram generators emit these classes) */
+.d-grid   { stroke: var(--grid); stroke-width: 1; }
+.d-tick   { font: 500 11px var(--sans); fill: var(--ink-3); font-variant-numeric: tabular-nums; }
+.d-lane   { font: 600 12px var(--sans); fill: var(--ink-2); }
+.d-lane-bar { fill: var(--h); }
+.d-line   { stroke: var(--rule); stroke-width: 2; stroke-linecap: round; }
+.d-end    { stroke: var(--ink-2); stroke-width: 2; stroke-linecap: round; }
+.d-label  { font: 600 13px var(--sans); fill: var(--ink); }
+.d-sub    { font: 400 12px var(--sans); fill: var(--ink-2); }
+.d-span-label { font: 600 12px var(--sans); fill: var(--ink); }
+
+/* hue helpers: .h-blue etc. set --h / --t for marks. The older names map onto the new roles. */
+.h-ink    { --h: var(--ink-2);  --t: var(--grid); }
+.h-mute   { --h: var(--ink-3);  --t: var(--grid); }
+.h-blue,   .h-sky  { --h: var(--blue);   --t: var(--blue-tint); }
+.h-green,  .h-sage { --h: var(--green);  --t: var(--green-tint); }
+.h-amber,  .h-sand { --h: var(--amber);  --t: var(--amber-tint); }
+.h-coral,  .h-rose { --h: var(--coral);  --t: var(--coral-tint); }
+.h-violet, .h-plum { --h: var(--violet); --t: var(--violet-tint); }
+.h-teal   { --h: var(--teal);   --t: var(--teal-tint); }
+.d-dot      { fill: var(--h); stroke: var(--surface); stroke-width: 3; }
+.d-dot-core { fill: var(--h); }
+.d-glyph    { font: 700 10px var(--sans); fill: var(--on-hue); }
+.d-halo     { fill: var(--t); }
+.d-span     { fill: var(--t); stroke: var(--h); stroke-width: 1.5; }
+.d-ghost    { fill: none; stroke: var(--ink-3); stroke-width: 1.5; stroke-dasharray: 4 4; }
+.d-cancel   { stroke: var(--coral); stroke-width: 2.5; stroke-linecap: round; }
+.d-arrow    { fill: var(--h); }
+.d-bg       { fill: var(--surface); stroke: var(--rule); }
+.d-break-gap   { fill: var(--surface); }
+.d-break-mark  { fill: none; stroke: var(--ink-3); stroke-width: 1.5; stroke-linecap: round; }
+.d-break-label { font: 500 11px var(--sans); fill: var(--ink-3); }
+@media (prefers-reduced-motion: no-preference) {
+  .d-mark { animation: d-pop 150ms ease-out both; animation-delay: calc(var(--i, 0) * 70ms); transform-box: fill-box; transform-origin: center; }
+  @keyframes d-pop { from { opacity: 0; transform: scale(.6); } }
+}
+
+/* "How to read this diagram": a quiet, expandable key */
+details.key { margin-top: calc(var(--space) * 3); max-width: var(--measure); }
+details.key summary, details.source summary { cursor: pointer; font: 600 12px/1 var(--sans); letter-spacing: .08em; text-transform: uppercase; color: var(--ink-3); list-style: none; padding: var(--space) 0; }
+details.key summary::-webkit-details-marker { display: none; }
+details.key summary::before { content: "+ "; }
+details.key[open] summary::before { content: "– "; }
+details.key p { font-size: 15px; color: var(--ink-2); margin: calc(var(--space) * 1.5) 0; }
+details.key ul { list-style: none; padding: 0; margin: var(--space) 0 calc(var(--space) * 2); }
+details.key li { display: flex; align-items: baseline; gap: calc(var(--space) * 1.5); font-size: 15px; color: var(--ink-2); padding: calc(var(--space) * .5) 0; }
+details.key li svg { flex: none; width: 34px; height: 18px; align-self: center; }
+details.key li b { font-weight: 600; color: var(--ink); }
+details.key ul.terms li { display: block; }
+
+.g-box    { fill: var(--t); stroke: var(--h); stroke-width: 1.5; }
+.g-box.dashed, .g-group { stroke-dasharray: 5 5; }
+.g-group  { fill: none; stroke: var(--ink-3); stroke-width: 1.25; stroke-opacity: .6; }
+.g-title  { font: 600 13px var(--sans); fill: var(--ink); }
+.g-sub    { font: 400 12px var(--sans); fill: var(--ink-2); }
+.g-mono   { font: 500 12px var(--mono); fill: var(--ink); }
+.g-cap    { font: 600 11px var(--sans); fill: var(--ink-3); letter-spacing: .12em; text-transform: uppercase; }
+.g-edge   { fill: none; stroke: var(--ink-3); stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; }
+.g-edge.dashed { stroke-dasharray: 4 5; }
+.g-head   { fill: none; stroke: var(--ink-3); stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; }
+.g-elabel { font: 500 12px var(--sans); fill: var(--ink-2); paint-order: stroke; stroke: var(--surface); stroke-width: 5px; stroke-linejoin: round; }
+.g-axis   { stroke: var(--ink-3); stroke-width: 1; }
+.g-zone   { fill: var(--t); }
+.g-zone.dashed { fill: url(#hatch); }
+.g-edge-h { fill: none; stroke: var(--h); stroke-width: 2; stroke-linecap: round; }
+.g-hatch  { stroke: var(--h); stroke-width: 1.25; stroke-opacity: .35; }
+.g-unset  { fill: var(--ink-3); opacity: .5; }
+.g-rule   { stroke: var(--rule); stroke-width: 1; }
+.g-start  { fill: var(--ink-3); }
+</style>
+</head>
+<body>
+<main class="page">
+<p class="eyebrow"><a href="https://github.com/nitsanavni/claude-code-idle-compact#readme">idle-compact</a> · overview</p>
+<h1>idle-compact at a glance: the parts, and how they work together</h1>
+<p class="lede">You talk with Claude inside Claude Code, and the conversation keeps growing. idle-compact is a small add-on that notices when you have stepped away, and asks Claude Code to shrink the conversation to a summary before you come back.</p>
+<figure class="figure"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 920 678" width="920" height="678" role="img" font-family="Inter, system-ui, sans-serif"><title>idle-compact at a glance: the parts, and how they work together</title>
+<rect x="208" y="28" width="684" height="432" rx="20" style="fill: var(--bg); stroke: var(--rule); stroke-width: 1.5"/>
+<text class="g-title" x="236" y="64" style="font-size: 15px">Claude Code</text>
+<text class="g-sub" x="236" y="83">the app, running on your computer or in a cloud session</text>
+<rect class="g-group" x="584" y="92" width="284" height="204" rx="16"/>
+<text class="g-title" x="604" y="118">Plugin system</text>
+<text class="g-sub" x="604" y="136">lets add-ons (&quot;mods&quot;) react</text>
+<text class="g-sub" x="604" y="152">to what happens</text>
+<path class="g-edge" d="M166 226 L230 226"/>
+<path class="g-head" d="M223 221 L230 226 L223 231"/>
+<path class="g-head" d="M173 231 L166 226 L173 221"/>
+<path class="g-edge" d="M514 226 L598 226"/>
+<path class="g-head" d="M591 221 L598 226 L591 231"/>
+<path class="g-edge" d="M780 171 C780 132 832 132 832 169"/>
+<path class="g-head" d="M837 164 L832 171 L827 164"/>
+<path class="g-edge" d="M680 282 L680 350"/>
+<path class="g-head" d="M685 343 L680 350 L675 343"/>
+<path class="g-edge" d="M440 350 L440 300"/>
+<path class="g-head" d="M435 307 L440 300 L445 307"/>
+<g class="h-blue"><rect class="g-box" x="28" y="188" width="132" height="76" rx="14"/>
+<circle cx="94" cy="154" r="11" style="fill: var(--h)"/><path d="M75 184 a19 17 0 0 1 38 0 Z" style="fill: var(--h)"/>
+<text class="g-title" x="94" y="214" text-anchor="middle" style="font-size: 15px">You</text>
+<text class="g-sub" x="94" y="234" text-anchor="middle">the person</text>
+<text class="g-sub" x="94" y="251" text-anchor="middle">typing</text>
+</g>
+<g class="h-teal"><rect class="g-box" x="236" y="158" width="272" height="136" rx="14"/>
+<text class="g-title" x="372" y="199.5" text-anchor="middle" style="font-size: 15px">The conversation</text>
+<text class="g-sub" x="372" y="219.5" text-anchor="middle">one session: everything said so far</text>
+<rect x="260" y="238.5" width="224" height="12" rx="6" style="fill: var(--surface); stroke: var(--h); stroke-width: 1.5"/>
+<rect x="260" y="238.5" width="161.3" height="12" rx="6" style="fill: var(--h)"/>
+<text class="g-sub" x="372" y="267.5" text-anchor="middle">its context window fills up as you go</text>
+</g>
+<g class="h-violet"><rect class="g-box" x="604" y="176" width="244" height="100" rx="14"/>
+<text class="g-title" x="726" y="214" text-anchor="middle" style="font-size: 15px">idle-compact</text>
+<text class="g-sub" x="726" y="234" text-anchor="middle">a mod: waits for quiet, then</text>
+<text class="g-sub" x="726" y="251" text-anchor="middle">checks the size</text>
+</g>
+<g class="h-green"><rect class="g-box" x="392" y="356" width="320" height="76" rx="14"/>
+<text class="g-title" x="552" y="390.5" text-anchor="middle" style="font-size: 15px">Compaction</text>
+<text class="g-sub" x="552" y="410.5" text-anchor="middle">the history is swapped for a short summary</text>
+</g>
+<g class="h-blue"><circle cx="198" cy="226" r="11" style="fill: var(--h); stroke: var(--surface); stroke-width: 3"/><text x="198" y="230" text-anchor="middle" style="font: 700 12px var(--sans); fill: var(--on-hue)">1</text></g>
+<g class="h-teal"><circle cx="556" cy="226" r="11" style="fill: var(--h); stroke: var(--surface); stroke-width: 3"/><text x="556" y="230" text-anchor="middle" style="font: 700 12px var(--sans); fill: var(--on-hue)">2</text></g>
+<g class="h-violet"><circle cx="806" cy="142" r="11" style="fill: var(--h); stroke: var(--surface); stroke-width: 3"/><text x="806" y="146" text-anchor="middle" style="font: 700 12px var(--sans); fill: var(--on-hue)">3</text></g>
+<g class="h-violet"><circle cx="680" cy="316" r="11" style="fill: var(--h); stroke: var(--surface); stroke-width: 3"/><text x="680" y="320" text-anchor="middle" style="font: 700 12px var(--sans); fill: var(--on-hue)">4</text></g>
+<g class="h-green"><circle cx="440" cy="325" r="11" style="fill: var(--h); stroke: var(--surface); stroke-width: 3"/><text x="440" y="329" text-anchor="middle" style="font: 700 12px var(--sans); fill: var(--on-hue)">5</text></g>
+<g class="h-blue"><circle cx="40" cy="500" r="11" style="fill: var(--h); stroke: var(--surface); stroke-width: 3"/><text x="40" y="504" text-anchor="middle" style="font: 700 12px var(--sans); fill: var(--on-hue)">1</text></g>
+<text class="g-sub" x="64" y="504" style="font-size: 13.5px; fill: var(--ink)">You and Claude take turns. Every message and reply is added to the conversation, so it keeps growing.</text>
+<g class="h-teal"><circle cx="40" cy="534" r="11" style="fill: var(--h); stroke: var(--surface); stroke-width: 3"/><text x="40" y="538" text-anchor="middle" style="font: 700 12px var(--sans); fill: var(--on-hue)">2</text></g>
+<text class="g-sub" x="64" y="538" style="font-size: 13.5px; fill: var(--ink)">Claude Code tells its mods whenever Claude finishes a reply, and whenever you send a new message.</text>
+<g class="h-violet"><circle cx="40" cy="568" r="11" style="fill: var(--h); stroke: var(--surface); stroke-width: 3"/><text x="40" y="572" text-anchor="middle" style="font: 700 12px var(--sans); fill: var(--on-hue)">3</text></g>
+<text class="g-sub" x="64" y="572" style="font-size: 13.5px; fill: var(--ink)">idle-compact starts a countdown when a reply ends (20 minutes by default). A new message cancels it.</text>
+<g class="h-violet"><circle cx="40" cy="602" r="11" style="fill: var(--h); stroke: var(--surface); stroke-width: 3"/><text x="40" y="606" text-anchor="middle" style="font: 700 12px var(--sans); fill: var(--on-hue)">4</text></g>
+<text class="g-sub" x="64" y="606" style="font-size: 13.5px; fill: var(--ink)">If the countdown runs out and the conversation is big enough, idle-compact asks Claude Code to compact.</text>
+<g class="h-green"><circle cx="40" cy="636" r="11" style="fill: var(--h); stroke: var(--surface); stroke-width: 3"/><text x="40" y="640" text-anchor="middle" style="font: 700 12px var(--sans); fill: var(--on-hue)">5</text></g>
+<text class="g-sub" x="64" y="640" style="font-size: 13.5px; fill: var(--ink)">Claude Code replaces the conversation with the summary, so your next message starts small and fast.</text>
+</svg></figure>
+<p class="note">Nothing here leaves Claude Code: idle-compact only listens for two events and asks for one thing, a compaction that Claude Code already knows how to do.</p>
+<details class="key"><summary>How to read this diagram</summary><p>Each <b>box</b> is one of the parts. Follow the <b>numbered circles</b> in order: each one sits on an arrow in the drawing and has its sentence underneath.</p>
+<ul><li><svg viewBox="0 0 34 18" aria-hidden="true"><g class="h-blue"><rect class="g-box" x="2" y="2" width="30" height="14" rx="4"/></g></svg><span><b>You</b> — the person typing</span></li><li><svg viewBox="0 0 34 18" aria-hidden="true"><g class="h-teal"><rect class="g-box" x="2" y="2" width="30" height="14" rx="4"/></g></svg><span><b>The conversation</b> — one session: everything said so far</span></li><li><svg viewBox="0 0 34 18" aria-hidden="true"><g class="h-violet"><rect class="g-box" x="2" y="2" width="30" height="14" rx="4"/></g></svg><span><b>idle-compact</b> — a mod: waits for quiet, then checks the size</span></li><li><svg viewBox="0 0 34 18" aria-hidden="true"><g class="h-green"><rect class="g-box" x="2" y="2" width="30" height="14" rx="4"/></g></svg><span><b>Compaction</b> — the history is swapped for a short summary</span></li></ul>
+<ul><li><svg viewBox="0 0 34 18" aria-hidden="true"><rect x="2" y="2" width="30" height="14" rx="5" style="fill: var(--bg); stroke: var(--rule); stroke-width: 1.5"/></svg><span><b>Large shaded frame</b> — Claude Code: everything inside it is part of the app or runs inside it.</span></li>
+<li><svg viewBox="0 0 34 18" aria-hidden="true"><rect class="g-group" x="2" y="2" width="30" height="14" rx="5"/></svg><span><b>Dashed frame</b> — the plugin system, the part of Claude Code that lets add-ons (&quot;mods&quot;) react to what happens.</span></li>
+<li><svg viewBox="0 0 34 18" aria-hidden="true"><path class="g-edge" d="M2 9 H28"/><path class="g-head" d="M24 5 l5 4 l-5 4"/></svg><span><b>Arrow</b> — one part acting on, or telling something to, another. Two heads: it goes both ways.</span></li>
+<li><svg viewBox="0 0 34 18" aria-hidden="true"><g class="h-violet"><circle cx="17" cy="9" r="8" style="fill: var(--h)"/><text x="17" y="12.5" text-anchor="middle" style="font: 700 10px var(--sans); fill: var(--on-hue)">3</text></g></svg><span><b>Numbered circle</b> — a step, in the order things happen. Its color is the part that acts.</span></li>
+<li><svg viewBox="0 0 34 18" aria-hidden="true"><g class="h-teal"><rect x="2" y="5" width="30" height="8" rx="4" style="fill: var(--surface); stroke: var(--h); stroke-width: 1.5"/><rect x="2" y="5" width="21" height="8" rx="4" style="fill: var(--h)"/></g></svg><span><b>Bar</b> — how full the conversation's context window is.</span></li></ul>
+<p>The words used here:</p><ul class="terms"><li><span><b>Claude Code</b> — Anthropic's coding assistant. It runs on your own computer (a local session) or on a remote machine you reach from the web or your phone (a cloud session).</span></li><li><span><b>Session</b> — one conversation with Claude Code, from start to finish.</span></li><li><span><b>Context window</b> — everything Claude reads to answer you: the whole conversation so far. It is measured in tokens (a token is roughly three quarters of a word) and it has a size limit.</span></li><li><span><b>Mod, plugin</b> — an add-on that Claude Code loads. The plugin system tells it about events, such as a reply ending, and lets it ask Claude Code to do things.</span></li><li><span><b>Compaction</b> — Claude Code's own feature for shrinking a conversation: it writes a summary and continues from that. idle-compact does not do the summarizing; it decides when to ask.</span></li><li><span><b>Idle</b> — nobody has sent a message for a while. That is when a big conversation is worth compacting: by the time you return, re-reading all of it would be slow and costly.</span></li></ul></details>
+<details class="source"><summary>Diagram source</summary><pre># The big picture: who the parts are and how they talk. Steps are numbered in the order they happen.
+title:   idle-compact at a glance: the parts, and how they work together
+caption: You talk with Claude inside Claude Code, and the conversation keeps growing. idle-compact is a small add-on that notices when you have stepped away, and asks Claude Code to shrink the conversation to a summary before you come back.
+note:    Nothing here leaves Claude Code: idle-compact only listens for two events and asks for one thing, a compaction that Claude Code already knows how to do.
+
+host   Claude Code — the app, running on your computer or in a cloud session
+part   you      You — the person typing                                          blue
+part   talk     The conversation — one session: everything said so far            teal
+meter  talk     its context window fills up as you go
+group  Plugin system — lets add-ons (&quot;mods&quot;) react to what happens
+part   mod      idle-compact — a mod: waits for quiet, then checks the size      violet
+part   compact  Compaction — the history is swapped for a short summary   green
+
+step  you &lt;-&gt; talk      You and Claude take turns. Every message and reply is added to the conversation, so it keeps growing.
+step  talk -&gt; mod       Claude Code tells its mods whenever Claude finishes a reply, and whenever you send a new message.
+step  mod -&gt; mod        idle-compact starts a countdown when a reply ends (20 minutes by default). A new message cancels it.
+step  mod -&gt; compact    If the countdown runs out and the conversation is big enough, idle-compact asks Claude Code to compact.
+step  compact -&gt; talk   Claude Code replaces the conversation with the summary, so your next message starts small and fast.
+
+term  Claude Code — Anthropic's coding assistant. It runs on your own computer (a local session) or on a remote machine you reach from the web or your phone (a cloud session).
+term  Session — one conversation with Claude Code, from start to finish.
+term  Context window — everything Claude reads to answer you: the whole conversation so far. It is measured in tokens (a token is roughly three quarters of a word) and it has a size limit.
+term  Mod, plugin — an add-on that Claude Code loads. The plugin system tells it about events, such as a reply ending, and lets it ask Claude Code to do things.
+term  Compaction — Claude Code's own feature for shrinking a conversation: it writes a summary and continues from that. idle-compact does not do the summarizing; it decides when to ask.
+term  Idle — nobody has sent a message for a while. That is when a big conversation is worth compacting: by the time you return, re-reading all of it would be slow and costly.</pre></details>
+<nav class="more">
+<p><i>This diagram</i><span><a href="overview.svg">as an SVG</a> · <a href="https://github.com/nitsanavni/claude-code-idle-compact/blob/main/docs/humans/diagrams/overview.parts">its source on GitHub</a></span></p>
+<p><i>More diagrams</i><span><b>Overview</b> · <a href="why.html">Why it exists</a> · <a href="timer.html">The timer</a> · <a href="config.html">Settings</a> · <a href="architecture.html">Code architecture</a> · <a href="../../diagrams/a-idle-compact.html">Timeline: idle, then compacted</a> · <a href="../../diagrams/b-user-returns.html">Timeline: coming back early</a> · <a href="../../diagrams/c-small-context-skip.html">Timeline: too small to compact</a> · <a href="../../diagrams/d-compact-after-turn.html">Timeline: compacting on request</a></span></p>
+<p><i>The project</i><span><a href="https://github.com/nitsanavni/claude-code-idle-compact#readme">idle-compact on GitHub</a> · <a href="https://github.com/nitsanavni/claude-code-idle-compact/blob/main/docs/humans/README.md">docs for people</a></span></p>
+</nav>
+</main>
+</body>
+</html>
