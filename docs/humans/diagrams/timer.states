@@ -1,0 +1,25 @@
+# The idle timer as a state machine. Positions are grid cells: at <col> <row>.
+title:   The timer, from turn to compaction
+caption: Every time a turn ends the mod starts a countdown, and every new turn cancels it. If the countdown runs out, the mod looks at the context size and compacts only when it is worth it. Claude can also ask for a compaction right after the current turn.
+note:    After any outcome the timer rests until the next turn ends. Settings are read again at every start and at every check, so changes apply on the next turn.
+
+start  session  at 0 -0.8
+start  tool     at 0.05 1
+state  idle     Resting — no countdown          at 0 0    mute
+state  armed    Counting down — idleSeconds     at 1 0    sand
+state  check    Checking — how big is it?       at 2 0    sky
+state  done     Compacted — toast, log, push    at 3 -1   sage
+state  skip     Skipped — too small to bother   at 3 0    mute
+state  dry      Dry run — reports, no change    at 3 1    mute
+state  queued   Queued — waits for turn end     at 1 1    plum
+
+session -> idle   session starts
+idle -> armed     turn ends  bend 16
+armed -> idle     new turn starts  bend 16
+armed -> armed    turn ends or settings change
+armed -> check    time is up
+check -> done     ≥ minTokens
+check -> skip     < minTokens
+check -> dry      ≥ minTokens, dryRun
+tool -> queued    compact_after_turn  dashed
+queued -> check   turn ends, 1 s later  dashed

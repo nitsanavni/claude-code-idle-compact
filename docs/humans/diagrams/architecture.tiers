@@ -1,0 +1,34 @@
+# The mod's moving parts, top to bottom. Hues: ink = Claude Code, sky = wiring, sage = logic, sand = infrastructure.
+title:   A small, testable core between two thin layers
+caption: Claude Code tells the mod when turns start and end. A thin wiring layer passes that on to the core, which makes every decision. The core reaches the outside world only through small wrappers, and in tests those wrappers answer from memory instead.
+note:    All the logic sits in core.ts and config.ts, so tests drive the real core over stand-in infrastructure, with no mocks.
+
+row
+box  engine    Claude Code — sends events, offers the $ interface   ink
+row
+box  register  register.ts — thin wiring, no decisions   sky
+box  tools     tools.ts — the three tools Claude can call   sky
+row
+box  core      core.ts — IdleCompact: timer, size check, compaction   sage
+box  config    config.ts — defaults, validation, layer merge   sage
+row  infra.ts · Nullables
+box  clock   Clock   sand
+box  store   Store   sand
+box  files   Files   sand
+box  ui      Ui      sand
+box  host    Host    sand
+row
+box  real    In a session — create($): wraps Claude Code's $   ink
+box  stub    In tests — createNull(): answers from memory   plum dashed
+tag  ink    Claude Code — the host program and its $ interface
+tag  sky    Wiring — connects events and tools to the core
+tag  sage   Logic — pure decisions, fully unit-tested
+tag  sand   Infrastructure — one small wrapper per outside thing
+
+engine -> register  turn.start · turn.complete · tool.run
+tools -> register  registers
+register -> core  calls the core
+core -> config  reads
+core -> infra  reads time, files, store; compacts
+infra -> real
+infra -> stub  dashed

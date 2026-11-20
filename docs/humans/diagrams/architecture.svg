@@ -1,0 +1,144 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 920 690" width="920" height="690" role="img" font-family="Inter, system-ui, sans-serif"><title>A small, testable core between two thin layers</title><style>/* Diagram style guide: shared by every human-facing diagram in docs/.
+   Calm paper tones, one serif for voice, one sans for labels, one mono for source.
+   Tokens first; components below. Generators inline this file, so keep it small. */
+
+:root {
+  /* surfaces */
+  --bg:        #f6f4ef;
+  --surface:   #fdfcf9;
+  --rule:      #e6e1d7;
+  --grid:      #ece8df;
+  /* text */
+  --ink:       #2c2b28;
+  --ink-2:     #615d55;
+  --ink-3:     #9a958b;
+  /* hues: muted, similar lightness, each with a soft tint */
+  --sky:   #5f86ad;  --sky-tint:   #e3ebf3;
+  --sage:  #5f8f72;  --sage-tint:  #e2ede5;
+  --sand:  #b8894c;  --sand-tint:  #f4eadb;
+  --rose:  #b8695f;  --rose-tint:  #f4e2df;
+  --plum:  #84709f;  --plum-tint:  #ebe6f1;
+  --mute:  #8f8a80;  --mute-tint:  #ece9e3;
+
+  --serif: "Iowan Old Style", Charter, "Bitstream Charter", Georgia, serif;
+  --sans:  Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+  --mono:  "JetBrains Mono", ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+
+  --radius: 14px;
+  --space:  8px;            /* everything is a multiple of this */
+  --measure: 62ch;          /* comfortable line length for prose */
+  color-scheme: light;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #1b1c1e; --surface: #222326; --rule: #33353a; --grid: #2a2c30;
+    --ink: #e8e6e1; --ink-2: #b0aca4; --ink-3: #7a776f;
+    --sky:  #8fb0d1; --sky-tint:  #26313c;
+    --sage: #8dbb9d; --sage-tint: #243229;
+    --sand: #d7ae75; --sand-tint: #3a3123;
+    --rose: #d6928a; --rose-tint: #3b2826;
+    --plum: #ad9cc6; --plum-tint: #2f2a38;
+    --mute: #8f8b84; --mute-tint: #2c2c2d;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #1b1c1e; --surface: #222326; --rule: #33353a; --grid: #2a2c30;
+  --ink: #e8e6e1; --ink-2: #b0aca4; --ink-3: #7a776f;
+  --sky:  #8fb0d1; --sky-tint:  #26313c;
+  --sage: #8dbb9d; --sage-tint: #243229;
+  --sand: #d7ae75; --sand-tint: #3a3123;
+  --rose: #d6928a; --rose-tint: #3b2826;
+  --plum: #ad9cc6; --plum-tint: #2f2a38;
+  --mute: #8f8b84; --mute-tint: #2c2c2d;
+  color-scheme: dark;
+}
+
+/* svg vocabulary (diagram generators emit these classes) */
+.d-grid   { stroke: var(--grid); stroke-width: 1; }
+.d-tick   { font: 500 11px var(--sans); fill: var(--ink-3); letter-spacing: .04em; }
+.d-lane   { font: 600 11px var(--sans); fill: var(--ink-3); letter-spacing: .12em; text-transform: uppercase; }
+.d-line   { stroke: var(--rule); stroke-width: 2; stroke-linecap: round; }
+.d-end    { stroke: var(--ink-3); stroke-width: 2; stroke-linecap: round; }
+.d-label  { font: 500 13px var(--sans); fill: var(--ink); }
+.d-sub    { font: 400 12px var(--sans); fill: var(--ink-3); }
+.d-span-label { font: 500 12px var(--sans); }
+
+/* hue helpers: .h-sky etc. set --h / --t for marks */
+.h-ink  { --h: var(--ink);  --t: var(--mute-tint); }
+.h-sky  { --h: var(--sky);  --t: var(--sky-tint); }
+.h-sage { --h: var(--sage); --t: var(--sage-tint); }
+.h-sand { --h: var(--sand); --t: var(--sand-tint); }
+.h-rose { --h: var(--rose); --t: var(--rose-tint); }
+.h-plum { --h: var(--plum); --t: var(--plum-tint); }
+.h-mute { --h: var(--mute); --t: var(--mute-tint); }
+.d-dot      { fill: var(--surface); stroke: var(--h); stroke-width: 2.5; }
+.d-dot-core { fill: var(--h); }
+.d-halo     { fill: var(--t); }
+.d-span     { fill: var(--t); stroke: var(--h); stroke-width: 1.25; stroke-opacity: .55; }
+.d-span-label { fill: var(--h); }
+.d-cancel   { stroke: var(--h); stroke-width: 2.5; stroke-linecap: round; }
+.d-arrow    { fill: none; stroke: var(--h); stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; stroke-opacity: .7; }
+.d-bg       { fill: var(--surface); stroke: var(--rule); }
+
+
+.g-box    { fill: var(--t); stroke: var(--h); stroke-width: 1.25; stroke-opacity: .55; }
+.g-box.dashed, .g-group { stroke-dasharray: 5 5; }
+.g-group  { fill: none; stroke: var(--ink-3); stroke-width: 1.25; stroke-opacity: .6; }
+.g-title  { font: 600 14px var(--sans); fill: var(--ink); }
+.g-sub    { font: 400 12px var(--sans); fill: var(--ink-2); }
+.g-mono   { font: 500 12px var(--mono); fill: var(--ink); }
+.g-cap    { font: 600 11px var(--sans); fill: var(--ink-3); letter-spacing: .12em; text-transform: uppercase; }
+.g-edge   { fill: none; stroke: var(--ink-3); stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; }
+.g-edge.dashed { stroke-dasharray: 4 5; }
+.g-head   { fill: none; stroke: var(--ink-3); stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; }
+.g-elabel { font: 500 12px var(--sans); fill: var(--ink-2); paint-order: stroke; stroke: var(--surface); stroke-width: 5px; stroke-linejoin: round; }
+.g-axis   { stroke: var(--ink-3); stroke-width: 1; }
+.g-zone   { fill: var(--t); }
+.g-zone.dashed { fill: url(#hatch); }
+.g-edge-h { fill: none; stroke: var(--h); stroke-width: 2; stroke-linecap: round; }
+.g-hatch  { stroke: var(--h); stroke-width: 1.25; stroke-opacity: .35; }
+.g-unset  { fill: var(--ink-3); opacity: .5; }
+.g-rule   { stroke: var(--rule); stroke-width: 1; }
+.g-start  { fill: var(--ink-3); }
+</style>
+<rect class="d-bg" x="0.5" y="0.5" width="919" height="689" rx="14"/><rect class="g-group" x="40" y="414" width="840" height="114" rx="18"/>
+<text class="g-cap" x="58" y="436">infra.ts · Nullables</text>
+<path class="g-edge" d="M460 92 C460 124 250 124 250 156"/><path class="g-head" d="M245 150 l5 6 l5 -6"/>
+<text class="g-elabel" x="472" y="128">turn.start · turn.complete · tool.run</text>
+<path class="g-edge" d="M516 192 H405"/><path class="g-head" d="M411 187 l-6 5 l6 5"/>
+<text class="g-elabel" x="460" y="182" text-anchor="middle">registers</text>
+<path class="g-edge" d="M250 226 C250 258 250 258 250 290"/><path class="g-head" d="M245 284 l5 6 l5 -6"/>
+<text class="g-elabel" x="262" y="262">calls the core</text>
+<path class="g-edge" d="M404 326 H515"/><path class="g-head" d="M509 321 l6 5 l-6 5"/>
+<text class="g-elabel" x="460" y="316" text-anchor="middle">reads</text>
+<path class="g-edge" d="M250 360 C250 384 460 384 460 408"/><path class="g-head" d="M455 402 l5 6 l5 -6"/>
+<text class="g-elabel" x="472" y="388">reads time, files, store; compacts</text>
+<path class="g-edge" d="M460 532 C460 564 250 564 250 596"/><path class="g-head" d="M245 590 l5 6 l5 -6"/>
+<path class="g-edge dashed" d="M460 532 C460 564 670 564 670 596"/><path class="g-head" d="M665 590 l5 6 l5 -6"/>
+<g class="h-ink"><rect class="g-box" x="250" y="28" width="420" height="60" rx="12"/>
+<text class="g-title" x="460" y="54" text-anchor="middle">Claude Code</text><text class="g-sub" x="460" y="72" text-anchor="middle">sends events, offers the $ interface</text></g>
+<g class="h-sky"><rect class="g-box" x="100" y="162" width="300" height="60" rx="12"/>
+<text class="g-title" x="250" y="188" text-anchor="middle">register.ts</text><text class="g-sub" x="250" y="206" text-anchor="middle">thin wiring, no decisions</text></g>
+<g class="h-sky"><rect class="g-box" x="520" y="162" width="300" height="60" rx="12"/>
+<text class="g-title" x="670" y="188" text-anchor="middle">tools.ts</text><text class="g-sub" x="670" y="206" text-anchor="middle">the three tools Claude can call</text></g>
+<g class="h-sage"><rect class="g-box" x="100" y="296" width="300" height="60" rx="12"/>
+<text class="g-title" x="250" y="322" text-anchor="middle">core.ts</text><text class="g-sub" x="250" y="340" text-anchor="middle">IdleCompact: timer, size check, compaction</text></g>
+<g class="h-sage"><rect class="g-box" x="520" y="296" width="300" height="60" rx="12"/>
+<text class="g-title" x="670" y="322" text-anchor="middle">config.ts</text><text class="g-sub" x="670" y="340" text-anchor="middle">defaults, validation, layer merge</text></g>
+<g class="h-sand"><rect class="g-box" x="56" y="452" width="142.4" height="60" rx="12"/>
+<text class="g-title" x="127.2" y="487" text-anchor="middle">Clock</text></g>
+<g class="h-sand"><rect class="g-box" x="222.4" y="452" width="142.4" height="60" rx="12"/>
+<text class="g-title" x="293.6" y="487" text-anchor="middle">Store</text></g>
+<g class="h-sand"><rect class="g-box" x="388.8" y="452" width="142.4" height="60" rx="12"/>
+<text class="g-title" x="460" y="487" text-anchor="middle">Files</text></g>
+<g class="h-sand"><rect class="g-box" x="555.2" y="452" width="142.4" height="60" rx="12"/>
+<text class="g-title" x="626.4" y="487" text-anchor="middle">Ui</text></g>
+<g class="h-sand"><rect class="g-box" x="721.6" y="452" width="142.4" height="60" rx="12"/>
+<text class="g-title" x="792.8" y="487" text-anchor="middle">Host</text></g>
+<g class="h-ink"><rect class="g-box" x="100" y="602" width="300" height="60" rx="12"/>
+<text class="g-title" x="250" y="628" text-anchor="middle">In a session</text><text class="g-sub" x="250" y="646" text-anchor="middle">create($): wraps Claude Code's $</text></g>
+<g class="h-plum"><rect class="g-box dashed" x="520" y="602" width="300" height="60" rx="12"/>
+<text class="g-title" x="670" y="628" text-anchor="middle">In tests</text><text class="g-sub" x="670" y="646" text-anchor="middle">createNull(): answers from memory</text></g>
+</svg>

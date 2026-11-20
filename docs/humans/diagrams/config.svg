@@ -1,0 +1,160 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 920 440" width="920" height="440" role="img" font-family="Inter, system-ui, sans-serif"><title>Four layers, merged one setting at a time</title><style>/* Diagram style guide: shared by every human-facing diagram in docs/.
+   Calm paper tones, one serif for voice, one sans for labels, one mono for source.
+   Tokens first; components below. Generators inline this file, so keep it small. */
+
+:root {
+  /* surfaces */
+  --bg:        #f6f4ef;
+  --surface:   #fdfcf9;
+  --rule:      #e6e1d7;
+  --grid:      #ece8df;
+  /* text */
+  --ink:       #2c2b28;
+  --ink-2:     #615d55;
+  --ink-3:     #9a958b;
+  /* hues: muted, similar lightness, each with a soft tint */
+  --sky:   #5f86ad;  --sky-tint:   #e3ebf3;
+  --sage:  #5f8f72;  --sage-tint:  #e2ede5;
+  --sand:  #b8894c;  --sand-tint:  #f4eadb;
+  --rose:  #b8695f;  --rose-tint:  #f4e2df;
+  --plum:  #84709f;  --plum-tint:  #ebe6f1;
+  --mute:  #8f8a80;  --mute-tint:  #ece9e3;
+
+  --serif: "Iowan Old Style", Charter, "Bitstream Charter", Georgia, serif;
+  --sans:  Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+  --mono:  "JetBrains Mono", ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+
+  --radius: 14px;
+  --space:  8px;            /* everything is a multiple of this */
+  --measure: 62ch;          /* comfortable line length for prose */
+  color-scheme: light;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #1b1c1e; --surface: #222326; --rule: #33353a; --grid: #2a2c30;
+    --ink: #e8e6e1; --ink-2: #b0aca4; --ink-3: #7a776f;
+    --sky:  #8fb0d1; --sky-tint:  #26313c;
+    --sage: #8dbb9d; --sage-tint: #243229;
+    --sand: #d7ae75; --sand-tint: #3a3123;
+    --rose: #d6928a; --rose-tint: #3b2826;
+    --plum: #ad9cc6; --plum-tint: #2f2a38;
+    --mute: #8f8b84; --mute-tint: #2c2c2d;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #1b1c1e; --surface: #222326; --rule: #33353a; --grid: #2a2c30;
+  --ink: #e8e6e1; --ink-2: #b0aca4; --ink-3: #7a776f;
+  --sky:  #8fb0d1; --sky-tint:  #26313c;
+  --sage: #8dbb9d; --sage-tint: #243229;
+  --sand: #d7ae75; --sand-tint: #3a3123;
+  --rose: #d6928a; --rose-tint: #3b2826;
+  --plum: #ad9cc6; --plum-tint: #2f2a38;
+  --mute: #8f8b84; --mute-tint: #2c2c2d;
+  color-scheme: dark;
+}
+
+/* svg vocabulary (diagram generators emit these classes) */
+.d-grid   { stroke: var(--grid); stroke-width: 1; }
+.d-tick   { font: 500 11px var(--sans); fill: var(--ink-3); letter-spacing: .04em; }
+.d-lane   { font: 600 11px var(--sans); fill: var(--ink-3); letter-spacing: .12em; text-transform: uppercase; }
+.d-line   { stroke: var(--rule); stroke-width: 2; stroke-linecap: round; }
+.d-end    { stroke: var(--ink-3); stroke-width: 2; stroke-linecap: round; }
+.d-label  { font: 500 13px var(--sans); fill: var(--ink); }
+.d-sub    { font: 400 12px var(--sans); fill: var(--ink-3); }
+.d-span-label { font: 500 12px var(--sans); }
+
+/* hue helpers: .h-sky etc. set --h / --t for marks */
+.h-ink  { --h: var(--ink);  --t: var(--mute-tint); }
+.h-sky  { --h: var(--sky);  --t: var(--sky-tint); }
+.h-sage { --h: var(--sage); --t: var(--sage-tint); }
+.h-sand { --h: var(--sand); --t: var(--sand-tint); }
+.h-rose { --h: var(--rose); --t: var(--rose-tint); }
+.h-plum { --h: var(--plum); --t: var(--plum-tint); }
+.h-mute { --h: var(--mute); --t: var(--mute-tint); }
+.d-dot      { fill: var(--surface); stroke: var(--h); stroke-width: 2.5; }
+.d-dot-core { fill: var(--h); }
+.d-halo     { fill: var(--t); }
+.d-span     { fill: var(--t); stroke: var(--h); stroke-width: 1.25; stroke-opacity: .55; }
+.d-span-label { fill: var(--h); }
+.d-cancel   { stroke: var(--h); stroke-width: 2.5; stroke-linecap: round; }
+.d-arrow    { fill: none; stroke: var(--h); stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; stroke-opacity: .7; }
+.d-bg       { fill: var(--surface); stroke: var(--rule); }
+
+
+.g-box    { fill: var(--t); stroke: var(--h); stroke-width: 1.25; stroke-opacity: .55; }
+.g-box.dashed, .g-group { stroke-dasharray: 5 5; }
+.g-group  { fill: none; stroke: var(--ink-3); stroke-width: 1.25; stroke-opacity: .6; }
+.g-title  { font: 600 14px var(--sans); fill: var(--ink); }
+.g-sub    { font: 400 12px var(--sans); fill: var(--ink-2); }
+.g-mono   { font: 500 12px var(--mono); fill: var(--ink); }
+.g-cap    { font: 600 11px var(--sans); fill: var(--ink-3); letter-spacing: .12em; text-transform: uppercase; }
+.g-edge   { fill: none; stroke: var(--ink-3); stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; }
+.g-edge.dashed { stroke-dasharray: 4 5; }
+.g-head   { fill: none; stroke: var(--ink-3); stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; }
+.g-elabel { font: 500 12px var(--sans); fill: var(--ink-2); paint-order: stroke; stroke: var(--surface); stroke-width: 5px; stroke-linejoin: round; }
+.g-axis   { stroke: var(--ink-3); stroke-width: 1; }
+.g-zone   { fill: var(--t); }
+.g-zone.dashed { fill: url(#hatch); }
+.g-edge-h { fill: none; stroke: var(--h); stroke-width: 2; stroke-linecap: round; }
+.g-hatch  { stroke: var(--h); stroke-width: 1.25; stroke-opacity: .35; }
+.g-unset  { fill: var(--ink-3); opacity: .5; }
+.g-rule   { stroke: var(--rule); stroke-width: 1; }
+.g-start  { fill: var(--ink-3); }
+</style>
+<rect class="d-bg" x="0.5" y="0.5" width="919" height="439" rx="14"/><text class="g-mono" x="290.8" y="38" text-anchor="middle" style="fill: var(--ink-2)">enabled</text>
+<text class="g-mono" x="424.4" y="38" text-anchor="middle" style="fill: var(--ink-2)">idleSeconds</text>
+<text class="g-mono" x="558" y="38" text-anchor="middle" style="fill: var(--ink-2)">minTokens</text>
+<text class="g-mono" x="691.6" y="38" text-anchor="middle" style="fill: var(--ink-2)">dryRun</text>
+<text class="g-mono" x="825.2" y="38" text-anchor="middle" style="fill: var(--ink-2)">announce</text>
+<g class="h-mute"><circle class="d-dot-core" cx="34" cy="88" r="4"/></g>
+<text class="g-title" x="50" y="85">defaults</text>
+<text class="g-sub" x="50" y="103">built into the mod</text>
+<line class="g-rule" x1="28" y1="120" x2="892" y2="120"/>
+<g class="h-sky"><circle class="d-dot-core" cx="34" cy="152" r="4"/></g>
+<text class="g-title" x="50" y="149">plugin options</text>
+<text class="g-sub" x="50" y="167">/config or settings.json</text>
+<line class="g-rule" x1="28" y1="184" x2="892" y2="184"/>
+<g class="h-sand"><circle class="d-dot-core" cx="34" cy="216" r="4"/></g>
+<text class="g-title" x="50" y="213">project file</text>
+<text class="g-sub" x="50" y="231">.claude/idle-compact.json</text>
+<line class="g-rule" x1="28" y1="248" x2="892" y2="248"/>
+<g class="h-plum"><circle class="d-dot-core" cx="34" cy="280" r="4"/></g>
+<text class="g-title" x="50" y="277">live changes</text>
+<text class="g-sub" x="50" y="295">the config tool, per user</text>
+<g class="h-mute"><line class="g-edge-h" x1="290.8" y1="102" x2="290.8" y2="360" style="stroke-width: 1.5; stroke-opacity: .5"/></g>
+<g class="h-plum"><line class="g-edge-h" x1="424.4" y1="294" x2="424.4" y2="360" style="stroke-width: 1.5; stroke-opacity: .5"/></g>
+<g class="h-sand"><line class="g-edge-h" x1="558" y1="230" x2="558" y2="360" style="stroke-width: 1.5; stroke-opacity: .5"/></g>
+<g class="h-plum"><line class="g-edge-h" x1="691.6" y1="294" x2="691.6" y2="360" style="stroke-width: 1.5; stroke-opacity: .5"/></g>
+<g class="h-sky"><line class="g-edge-h" x1="825.2" y1="166" x2="825.2" y2="360" style="stroke-width: 1.5; stroke-opacity: .5"/></g>
+<g class="h-mute"><rect class="d-span" x="262.8" y="74" width="56" height="28" rx="14"/><text class="g-mono" x="290.8" y="92.5" text-anchor="middle">true</text></g>
+<g class="h-mute"><rect class="g-box" x="396.4" y="74" width="56" height="28" rx="14" style="fill: var(--surface)"/><text class="g-mono" x="424.4" y="92.5" text-anchor="middle" style="fill: var(--ink-2)">1200</text></g>
+<g class="h-mute"><rect class="g-box" x="523.1" y="74" width="69.8" height="28" rx="14" style="fill: var(--surface)"/><text class="g-mono" x="558" y="92.5" text-anchor="middle" style="fill: var(--ink-2)">120000</text></g>
+<g class="h-mute"><rect class="g-box" x="660.3" y="74" width="62.5" height="28" rx="14" style="fill: var(--surface)"/><text class="g-mono" x="691.6" y="92.5" text-anchor="middle" style="fill: var(--ink-2)">false</text></g>
+<g class="h-mute"><rect class="g-box" x="761.4" y="74" width="127.6" height="28" rx="14" style="fill: var(--surface)"/><text class="g-mono" x="825.2" y="92.5" text-anchor="middle" style="fill: var(--ink-2)">log,toast,notify</text></g>
+<circle class="g-unset" cx="290.8" cy="152" r="2.2"/>
+<circle class="g-unset" cx="424.4" cy="152" r="2.2"/>
+<circle class="g-unset" cx="558" cy="152" r="2.2"/>
+<circle class="g-unset" cx="691.6" cy="152" r="2.2"/>
+<g class="h-sky"><rect class="d-span" x="779.3" y="138" width="91.7" height="28" rx="14"/><text class="g-mono" x="825.2" y="156.5" text-anchor="middle">log,toast</text></g>
+<circle class="g-unset" cx="290.8" cy="216" r="2.2"/>
+<g class="h-sand"><rect class="g-box" x="396.4" y="202" width="56" height="28" rx="14" style="fill: var(--surface)"/><text class="g-mono" x="424.4" y="220.5" text-anchor="middle" style="fill: var(--ink-2)">900</text></g>
+<g class="h-sand"><rect class="d-span" x="523.1" y="202" width="69.8" height="28" rx="14"/><text class="g-mono" x="558" y="220.5" text-anchor="middle">150000</text></g>
+<circle class="g-unset" cx="691.6" cy="216" r="2.2"/>
+<circle class="g-unset" cx="825.2" cy="216" r="2.2"/>
+<circle class="g-unset" cx="290.8" cy="280" r="2.2"/>
+<g class="h-plum"><rect class="d-span" x="396.4" y="266" width="56" height="28" rx="14"/><text class="g-mono" x="424.4" y="284.5" text-anchor="middle">300</text></g>
+<circle class="g-unset" cx="558" cy="280" r="2.2"/>
+<g class="h-plum"><rect class="d-span" x="663.6" y="266" width="56" height="28" rx="14"/><text class="g-mono" x="691.6" y="284.5" text-anchor="middle">true</text></g>
+<circle class="g-unset" cx="825.2" cy="280" r="2.2"/>
+<rect x="16" y="342" width="888" height="64" rx="12" style="fill: var(--bg); stroke: var(--rule)"/>
+<text class="g-title" x="50" y="371">in effect</text>
+<text class="g-sub" x="50" y="389">what the timer uses</text>
+<path class="g-head" d="M30 369 l4 5 l4 -5" style="stroke: var(--ink)"/>
+<g class="h-mute"><rect class="d-span" x="262.8" y="360" width="56" height="28" rx="14"/><text class="g-mono" x="290.8" y="378.5" text-anchor="middle">true</text></g>
+<g class="h-plum"><rect class="d-span" x="396.4" y="360" width="56" height="28" rx="14"/><text class="g-mono" x="424.4" y="378.5" text-anchor="middle">300</text></g>
+<g class="h-sand"><rect class="d-span" x="523.1" y="360" width="69.8" height="28" rx="14"/><text class="g-mono" x="558" y="378.5" text-anchor="middle">150000</text></g>
+<g class="h-plum"><rect class="d-span" x="663.6" y="360" width="56" height="28" rx="14"/><text class="g-mono" x="691.6" y="378.5" text-anchor="middle">true</text></g>
+<g class="h-sky"><rect class="d-span" x="779.3" y="360" width="91.7" height="28" rx="14"/><text class="g-mono" x="825.2" y="378.5" text-anchor="middle">log,toast</text></g>
+</svg>

@@ -1,0 +1,11 @@
+# Where each setting comes from. Rows are layers, lowest priority first; "." = unset.
+title:   Four layers, merged one setting at a time
+caption: Every setting starts at its default. Your plugin options, a project file and live changes made through Claude can each override it, and the last layer to set a value wins. A layer that leaves a setting alone lets the one above it show through.
+note:    An example. Here the project file slows the timer to 15 minutes, then a live change in this session asks for 5 minutes and a dry run.
+
+fields  enabled  idleSeconds  minTokens  dryRun  announce
+layer  defaults — built into the mod                     mute  true  1200  120000  false  log,toast,notify
+layer  plugin options — /config or settings.json        sky   .     .     .       .      log,toast
+layer  project file — .claude/idle-compact.json         sand  .     900   150000  .      .
+layer  live changes — the config tool, per user         plum  .     300   .       true   .
+result  in effect — what the timer uses

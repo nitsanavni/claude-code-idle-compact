@@ -1,0 +1,9 @@
+# When does an idle conversation get compacted? One zone per compactor.
+title:   Compact sooner, while the cache is still warm
+caption: Claude Code has its own idle compaction, but it waits for about 54 quiet minutes and a 200k-token context, and in cloud sessions it is off. idle-compact steps in after 20 minutes, once the context holds 120k tokens or more.
+note:    Both of idle-compact's thresholds are settings: idleSeconds (1200) and minTokens (120000).
+
+x  idle time        0 80  every 10  unit m
+y  context tokens   0 300000  every 50000  unit k
+zone  20 120000  sage           idle-compact — compacts here, in local and cloud sessions
+zone  54 200000  mute dashed    Claude Code built-in — idle compaction, off in\ncloud sessions

@@ -1,0 +1,159 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 920 500" width="920" height="500" role="img" font-family="Inter, system-ui, sans-serif"><title>Compact sooner, while the cache is still warm</title><style>/* Diagram style guide: shared by every human-facing diagram in docs/.
+   Calm paper tones, one serif for voice, one sans for labels, one mono for source.
+   Tokens first; components below. Generators inline this file, so keep it small. */
+
+:root {
+  /* surfaces */
+  --bg:        #f6f4ef;
+  --surface:   #fdfcf9;
+  --rule:      #e6e1d7;
+  --grid:      #ece8df;
+  /* text */
+  --ink:       #2c2b28;
+  --ink-2:     #615d55;
+  --ink-3:     #9a958b;
+  /* hues: muted, similar lightness, each with a soft tint */
+  --sky:   #5f86ad;  --sky-tint:   #e3ebf3;
+  --sage:  #5f8f72;  --sage-tint:  #e2ede5;
+  --sand:  #b8894c;  --sand-tint:  #f4eadb;
+  --rose:  #b8695f;  --rose-tint:  #f4e2df;
+  --plum:  #84709f;  --plum-tint:  #ebe6f1;
+  --mute:  #8f8a80;  --mute-tint:  #ece9e3;
+
+  --serif: "Iowan Old Style", Charter, "Bitstream Charter", Georgia, serif;
+  --sans:  Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+  --mono:  "JetBrains Mono", ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+
+  --radius: 14px;
+  --space:  8px;            /* everything is a multiple of this */
+  --measure: 62ch;          /* comfortable line length for prose */
+  color-scheme: light;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #1b1c1e; --surface: #222326; --rule: #33353a; --grid: #2a2c30;
+    --ink: #e8e6e1; --ink-2: #b0aca4; --ink-3: #7a776f;
+    --sky:  #8fb0d1; --sky-tint:  #26313c;
+    --sage: #8dbb9d; --sage-tint: #243229;
+    --sand: #d7ae75; --sand-tint: #3a3123;
+    --rose: #d6928a; --rose-tint: #3b2826;
+    --plum: #ad9cc6; --plum-tint: #2f2a38;
+    --mute: #8f8b84; --mute-tint: #2c2c2d;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #1b1c1e; --surface: #222326; --rule: #33353a; --grid: #2a2c30;
+  --ink: #e8e6e1; --ink-2: #b0aca4; --ink-3: #7a776f;
+  --sky:  #8fb0d1; --sky-tint:  #26313c;
+  --sage: #8dbb9d; --sage-tint: #243229;
+  --sand: #d7ae75; --sand-tint: #3a3123;
+  --rose: #d6928a; --rose-tint: #3b2826;
+  --plum: #ad9cc6; --plum-tint: #2f2a38;
+  --mute: #8f8b84; --mute-tint: #2c2c2d;
+  color-scheme: dark;
+}
+
+/* svg vocabulary (diagram generators emit these classes) */
+.d-grid   { stroke: var(--grid); stroke-width: 1; }
+.d-tick   { font: 500 11px var(--sans); fill: var(--ink-3); letter-spacing: .04em; }
+.d-lane   { font: 600 11px var(--sans); fill: var(--ink-3); letter-spacing: .12em; text-transform: uppercase; }
+.d-line   { stroke: var(--rule); stroke-width: 2; stroke-linecap: round; }
+.d-end    { stroke: var(--ink-3); stroke-width: 2; stroke-linecap: round; }
+.d-label  { font: 500 13px var(--sans); fill: var(--ink); }
+.d-sub    { font: 400 12px var(--sans); fill: var(--ink-3); }
+.d-span-label { font: 500 12px var(--sans); }
+
+/* hue helpers: .h-sky etc. set --h / --t for marks */
+.h-ink  { --h: var(--ink);  --t: var(--mute-tint); }
+.h-sky  { --h: var(--sky);  --t: var(--sky-tint); }
+.h-sage { --h: var(--sage); --t: var(--sage-tint); }
+.h-sand { --h: var(--sand); --t: var(--sand-tint); }
+.h-rose { --h: var(--rose); --t: var(--rose-tint); }
+.h-plum { --h: var(--plum); --t: var(--plum-tint); }
+.h-mute { --h: var(--mute); --t: var(--mute-tint); }
+.d-dot      { fill: var(--surface); stroke: var(--h); stroke-width: 2.5; }
+.d-dot-core { fill: var(--h); }
+.d-halo     { fill: var(--t); }
+.d-span     { fill: var(--t); stroke: var(--h); stroke-width: 1.25; stroke-opacity: .55; }
+.d-span-label { fill: var(--h); }
+.d-cancel   { stroke: var(--h); stroke-width: 2.5; stroke-linecap: round; }
+.d-arrow    { fill: none; stroke: var(--h); stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; stroke-opacity: .7; }
+.d-bg       { fill: var(--surface); stroke: var(--rule); }
+
+
+.g-box    { fill: var(--t); stroke: var(--h); stroke-width: 1.25; stroke-opacity: .55; }
+.g-box.dashed, .g-group { stroke-dasharray: 5 5; }
+.g-group  { fill: none; stroke: var(--ink-3); stroke-width: 1.25; stroke-opacity: .6; }
+.g-title  { font: 600 14px var(--sans); fill: var(--ink); }
+.g-sub    { font: 400 12px var(--sans); fill: var(--ink-2); }
+.g-mono   { font: 500 12px var(--mono); fill: var(--ink); }
+.g-cap    { font: 600 11px var(--sans); fill: var(--ink-3); letter-spacing: .12em; text-transform: uppercase; }
+.g-edge   { fill: none; stroke: var(--ink-3); stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; }
+.g-edge.dashed { stroke-dasharray: 4 5; }
+.g-head   { fill: none; stroke: var(--ink-3); stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; }
+.g-elabel { font: 500 12px var(--sans); fill: var(--ink-2); paint-order: stroke; stroke: var(--surface); stroke-width: 5px; stroke-linejoin: round; }
+.g-axis   { stroke: var(--ink-3); stroke-width: 1; }
+.g-zone   { fill: var(--t); }
+.g-zone.dashed { fill: url(#hatch); }
+.g-edge-h { fill: none; stroke: var(--h); stroke-width: 2; stroke-linecap: round; }
+.g-hatch  { stroke: var(--h); stroke-width: 1.25; stroke-opacity: .35; }
+.g-unset  { fill: var(--ink-3); opacity: .5; }
+.g-rule   { stroke: var(--rule); stroke-width: 1; }
+.g-start  { fill: var(--ink-3); }
+</style><defs><pattern id="hatch" class="h-mute" width="8" height="8" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="8" height="8" style="fill: var(--t)"/><line class="g-hatch" x1="0" y1="0" x2="0" y2="8"/></pattern></defs>
+<rect class="d-bg" x="0.5" y="0.5" width="919" height="499" rx="14"/><line class="d-grid" x1="96" y1="36" x2="96" y2="428" stroke-dasharray="2 5"/>
+<text class="d-tick" x="96" y="450" text-anchor="middle">0m</text>
+<line class="d-grid" x1="194" y1="36" x2="194" y2="428" stroke-dasharray="2 5"/>
+<text class="d-tick" x="194" y="450" text-anchor="middle">10m</text>
+<line class="d-grid" x1="292" y1="36" x2="292" y2="428" stroke-dasharray="2 5"/>
+<text class="d-tick" x="292" y="450" text-anchor="middle">20m</text>
+<line class="d-grid" x1="390" y1="36" x2="390" y2="428" stroke-dasharray="2 5"/>
+<text class="d-tick" x="390" y="450" text-anchor="middle">30m</text>
+<line class="d-grid" x1="488" y1="36" x2="488" y2="428" stroke-dasharray="2 5"/>
+<text class="d-tick" x="488" y="450" text-anchor="middle">40m</text>
+<line class="d-grid" x1="586" y1="36" x2="586" y2="428" stroke-dasharray="2 5"/>
+<text class="d-tick" x="586" y="450" text-anchor="middle">50m</text>
+<line class="d-grid" x1="684" y1="36" x2="684" y2="428" stroke-dasharray="2 5"/>
+<text class="d-tick" x="684" y="450" text-anchor="middle">60m</text>
+<line class="d-grid" x1="782" y1="36" x2="782" y2="428" stroke-dasharray="2 5"/>
+<text class="d-tick" x="782" y="450" text-anchor="middle">70m</text>
+<line class="d-grid" x1="880" y1="36" x2="880" y2="428" stroke-dasharray="2 5"/>
+<text class="d-tick" x="880" y="450" text-anchor="middle">80m</text>
+<line class="d-grid" x1="96" y1="428" x2="880" y2="428" stroke-dasharray="2 5"/>
+<text class="d-tick" x="82" y="432" text-anchor="end">0</text>
+<line class="d-grid" x1="96" y1="362.7" x2="880" y2="362.7" stroke-dasharray="2 5"/>
+<text class="d-tick" x="82" y="366.7" text-anchor="end">50k</text>
+<line class="d-grid" x1="96" y1="297.3" x2="880" y2="297.3" stroke-dasharray="2 5"/>
+<text class="d-tick" x="82" y="301.3" text-anchor="end">100k</text>
+<line class="d-grid" x1="96" y1="232" x2="880" y2="232" stroke-dasharray="2 5"/>
+<text class="d-tick" x="82" y="236" text-anchor="end">150k</text>
+<line class="d-grid" x1="96" y1="166.7" x2="880" y2="166.7" stroke-dasharray="2 5"/>
+<text class="d-tick" x="82" y="170.7" text-anchor="end">200k</text>
+<line class="d-grid" x1="96" y1="101.3" x2="880" y2="101.3" stroke-dasharray="2 5"/>
+<text class="d-tick" x="82" y="105.3" text-anchor="end">250k</text>
+<line class="d-grid" x1="96" y1="36" x2="880" y2="36" stroke-dasharray="2 5"/>
+<text class="d-tick" x="82" y="40" text-anchor="end">300k</text>
+<text class="g-cap" x="488" y="478" text-anchor="middle">idle time →</text>
+<text class="g-cap" transform="translate(28 232) rotate(-90)" text-anchor="middle">context tokens →</text>
+<g class="h-sage">
+<rect class="g-zone" x="292" y="36" width="588" height="235.2"/>
+<path class="g-edge-h" d="M292 36 V271.2 H880"/>
+<circle class="d-halo" cx="292" cy="271.2" r="12"/><circle class="d-dot" cx="292" cy="271.2" r="6"/><circle class="d-dot-core" cx="292" cy="271.2" r="2.4"/>
+<text class="d-sub" x="280" y="293.2" text-anchor="end">20m · 120k</text>
+<text class="g-title" x="310" y="66">idle-compact</text>
+<text class="g-sub" x="310" y="86">compacts here, in local and cloud sessions</text>
+</g>
+<g class="h-mute">
+<rect class="g-zone dashed" x="625.2" y="36" width="254.8" height="130.7"/>
+<path class="g-edge-h" stroke-dasharray="5 5" d="M625.2 36 V166.7 H880"/>
+<circle class="d-halo" cx="625.2" cy="166.7" r="12"/><circle class="d-dot" cx="625.2" cy="166.7" r="6"/><circle class="d-dot-core" cx="625.2" cy="166.7" r="2.4"/>
+<text class="d-sub" x="613.2" y="188.7" text-anchor="end">54m · 200k</text>
+<text class="g-title" x="643.2" y="66">Claude Code built-in</text>
+<text class="g-sub" x="643.2" y="86">idle compaction, off in</text>
+<text class="g-sub" x="643.2" y="103">cloud sessions</text>
+</g>
+<line class="g-axis" x1="96" y1="428" x2="880" y2="428"/>
+<line class="g-axis" x1="96" y1="36" x2="96" y2="428"/>
+</svg>
