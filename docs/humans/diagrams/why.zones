@@ -1,9 +1,20 @@
-# When does an idle conversation get compacted? One zone per compactor.
-title:   Compact sooner, while the cache is still warm
-caption: Claude Code has its own idle compaction, but it waits for about 54 quiet minutes and a 200k-token context, and in cloud sessions it is off. idle-compact steps in after 20 minutes, once the context holds 120k tokens or more.
-note:    Both of idle-compact's thresholds are settings: idleSeconds (1200) and minTokens (120000).
+# Why idle-compact exists: Claude Code's own idle compaction is off in cloud sessions. Table first, thresholds second.
+title:   Idle compaction for cloud sessions, where Claude Code leaves it off
+caption: Claude Code can tidy up a conversation that has sat idle, but only when it runs on your computer: in cloud sessions that feature is switched off. idle-compact was built to bring it to the cloud, and it also steps in sooner.
+note:    Both of idle-compact's thresholds are settings you can change: idleSeconds (1200, which is 20 minutes) and minTokens (120000).
+
+where  Does an idle conversation get compacted?  On your computer  In a cloud session
+runs   Claude Code alone   mute   yes — after about 54 idle minutes, from 200k tokens   no — idle compaction is switched off
+runs   With idle-compact   green  yes — after 20 idle minutes, from 120k tokens         yes — after 20 idle minutes, from 120k tokens
+gap    the gap idle-compact was built to fill
+plot   And sooner: when each one steps in
 
 x  idle time        0 80  every 10  unit m
-y  context tokens   0 300000  every 50000  unit k
-zone  20 120000  sage           idle-compact — compacts here, in local and cloud sessions
-zone  54 200000  mute dashed    Claude Code built-in — idle compaction, off in\ncloud sessions
+y  conversation size, in tokens   0 300000  every 50000  unit k
+zone  20 120000  green          With idle-compact — compacts here, on your computer and in the cloud
+zone  54 200000  mute dashed    Claude Code alone — compacts here on your\ncomputer only, never in the cloud
+
+term  Compact — Claude Code replaces the conversation so far with a short summary of it. The next message then has far less to re-read, which makes it faster and cheaper.
+term  Idle — nobody has sent a message for a while. While you work, Claude Code keeps the conversation cached; after a long pause the cache expires and the whole conversation must be read again.
+term  Cloud session — Claude Code running on a remote machine (for example from the web or your phone) instead of on your own computer.
+term  Tokens — the units a conversation is measured in; a token is roughly three quarters of a word. "120k" is 120,000 tokens.

@@ -1,4 +1,4 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 920 500" width="920" height="500" role="img" font-family="Inter, system-ui, sans-serif"><title>Compact sooner, while the cache is still warm</title><style>/* Diagram style guide: shared by every human-facing diagram in docs/.
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 920 810" width="920" height="810" role="img" font-family="Inter, system-ui, sans-serif"><title>Idle compaction for cloud sessions, where Claude Code leaves it off</title><style>/* Diagram style guide: shared by every human-facing diagram in docs/.
    Clear and vivid on a cool white page: Inter for words, JetBrains Mono for source,
    six saturated series hues with a fixed role each. Flat marks: no gradients, no glows.
    Tokens first; components below. Generators inline this file, so keep it small. */
@@ -123,57 +123,82 @@
 .g-rule   { stroke: var(--rule); stroke-width: 1; }
 .g-start  { fill: var(--ink-3); }
 </style><defs><pattern id="hatch" class="h-mute" width="8" height="8" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="8" height="8" style="fill: var(--t)"/><line class="g-hatch" x1="0" y1="0" x2="0" y2="8"/></pattern></defs>
-<rect class="d-bg" x="0.5" y="0.5" width="919" height="499" rx="14"/><line class="d-grid" x1="96" y1="36" x2="96" y2="428" stroke-dasharray="2 5"/>
-<text class="d-tick" x="96" y="450" text-anchor="middle">0m</text>
-<line class="d-grid" x1="194" y1="36" x2="194" y2="428" stroke-dasharray="2 5"/>
-<text class="d-tick" x="194" y="450" text-anchor="middle">10m</text>
-<line class="d-grid" x1="292" y1="36" x2="292" y2="428" stroke-dasharray="2 5"/>
-<text class="d-tick" x="292" y="450" text-anchor="middle">20m</text>
-<line class="d-grid" x1="390" y1="36" x2="390" y2="428" stroke-dasharray="2 5"/>
-<text class="d-tick" x="390" y="450" text-anchor="middle">30m</text>
-<line class="d-grid" x1="488" y1="36" x2="488" y2="428" stroke-dasharray="2 5"/>
-<text class="d-tick" x="488" y="450" text-anchor="middle">40m</text>
-<line class="d-grid" x1="586" y1="36" x2="586" y2="428" stroke-dasharray="2 5"/>
-<text class="d-tick" x="586" y="450" text-anchor="middle">50m</text>
-<line class="d-grid" x1="684" y1="36" x2="684" y2="428" stroke-dasharray="2 5"/>
-<text class="d-tick" x="684" y="450" text-anchor="middle">60m</text>
-<line class="d-grid" x1="782" y1="36" x2="782" y2="428" stroke-dasharray="2 5"/>
-<text class="d-tick" x="782" y="450" text-anchor="middle">70m</text>
-<line class="d-grid" x1="880" y1="36" x2="880" y2="428" stroke-dasharray="2 5"/>
-<text class="d-tick" x="880" y="450" text-anchor="middle">80m</text>
-<line class="d-grid" x1="96" y1="428" x2="880" y2="428" stroke-dasharray="2 5"/>
-<text class="d-tick" x="82" y="432" text-anchor="end">0</text>
-<line class="d-grid" x1="96" y1="362.7" x2="880" y2="362.7" stroke-dasharray="2 5"/>
-<text class="d-tick" x="82" y="366.7" text-anchor="end">50k</text>
-<line class="d-grid" x1="96" y1="297.3" x2="880" y2="297.3" stroke-dasharray="2 5"/>
-<text class="d-tick" x="82" y="301.3" text-anchor="end">100k</text>
-<line class="d-grid" x1="96" y1="232" x2="880" y2="232" stroke-dasharray="2 5"/>
-<text class="d-tick" x="82" y="236" text-anchor="end">150k</text>
-<line class="d-grid" x1="96" y1="166.7" x2="880" y2="166.7" stroke-dasharray="2 5"/>
-<text class="d-tick" x="82" y="170.7" text-anchor="end">200k</text>
-<line class="d-grid" x1="96" y1="101.3" x2="880" y2="101.3" stroke-dasharray="2 5"/>
-<text class="d-tick" x="82" y="105.3" text-anchor="end">250k</text>
-<line class="d-grid" x1="96" y1="36" x2="880" y2="36" stroke-dasharray="2 5"/>
-<text class="d-tick" x="82" y="40" text-anchor="end">300k</text>
-<text class="g-cap" x="488" y="478" text-anchor="middle">idle time →</text>
-<text class="g-cap" transform="translate(28 232) rotate(-90)" text-anchor="middle">context tokens →</text>
-<g class="h-sage">
-<rect class="g-zone" x="292" y="36" width="588" height="235.2"/>
-<path class="g-edge-h" d="M292 36 V271.2 H880"/>
-<circle class="d-halo" cx="292" cy="271.2" r="12"/><circle class="d-dot" cx="292" cy="271.2" r="6"/><circle class="d-dot-core" cx="292" cy="271.2" r="2.4"/>
-<text class="d-sub" x="280" y="293.2" text-anchor="end">20m · 120k</text>
-<text class="g-title" x="310" y="66">idle-compact</text>
-<text class="g-sub" x="310" y="86">compacts here, in local and cloud sessions</text>
+<rect class="d-bg" x="0.5" y="0.5" width="919" height="809" rx="14"/><text class="g-cap" x="40" y="38">Does an idle conversation get compacted?</text>
+<text class="g-title" x="234" y="64">On your computer</text>
+<text class="g-title" x="567" y="64">In a cloud session</text>
+<text class="g-title" x="40" y="111" style="font-size: 14px">Claude Code alone</text>
+<g class="h-mute"><rect class="g-box" x="230" y="76" width="317" height="60" rx="12"/>
+<circle cx="258" cy="106" r="11" style="fill: var(--h)"/><path d="M253 106 l3.5 3.5 l6.5 -7" style="fill: none; stroke: var(--on-hue); stroke-width: 2; stroke-linecap: round; stroke-linejoin: round"/>
+<text class="g-title" x="280" y="102" style="font-size: 14px">Yes</text>
+<text class="g-sub" x="280" y="120">after about 54 idle minutes, from 200k tokens</text></g>
+<g class="h-coral"><rect class="g-box" x="563" y="76" width="317" height="60" rx="12" style="stroke-width: 2.5"/>
+<circle cx="591" cy="106" r="11" style="fill: var(--h)"/><path d="M587 102 l8 8 M595 102 l-8 8" style="fill: none; stroke: var(--on-hue); stroke-width: 2; stroke-linecap: round"/>
+<text class="g-title" x="613" y="102" style="font-size: 14px">No</text>
+<text class="g-sub" x="613" y="120">idle compaction is switched off</text></g>
+<text class="g-title" x="40" y="215" style="font-size: 14px">With idle-compact</text>
+<g class="h-green"><rect class="g-box" x="230" y="180" width="317" height="60" rx="12"/>
+<circle cx="258" cy="210" r="11" style="fill: var(--h)"/><path d="M253 210 l3.5 3.5 l6.5 -7" style="fill: none; stroke: var(--on-hue); stroke-width: 2; stroke-linecap: round; stroke-linejoin: round"/>
+<text class="g-title" x="280" y="206" style="font-size: 14px">Yes</text>
+<text class="g-sub" x="280" y="224">after 20 idle minutes, from 120k tokens</text></g>
+<g class="h-green"><rect class="g-box" x="563" y="180" width="317" height="60" rx="12"/>
+<circle cx="591" cy="210" r="11" style="fill: var(--h)"/><path d="M586 210 l3.5 3.5 l6.5 -7" style="fill: none; stroke: var(--on-hue); stroke-width: 2; stroke-linecap: round; stroke-linejoin: round"/>
+<text class="g-title" x="613" y="206" style="font-size: 14px">Yes</text>
+<text class="g-sub" x="613" y="224">after 20 idle minutes, from 120k tokens</text></g>
+<g class="h-coral"><path class="g-edge-h" d="M591 143 V173"/><path class="g-edge-h" d="M586 167 L591 173 L596 167"/>
+<text class="g-title" x="613" y="162.5" style="fill: var(--h)">the gap idle-compact was built to fill</text></g>
+<line class="g-rule" x1="40" y1="276" x2="880" y2="276"/>
+<text class="g-cap" x="40" y="318">And sooner: when each one steps in</text>
+<line class="d-grid" x1="96" y1="346" x2="96" y2="738" stroke-dasharray="2 5"/>
+<text class="d-tick" x="96" y="760" text-anchor="middle">0m</text>
+<line class="d-grid" x1="194" y1="346" x2="194" y2="738" stroke-dasharray="2 5"/>
+<text class="d-tick" x="194" y="760" text-anchor="middle">10m</text>
+<line class="d-grid" x1="292" y1="346" x2="292" y2="738" stroke-dasharray="2 5"/>
+<text class="d-tick" x="292" y="760" text-anchor="middle">20m</text>
+<line class="d-grid" x1="390" y1="346" x2="390" y2="738" stroke-dasharray="2 5"/>
+<text class="d-tick" x="390" y="760" text-anchor="middle">30m</text>
+<line class="d-grid" x1="488" y1="346" x2="488" y2="738" stroke-dasharray="2 5"/>
+<text class="d-tick" x="488" y="760" text-anchor="middle">40m</text>
+<line class="d-grid" x1="586" y1="346" x2="586" y2="738" stroke-dasharray="2 5"/>
+<text class="d-tick" x="586" y="760" text-anchor="middle">50m</text>
+<line class="d-grid" x1="684" y1="346" x2="684" y2="738" stroke-dasharray="2 5"/>
+<text class="d-tick" x="684" y="760" text-anchor="middle">60m</text>
+<line class="d-grid" x1="782" y1="346" x2="782" y2="738" stroke-dasharray="2 5"/>
+<text class="d-tick" x="782" y="760" text-anchor="middle">70m</text>
+<line class="d-grid" x1="880" y1="346" x2="880" y2="738" stroke-dasharray="2 5"/>
+<text class="d-tick" x="880" y="760" text-anchor="middle">80m</text>
+<line class="d-grid" x1="96" y1="738" x2="880" y2="738" stroke-dasharray="2 5"/>
+<text class="d-tick" x="82" y="742" text-anchor="end">0</text>
+<line class="d-grid" x1="96" y1="672.7" x2="880" y2="672.7" stroke-dasharray="2 5"/>
+<text class="d-tick" x="82" y="676.7" text-anchor="end">50k</text>
+<line class="d-grid" x1="96" y1="607.3" x2="880" y2="607.3" stroke-dasharray="2 5"/>
+<text class="d-tick" x="82" y="611.3" text-anchor="end">100k</text>
+<line class="d-grid" x1="96" y1="542" x2="880" y2="542" stroke-dasharray="2 5"/>
+<text class="d-tick" x="82" y="546" text-anchor="end">150k</text>
+<line class="d-grid" x1="96" y1="476.7" x2="880" y2="476.7" stroke-dasharray="2 5"/>
+<text class="d-tick" x="82" y="480.7" text-anchor="end">200k</text>
+<line class="d-grid" x1="96" y1="411.3" x2="880" y2="411.3" stroke-dasharray="2 5"/>
+<text class="d-tick" x="82" y="415.3" text-anchor="end">250k</text>
+<line class="d-grid" x1="96" y1="346" x2="880" y2="346" stroke-dasharray="2 5"/>
+<text class="d-tick" x="82" y="350" text-anchor="end">300k</text>
+<text class="g-cap" x="488" y="788" text-anchor="middle">idle time →</text>
+<text class="g-cap" transform="translate(28 542) rotate(-90)" text-anchor="middle">conversation size, in tokens →</text>
+<g class="h-green">
+<rect class="g-zone" x="292" y="346" width="588" height="235.2"/>
+<path class="g-edge-h" d="M292 346 V581.2 H880"/>
+<circle class="d-halo" cx="292" cy="581.2" r="12"/><circle class="d-dot" cx="292" cy="581.2" r="6"/><circle class="d-dot-core" cx="292" cy="581.2" r="2.4"/>
+<text class="d-sub" x="280" y="603.2" text-anchor="end">20m · 120k</text>
+<text class="g-title" x="310" y="376">With idle-compact</text>
+<text class="g-sub" x="310" y="396">compacts here, on your computer and in the cloud</text>
 </g>
 <g class="h-mute">
-<rect class="g-zone dashed" x="625.2" y="36" width="254.8" height="130.7"/>
-<path class="g-edge-h" stroke-dasharray="5 5" d="M625.2 36 V166.7 H880"/>
-<circle class="d-halo" cx="625.2" cy="166.7" r="12"/><circle class="d-dot" cx="625.2" cy="166.7" r="6"/><circle class="d-dot-core" cx="625.2" cy="166.7" r="2.4"/>
-<text class="d-sub" x="613.2" y="188.7" text-anchor="end">54m · 200k</text>
-<text class="g-title" x="643.2" y="66">Claude Code built-in</text>
-<text class="g-sub" x="643.2" y="86">idle compaction, off in</text>
-<text class="g-sub" x="643.2" y="103">cloud sessions</text>
+<rect class="g-zone dashed" x="625.2" y="346" width="254.8" height="130.7"/>
+<path class="g-edge-h" stroke-dasharray="5 5" d="M625.2 346 V476.7 H880"/>
+<circle class="d-halo" cx="625.2" cy="476.7" r="12"/><circle class="d-dot" cx="625.2" cy="476.7" r="6"/><circle class="d-dot-core" cx="625.2" cy="476.7" r="2.4"/>
+<text class="d-sub" x="613.2" y="498.7" text-anchor="end">54m · 200k</text>
+<text class="g-title" x="643.2" y="376">Claude Code alone</text>
+<text class="g-sub" x="643.2" y="396">compacts here on your</text>
+<text class="g-sub" x="643.2" y="413">computer only, never in the cloud</text>
 </g>
-<line class="g-axis" x1="96" y1="428" x2="880" y2="428"/>
-<line class="g-axis" x1="96" y1="36" x2="96" y2="428"/>
+<line class="g-axis" x1="96" y1="738" x2="880" y2="738"/>
+<line class="g-axis" x1="96" y1="346" x2="96" y2="738"/>
 </svg>

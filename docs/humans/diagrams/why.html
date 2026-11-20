@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Compact sooner, while the cache is still warm</title>
+<title>Idle compaction for cloud sessions, where Claude Code leaves it off</title>
 <style>/* Diagram style guide: shared by every human-facing diagram in docs/.
    Clear and vivid on a cool white page: Inter for words, JetBrains Mono for source,
    six saturated series hues with a fixed role each. Flat marks: no gradients, no glows.
@@ -103,6 +103,15 @@ h1 { font: 650 clamp(28px, 4vw, 36px)/1.15 var(--sans); letter-spacing: -.02em; 
 .legend svg { flex: none; height: 18px; width: auto; }
 .legend + .note { margin-top: calc(var(--space) * 4); }
 
+/* links: quiet until hovered; the footer lists this diagram's files and the other diagrams */
+a { color: inherit; text-decoration: underline; text-decoration-color: color-mix(in srgb, currentColor 35%, transparent); text-underline-offset: 3px; }
+a:hover { color: var(--blue); text-decoration-color: currentColor; }
+.eyebrow a { text-decoration: none; }
+nav.more { margin-top: calc(var(--space) * 5); padding-top: calc(var(--space) * 3); border-top: 1px solid var(--rule); font-size: 14px; color: var(--ink-2); }
+nav.more p { margin: 0 0 var(--space); display: grid; grid-template-columns: 136px 1fr; align-items: baseline; }
+nav.more i { font: 600 12px/1 var(--sans); letter-spacing: .08em; text-transform: uppercase; color: var(--ink-3); }
+nav.more b { font-weight: 600; color: var(--ink); }
+
 /* agent-readable source, tucked away */
 details.source { margin-top: var(--space); }
 details.source summary::-webkit-details-marker { display: none; }
@@ -162,6 +171,7 @@ details.key ul { list-style: none; padding: 0; margin: var(--space) 0 calc(var(-
 details.key li { display: flex; align-items: baseline; gap: calc(var(--space) * 1.5); font-size: 15px; color: var(--ink-2); padding: calc(var(--space) * .5) 0; }
 details.key li svg { flex: none; width: 34px; height: 18px; align-self: center; }
 details.key li b { font-weight: 600; color: var(--ink); }
+details.key ul.terms li { display: block; }
 
 .g-box    { fill: var(--t); stroke: var(--h); stroke-width: 1.5; }
 .g-box.dashed, .g-group { stroke-dasharray: 5 5; }
@@ -186,80 +196,123 @@ details.key li b { font-weight: 600; color: var(--ink); }
 </head>
 <body>
 <main class="page">
-<p class="eyebrow">idle-compact · why</p>
-<h1>Compact sooner, while the cache is still warm</h1>
-<p class="lede">Claude Code has its own idle compaction, but it waits for about 54 quiet minutes and a 200k-token context, and in cloud sessions it is off. idle-compact steps in after 20 minutes, once the context holds 120k tokens or more.</p>
-<figure class="figure"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 920 500" width="920" height="500" role="img" font-family="Inter, system-ui, sans-serif"><title>Compact sooner, while the cache is still warm</title><defs><pattern id="hatch" class="h-mute" width="8" height="8" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="8" height="8" style="fill: var(--t)"/><line class="g-hatch" x1="0" y1="0" x2="0" y2="8"/></pattern></defs>
-<line class="d-grid" x1="96" y1="36" x2="96" y2="428" stroke-dasharray="2 5"/>
-<text class="d-tick" x="96" y="450" text-anchor="middle">0m</text>
-<line class="d-grid" x1="194" y1="36" x2="194" y2="428" stroke-dasharray="2 5"/>
-<text class="d-tick" x="194" y="450" text-anchor="middle">10m</text>
-<line class="d-grid" x1="292" y1="36" x2="292" y2="428" stroke-dasharray="2 5"/>
-<text class="d-tick" x="292" y="450" text-anchor="middle">20m</text>
-<line class="d-grid" x1="390" y1="36" x2="390" y2="428" stroke-dasharray="2 5"/>
-<text class="d-tick" x="390" y="450" text-anchor="middle">30m</text>
-<line class="d-grid" x1="488" y1="36" x2="488" y2="428" stroke-dasharray="2 5"/>
-<text class="d-tick" x="488" y="450" text-anchor="middle">40m</text>
-<line class="d-grid" x1="586" y1="36" x2="586" y2="428" stroke-dasharray="2 5"/>
-<text class="d-tick" x="586" y="450" text-anchor="middle">50m</text>
-<line class="d-grid" x1="684" y1="36" x2="684" y2="428" stroke-dasharray="2 5"/>
-<text class="d-tick" x="684" y="450" text-anchor="middle">60m</text>
-<line class="d-grid" x1="782" y1="36" x2="782" y2="428" stroke-dasharray="2 5"/>
-<text class="d-tick" x="782" y="450" text-anchor="middle">70m</text>
-<line class="d-grid" x1="880" y1="36" x2="880" y2="428" stroke-dasharray="2 5"/>
-<text class="d-tick" x="880" y="450" text-anchor="middle">80m</text>
-<line class="d-grid" x1="96" y1="428" x2="880" y2="428" stroke-dasharray="2 5"/>
-<text class="d-tick" x="82" y="432" text-anchor="end">0</text>
-<line class="d-grid" x1="96" y1="362.7" x2="880" y2="362.7" stroke-dasharray="2 5"/>
-<text class="d-tick" x="82" y="366.7" text-anchor="end">50k</text>
-<line class="d-grid" x1="96" y1="297.3" x2="880" y2="297.3" stroke-dasharray="2 5"/>
-<text class="d-tick" x="82" y="301.3" text-anchor="end">100k</text>
-<line class="d-grid" x1="96" y1="232" x2="880" y2="232" stroke-dasharray="2 5"/>
-<text class="d-tick" x="82" y="236" text-anchor="end">150k</text>
-<line class="d-grid" x1="96" y1="166.7" x2="880" y2="166.7" stroke-dasharray="2 5"/>
-<text class="d-tick" x="82" y="170.7" text-anchor="end">200k</text>
-<line class="d-grid" x1="96" y1="101.3" x2="880" y2="101.3" stroke-dasharray="2 5"/>
-<text class="d-tick" x="82" y="105.3" text-anchor="end">250k</text>
-<line class="d-grid" x1="96" y1="36" x2="880" y2="36" stroke-dasharray="2 5"/>
-<text class="d-tick" x="82" y="40" text-anchor="end">300k</text>
-<text class="g-cap" x="488" y="478" text-anchor="middle">idle time →</text>
-<text class="g-cap" transform="translate(28 232) rotate(-90)" text-anchor="middle">context tokens →</text>
-<g class="h-sage">
-<rect class="g-zone" x="292" y="36" width="588" height="235.2"/>
-<path class="g-edge-h" d="M292 36 V271.2 H880"/>
-<circle class="d-halo" cx="292" cy="271.2" r="12"/><circle class="d-dot" cx="292" cy="271.2" r="6"/><circle class="d-dot-core" cx="292" cy="271.2" r="2.4"/>
-<text class="d-sub" x="280" y="293.2" text-anchor="end">20m · 120k</text>
-<text class="g-title" x="310" y="66">idle-compact</text>
-<text class="g-sub" x="310" y="86">compacts here, in local and cloud sessions</text>
+<p class="eyebrow"><a href="https://github.com/nitsanavni/claude-code-idle-compact#readme">idle-compact</a> · why</p>
+<h1>Idle compaction for cloud sessions, where Claude Code leaves it off</h1>
+<p class="lede">Claude Code can tidy up a conversation that has sat idle, but only when it runs on your computer: in cloud sessions that feature is switched off. idle-compact was built to bring it to the cloud, and it also steps in sooner.</p>
+<figure class="figure"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 920 810" width="920" height="810" role="img" font-family="Inter, system-ui, sans-serif"><title>Idle compaction for cloud sessions, where Claude Code leaves it off</title><defs><pattern id="hatch" class="h-mute" width="8" height="8" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="8" height="8" style="fill: var(--t)"/><line class="g-hatch" x1="0" y1="0" x2="0" y2="8"/></pattern></defs>
+<text class="g-cap" x="40" y="38">Does an idle conversation get compacted?</text>
+<text class="g-title" x="234" y="64">On your computer</text>
+<text class="g-title" x="567" y="64">In a cloud session</text>
+<text class="g-title" x="40" y="111" style="font-size: 14px">Claude Code alone</text>
+<g class="h-mute"><rect class="g-box" x="230" y="76" width="317" height="60" rx="12"/>
+<circle cx="258" cy="106" r="11" style="fill: var(--h)"/><path d="M253 106 l3.5 3.5 l6.5 -7" style="fill: none; stroke: var(--on-hue); stroke-width: 2; stroke-linecap: round; stroke-linejoin: round"/>
+<text class="g-title" x="280" y="102" style="font-size: 14px">Yes</text>
+<text class="g-sub" x="280" y="120">after about 54 idle minutes, from 200k tokens</text></g>
+<g class="h-coral"><rect class="g-box" x="563" y="76" width="317" height="60" rx="12" style="stroke-width: 2.5"/>
+<circle cx="591" cy="106" r="11" style="fill: var(--h)"/><path d="M587 102 l8 8 M595 102 l-8 8" style="fill: none; stroke: var(--on-hue); stroke-width: 2; stroke-linecap: round"/>
+<text class="g-title" x="613" y="102" style="font-size: 14px">No</text>
+<text class="g-sub" x="613" y="120">idle compaction is switched off</text></g>
+<text class="g-title" x="40" y="215" style="font-size: 14px">With idle-compact</text>
+<g class="h-green"><rect class="g-box" x="230" y="180" width="317" height="60" rx="12"/>
+<circle cx="258" cy="210" r="11" style="fill: var(--h)"/><path d="M253 210 l3.5 3.5 l6.5 -7" style="fill: none; stroke: var(--on-hue); stroke-width: 2; stroke-linecap: round; stroke-linejoin: round"/>
+<text class="g-title" x="280" y="206" style="font-size: 14px">Yes</text>
+<text class="g-sub" x="280" y="224">after 20 idle minutes, from 120k tokens</text></g>
+<g class="h-green"><rect class="g-box" x="563" y="180" width="317" height="60" rx="12"/>
+<circle cx="591" cy="210" r="11" style="fill: var(--h)"/><path d="M586 210 l3.5 3.5 l6.5 -7" style="fill: none; stroke: var(--on-hue); stroke-width: 2; stroke-linecap: round; stroke-linejoin: round"/>
+<text class="g-title" x="613" y="206" style="font-size: 14px">Yes</text>
+<text class="g-sub" x="613" y="224">after 20 idle minutes, from 120k tokens</text></g>
+<g class="h-coral"><path class="g-edge-h" d="M591 143 V173"/><path class="g-edge-h" d="M586 167 L591 173 L596 167"/>
+<text class="g-title" x="613" y="162.5" style="fill: var(--h)">the gap idle-compact was built to fill</text></g>
+<line class="g-rule" x1="40" y1="276" x2="880" y2="276"/>
+<text class="g-cap" x="40" y="318">And sooner: when each one steps in</text>
+<line class="d-grid" x1="96" y1="346" x2="96" y2="738" stroke-dasharray="2 5"/>
+<text class="d-tick" x="96" y="760" text-anchor="middle">0m</text>
+<line class="d-grid" x1="194" y1="346" x2="194" y2="738" stroke-dasharray="2 5"/>
+<text class="d-tick" x="194" y="760" text-anchor="middle">10m</text>
+<line class="d-grid" x1="292" y1="346" x2="292" y2="738" stroke-dasharray="2 5"/>
+<text class="d-tick" x="292" y="760" text-anchor="middle">20m</text>
+<line class="d-grid" x1="390" y1="346" x2="390" y2="738" stroke-dasharray="2 5"/>
+<text class="d-tick" x="390" y="760" text-anchor="middle">30m</text>
+<line class="d-grid" x1="488" y1="346" x2="488" y2="738" stroke-dasharray="2 5"/>
+<text class="d-tick" x="488" y="760" text-anchor="middle">40m</text>
+<line class="d-grid" x1="586" y1="346" x2="586" y2="738" stroke-dasharray="2 5"/>
+<text class="d-tick" x="586" y="760" text-anchor="middle">50m</text>
+<line class="d-grid" x1="684" y1="346" x2="684" y2="738" stroke-dasharray="2 5"/>
+<text class="d-tick" x="684" y="760" text-anchor="middle">60m</text>
+<line class="d-grid" x1="782" y1="346" x2="782" y2="738" stroke-dasharray="2 5"/>
+<text class="d-tick" x="782" y="760" text-anchor="middle">70m</text>
+<line class="d-grid" x1="880" y1="346" x2="880" y2="738" stroke-dasharray="2 5"/>
+<text class="d-tick" x="880" y="760" text-anchor="middle">80m</text>
+<line class="d-grid" x1="96" y1="738" x2="880" y2="738" stroke-dasharray="2 5"/>
+<text class="d-tick" x="82" y="742" text-anchor="end">0</text>
+<line class="d-grid" x1="96" y1="672.7" x2="880" y2="672.7" stroke-dasharray="2 5"/>
+<text class="d-tick" x="82" y="676.7" text-anchor="end">50k</text>
+<line class="d-grid" x1="96" y1="607.3" x2="880" y2="607.3" stroke-dasharray="2 5"/>
+<text class="d-tick" x="82" y="611.3" text-anchor="end">100k</text>
+<line class="d-grid" x1="96" y1="542" x2="880" y2="542" stroke-dasharray="2 5"/>
+<text class="d-tick" x="82" y="546" text-anchor="end">150k</text>
+<line class="d-grid" x1="96" y1="476.7" x2="880" y2="476.7" stroke-dasharray="2 5"/>
+<text class="d-tick" x="82" y="480.7" text-anchor="end">200k</text>
+<line class="d-grid" x1="96" y1="411.3" x2="880" y2="411.3" stroke-dasharray="2 5"/>
+<text class="d-tick" x="82" y="415.3" text-anchor="end">250k</text>
+<line class="d-grid" x1="96" y1="346" x2="880" y2="346" stroke-dasharray="2 5"/>
+<text class="d-tick" x="82" y="350" text-anchor="end">300k</text>
+<text class="g-cap" x="488" y="788" text-anchor="middle">idle time →</text>
+<text class="g-cap" transform="translate(28 542) rotate(-90)" text-anchor="middle">conversation size, in tokens →</text>
+<g class="h-green">
+<rect class="g-zone" x="292" y="346" width="588" height="235.2"/>
+<path class="g-edge-h" d="M292 346 V581.2 H880"/>
+<circle class="d-halo" cx="292" cy="581.2" r="12"/><circle class="d-dot" cx="292" cy="581.2" r="6"/><circle class="d-dot-core" cx="292" cy="581.2" r="2.4"/>
+<text class="d-sub" x="280" y="603.2" text-anchor="end">20m · 120k</text>
+<text class="g-title" x="310" y="376">With idle-compact</text>
+<text class="g-sub" x="310" y="396">compacts here, on your computer and in the cloud</text>
 </g>
 <g class="h-mute">
-<rect class="g-zone dashed" x="625.2" y="36" width="254.8" height="130.7"/>
-<path class="g-edge-h" stroke-dasharray="5 5" d="M625.2 36 V166.7 H880"/>
-<circle class="d-halo" cx="625.2" cy="166.7" r="12"/><circle class="d-dot" cx="625.2" cy="166.7" r="6"/><circle class="d-dot-core" cx="625.2" cy="166.7" r="2.4"/>
-<text class="d-sub" x="613.2" y="188.7" text-anchor="end">54m · 200k</text>
-<text class="g-title" x="643.2" y="66">Claude Code built-in</text>
-<text class="g-sub" x="643.2" y="86">idle compaction, off in</text>
-<text class="g-sub" x="643.2" y="103">cloud sessions</text>
+<rect class="g-zone dashed" x="625.2" y="346" width="254.8" height="130.7"/>
+<path class="g-edge-h" stroke-dasharray="5 5" d="M625.2 346 V476.7 H880"/>
+<circle class="d-halo" cx="625.2" cy="476.7" r="12"/><circle class="d-dot" cx="625.2" cy="476.7" r="6"/><circle class="d-dot-core" cx="625.2" cy="476.7" r="2.4"/>
+<text class="d-sub" x="613.2" y="498.7" text-anchor="end">54m · 200k</text>
+<text class="g-title" x="643.2" y="376">Claude Code alone</text>
+<text class="g-sub" x="643.2" y="396">compacts here on your</text>
+<text class="g-sub" x="643.2" y="413">computer only, never in the cloud</text>
 </g>
-<line class="g-axis" x1="96" y1="428" x2="880" y2="428"/>
-<line class="g-axis" x1="96" y1="36" x2="96" y2="428"/>
+<line class="g-axis" x1="96" y1="738" x2="880" y2="738"/>
+<line class="g-axis" x1="96" y1="346" x2="96" y2="738"/>
 </svg></figure>
-<p class="note">Both of idle-compact's thresholds are settings: idleSeconds (1200) and minTokens (120000).</p>
-<details class="key"><summary>How to read this diagram</summary><p>The plot asks one question: <b>after how long, and at what size</b>, does an idle conversation get compacted? Left to right is how long nobody has typed; bottom to top is how big the context is.</p>
+<p class="note">Both of idle-compact's thresholds are settings you can change: idleSeconds (1200, which is 20 minutes) and minTokens (120000).</p>
+<details class="key"><summary>How to read this diagram</summary><p>The <b>table</b> on top is the reason idle-compact exists. Each row is a setup, each column is where Claude Code runs, and each cell answers: does a conversation that has sat idle get compacted?</p>
+<ul><li><svg viewBox="0 0 34 18" aria-hidden="true"><g class="h-green" transform="translate(6 -2) scale(.8)"><circle cx="14" cy="13.5" r="11" style="fill: var(--h)"/><path d="M9 13.5 l3.5 3.5 l6.5 -7" style="fill: none; stroke: var(--on-hue); stroke-width: 2; stroke-linecap: round; stroke-linejoin: round"/></g></svg><span><b>Yes</b> — idle conversations are compacted here, once they are idle long enough and big enough.</span></li>
+<li><svg viewBox="0 0 34 18" aria-hidden="true"><g class="h-coral" transform="translate(6 -2) scale(.8)"><circle cx="14" cy="13.5" r="11" style="fill: var(--h)"/><path d="M10 9.5 l8 8 M18 9.5 l-8 8" style="fill: none; stroke: var(--on-hue); stroke-width: 2; stroke-linecap: round"/></g></svg><span><b>No</b> — nothing compacts an idle conversation here. This is the gap idle-compact fills.</span></li></ul><p>The <b>plot</b> asks: <b>after how long, and at what size</b>, does an idle conversation get compacted? Left to right is how long nobody has typed; bottom to top is how big the conversation is, counted in tokens.</p>
 <p>Each shaded <b>corner</b> is where a compactor acts: both of its thresholds are met, so the region opens up and to the right of its dot.</p>
-<ul><li><svg viewBox="0 0 34 18" aria-hidden="true"><g class="h-sage"><rect class="g-zone" x="1" y="1" width="32" height="16" rx="3" /><path class="g-edge-h" d="M2 1 V17 H33"/></g></svg><span><b>idle-compact</b> — compacts here, in local and cloud sessions</span></li><li><svg viewBox="0 0 34 18" aria-hidden="true"><g class="h-mute"><rect class="g-zone" x="1" y="1" width="32" height="16" rx="3" fill-opacity=".55"/><path class="g-edge-h" stroke-dasharray="3 3" d="M2 1 V17 H33"/></g></svg><span><b>Claude Code built-in</b> — idle compaction, off in cloud sessions</span></li>
+<ul><li><svg viewBox="0 0 34 18" aria-hidden="true"><g class="h-green"><rect class="g-zone" x="1" y="1" width="32" height="16" rx="3" /><path class="g-edge-h" d="M2 1 V17 H33"/></g></svg><span><b>With idle-compact</b> — compacts here, on your computer and in the cloud</span></li><li><svg viewBox="0 0 34 18" aria-hidden="true"><g class="h-mute"><rect class="g-zone" x="1" y="1" width="32" height="16" rx="3" fill-opacity=".55"/><path class="g-edge-h" stroke-dasharray="3 3" d="M2 1 V17 H33"/></g></svg><span><b>Claude Code alone</b> — compacts here on your computer only, never in the cloud</span></li>
 <li><svg viewBox="0 0 34 18" aria-hidden="true"><g class="h-ink"><circle class="d-halo" cx="17" cy="9" r="8"/><circle class="d-dot" cx="17" cy="9" r="4.5"/><circle class="d-dot-core" cx="17" cy="9" r="1.8"/></g></svg><span><b>Dot</b> — the corner itself: its time and token thresholds, written beside it.</span></li>
-<li><svg viewBox="0 0 34 18" aria-hidden="true"><g class="h-mute"><path class="g-edge-h" stroke-dasharray="3 3" d="M1 9 H33"/></g></svg><span><b>Dashed and hatched</b> — a compactor that exists but does not run here (in cloud sessions).</span></li></ul>
-<p>A conversation that stays idle drifts right. If it is big enough to sit inside a shaded corner when its time comes, it gets compacted.</p></details>
-<details class="source"><summary>Diagram source</summary><pre># When does an idle conversation get compacted? One zone per compactor.
-title:   Compact sooner, while the cache is still warm
-caption: Claude Code has its own idle compaction, but it waits for about 54 quiet minutes and a 200k-token context, and in cloud sessions it is off. idle-compact steps in after 20 minutes, once the context holds 120k tokens or more.
-note:    Both of idle-compact's thresholds are settings: idleSeconds (1200) and minTokens (120000).
+<li><svg viewBox="0 0 34 18" aria-hidden="true"><g class="h-mute"><path class="g-edge-h" stroke-dasharray="3 3" d="M1 9 H33"/></g></svg><span><b>Dashed and hatched</b> — Claude Code's own idle compaction: it exists, but only on your computer, not in the cloud.</span></li></ul>
+<p>A conversation that stays idle drifts right. If it is big enough to sit inside a shaded corner when its time comes, it gets compacted.</p><p>The words used here:</p><ul class="terms"><li><span><b>Compact</b> — Claude Code replaces the conversation so far with a short summary of it. The next message then has far less to re-read, which makes it faster and cheaper.</span></li><li><span><b>Idle</b> — nobody has sent a message for a while. While you work, Claude Code keeps the conversation cached; after a long pause the cache expires and the whole conversation must be read again.</span></li><li><span><b>Cloud session</b> — Claude Code running on a remote machine (for example from the web or your phone) instead of on your own computer.</span></li><li><span><b>Tokens</b> — the units a conversation is measured in; a token is roughly three quarters of a word. &quot;120k&quot; is 120,000 tokens.</span></li></ul></details>
+<details class="source"><summary>Diagram source</summary><pre># Why idle-compact exists: Claude Code's own idle compaction is off in cloud sessions. Table first, thresholds second.
+title:   Idle compaction for cloud sessions, where Claude Code leaves it off
+caption: Claude Code can tidy up a conversation that has sat idle, but only when it runs on your computer: in cloud sessions that feature is switched off. idle-compact was built to bring it to the cloud, and it also steps in sooner.
+note:    Both of idle-compact's thresholds are settings you can change: idleSeconds (1200, which is 20 minutes) and minTokens (120000).
+
+where  Does an idle conversation get compacted?  On your computer  In a cloud session
+runs   Claude Code alone   mute   yes — after about 54 idle minutes, from 200k tokens   no — idle compaction is switched off
+runs   With idle-compact   green  yes — after 20 idle minutes, from 120k tokens         yes — after 20 idle minutes, from 120k tokens
+gap    the gap idle-compact was built to fill
+plot   And sooner: when each one steps in
 
 x  idle time        0 80  every 10  unit m
-y  context tokens   0 300000  every 50000  unit k
-zone  20 120000  sage           idle-compact — compacts here, in local and cloud sessions
-zone  54 200000  mute dashed    Claude Code built-in — idle compaction, off in\ncloud sessions</pre></details>
+y  conversation size, in tokens   0 300000  every 50000  unit k
+zone  20 120000  green          With idle-compact — compacts here, on your computer and in the cloud
+zone  54 200000  mute dashed    Claude Code alone — compacts here on your\ncomputer only, never in the cloud
+
+term  Compact — Claude Code replaces the conversation so far with a short summary of it. The next message then has far less to re-read, which makes it faster and cheaper.
+term  Idle — nobody has sent a message for a while. While you work, Claude Code keeps the conversation cached; after a long pause the cache expires and the whole conversation must be read again.
+term  Cloud session — Claude Code running on a remote machine (for example from the web or your phone) instead of on your own computer.
+term  Tokens — the units a conversation is measured in; a token is roughly three quarters of a word. &quot;120k&quot; is 120,000 tokens.</pre></details>
+<nav class="more">
+<p><i>This diagram</i><span><a href="why.svg">as an SVG</a> · <a href="https://github.com/nitsanavni/claude-code-idle-compact/blob/main/docs/humans/diagrams/why.zones">its source on GitHub</a></span></p>
+<p><i>More diagrams</i><span><a href="overview.html">Overview</a> · <b>Why it exists</b> · <a href="timer.html">The timer</a> · <a href="config.html">Settings</a> · <a href="architecture.html">Code architecture</a> · <a href="../../diagrams/a-idle-compact.html">Timeline: idle, then compacted</a> · <a href="../../diagrams/b-user-returns.html">Timeline: coming back early</a> · <a href="../../diagrams/c-small-context-skip.html">Timeline: too small to compact</a> · <a href="../../diagrams/d-compact-after-turn.html">Timeline: compacting on request</a></span></p>
+<p><i>The project</i><span><a href="https://github.com/nitsanavni/claude-code-idle-compact#readme">idle-compact on GitHub</a> · <a href="https://github.com/nitsanavni/claude-code-idle-compact/blob/main/docs/humans/README.md">docs for people</a></span></p>
+</nav>
 </main>
 </body>
 </html>
