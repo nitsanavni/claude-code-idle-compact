@@ -6,6 +6,7 @@ Seven settings control the mod. You will rarely need more than the first three.
 | --- | --- | --- |
 | `idleSeconds` | `1200` (20 min) | How long to wait after a turn ends |
 | `minTokens` | `120000` | Leave smaller conversations alone |
+| `minGrowth` | `40000` | After a compaction, wait until the conversation has grown this much again |
 | `enabled` | `true` | The master switch |
 | `dryRun` | `false` | Say what would happen, but don't compact |
 | `announce` | `log,toast,notify` | How you hear about a compaction: `log`, `toast`, `notify` (a push notification), `prompt` (a message in the chat) |

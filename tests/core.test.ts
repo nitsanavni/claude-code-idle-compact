@@ -55,6 +55,33 @@ describe('idle timer', () => {
     expect(host.data).toEqual([{ call: 'session.compact' }])
   })
 
+  test('hysteresis: after a compaction, skips until the context grew minGrowth since', async () => {
+    // compacts at BIG; the next turn ends at 110k (the new floor); idle again at 140k, 30k grown: skip; at 150k: compact
+    const floor = 110_000
+    const { app, clock, host } = setup({ tokens: [BIG, floor, floor + 30_000, floor + 40_000] })
+    await app.onTurnComplete(MAIN)
+    await clock.advance(IDLE_MS)
+    expect(host.data).toEqual([{ call: 'session.compact' }])
+    await app.onTurnComplete(MAIN) // first turn after the compaction: measures the floor
+    expect(app.status.floorTokens).toBe(floor)
+    await clock.advance(IDLE_MS)
+    expect(host.data.length).toBe(1)
+    expect(app.status.lastOutcome).toBe(`skipped (idle): grew 30000 since the last compaction (floor ${floor}) < minGrowth ${DEFAULTS.minGrowth}`)
+    await app.onTurnComplete(MAIN)
+    await clock.advance(IDLE_MS)
+    expect(host.data.length).toBe(2)
+  })
+
+  test('compact_after_turn ignores the hysteresis', async () => {
+    const { app, clock, host } = setup({ tokens: [BIG, 110_000, 110_000] })
+    await app.onTurnComplete(MAIN)
+    await clock.advance(IDLE_MS)
+    app.queueCompact()
+    await app.onTurnComplete(MAIN)
+    await clock.advance(1000)
+    expect(host.data.length).toBe(2)
+  })
+
   test('turn.start cancels the timer', async () => {
     const { app, clock, host } = setup({ tokens: BIG })
     await app.onTurnComplete(MAIN)

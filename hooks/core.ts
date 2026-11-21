@@ -1,6 +1,7 @@
 // The idle-compact logic, over Nullable infrastructure (infra.ts).
 // Arm on the main loop's turn.complete, cancel on its turn.start, fire after
-// idleSeconds: compact when the context is at least minTokens.
+// idleSeconds: compact when the context is at least minTokens and, after a
+// compaction, has grown minGrowth past the floor measured at the next turn's end.
 // Config is re-read at every arm and fire, so changes apply immediately.
 
 import { applyChange, channels, fromLegacy, parseProjectFile, pick, resolve, PROJECT_FILE, type Config, type Layers } from './config'
@@ -36,6 +37,7 @@ export class IdleCompact {
   readonly status: Status = { armed: false }
   private timer: Cancel | null = null
   private queued = false
+  private measureFloor = false
 
   private readonly userConfig: Partial<Config>
 
@@ -93,6 +95,11 @@ export class IdleCompact {
   async onTurnComplete(agentId: string | undefined): Promise<void> {
     if (agentId !== undefined) return
     this.status.lastTurnEndAt = this.iso()
+    if (this.measureFloor) {
+      // the first turn after a compaction: what the context is now is its floor
+      this.measureFloor = false
+      this.status.floorTokens = (await this.deps.host.contextTokens()) ?? 0
+    }
     if (this.queued) {
       this.queued = false
       this.deps.clock.after(1000, () => this.requestedCompact())
@@ -151,7 +158,7 @@ export class IdleCompact {
 
   private async requestedCompact(): Promise<void> {
     const cfg = await this.config()
-    await this.compact({ ...cfg, minTokens: 0, dryRun: false }, 'requested')
+    await this.compact({ ...cfg, minTokens: 0, minGrowth: 0, dryRun: false }, 'requested')
   }
 
   // ---- compaction ----
@@ -164,6 +171,11 @@ export class IdleCompact {
     status.lastContextTokens = tokens
     if (tokens < cfg.minTokens) {
       status.lastOutcome = `skipped (${why}): ${tokens} < minTokens ${cfg.minTokens}`
+      return
+    }
+    const floor = status.floorTokens
+    if (typeof floor === 'number' && tokens - floor < cfg.minGrowth) {
+      status.lastOutcome = `skipped (${why}): grew ${tokens - floor} since the last compaction (floor ${floor}) < minGrowth ${cfg.minGrowth}`
       return
     }
     if (cfg.dryRun) {
@@ -186,7 +198,10 @@ export class IdleCompact {
         status.lastOutcome = r?.skip ? `vetoed via ${name}: ${r.skip}` : `compacted via ${name} (${why}) at ${tokens} tokens`
         status.lastErrors = errors
         if (r?.skip) ui.log(`🗜️ idle-compact: vetoed (${r.skip})`)
-        else this.announce(cfg, `🗜️ idle-compact: compacted ${k}k tokens (${why})`, errors)
+        else {
+          this.compacted()
+          this.announce(cfg, `🗜️ idle-compact: compacted ${k}k tokens (${why})`, errors)
+        }
         return
       } catch (err) {
         errors.push(`${name}: ${String(err).slice(0, 200)}`)
@@ -195,6 +210,11 @@ export class IdleCompact {
     status.lastErrors = errors
     status.lastOutcome = 'failed: every way refused'
     ui.log('🗜️ idle-compact: failed, see status')
+  }
+
+  private compacted(): void {
+    this.status.floorTokens = undefined
+    this.measureFloor = true
   }
 
   private announce(cfg: Config, msg: string, errors: string[]): void {

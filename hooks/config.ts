@@ -4,6 +4,7 @@ export type Config = {
   enabled: boolean
   idleSeconds: number // wait after a turn ends before compacting
   minTokens: number // skip when context is smaller than this
+  minGrowth: number // hysteresis: after a compaction, skip until the context grew this much past its new floor
   dryRun: boolean // true: only report what would happen
   instructions: string // optional focus for the summary
   announce: string // comma list of where to show "compacted": log,toast,notify,prompt (prompt = a message in the stream that starts a short turn)
@@ -14,6 +15,7 @@ export const DEFAULTS: Config = {
   enabled: true,
   idleSeconds: 20 * 60,
   minTokens: 120_000,
+  minGrowth: 40_000,
   dryRun: false,
   instructions: '',
   announce: 'log,toast,notify',

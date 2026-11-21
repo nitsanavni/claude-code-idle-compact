@@ -45,6 +45,7 @@ stateDiagram-v2
   Armed --> Armed: turn.complete / config tool
   Armed --> Check: idleSeconds elapsed (enabled re-checked)
   Check --> Skipped: tokens < minTokens
+  Check --> Skipped: tokens - floor < minGrowth (floor = size at the first turn end after a compaction)
   Check --> DryRun: tokens >= minTokens, dryRun
   Check --> Compacted: tokens >= minTokens. Tries session.compact, then command.run, then prompt.submit /compact
   [*] --> Queued: compact_after_turn

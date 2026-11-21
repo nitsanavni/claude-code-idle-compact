@@ -27,7 +27,7 @@ In the second story, nobody stops working. The mod gives Claude three tools: wit
 ## How it works
 
 - When a turn ends, the mod starts a timer. By default it waits 20 minutes.
-- When the timer fires, the mod checks the context size. If the context is at least `minTokens`, it runs `/compact`.
+- When the timer fires, the mod checks the context size. If the context is at least `minTokens`, it runs `/compact`. After a compaction it waits until the context has grown `minGrowth` past its new size, so a session whose floor (tools, summary) is already above `minTokens` doesn't compact again every idle period.
 - It then announces the compaction with a toast, a log line and a push notification, so you can see it happened.
 - Starting a new turn resets the timer.
 
@@ -48,6 +48,7 @@ Settings:
 | `enabled` | `true` | Master switch |
 | `idleSeconds` | `1200` | How long to wait after a turn ends before compacting |
 | `minTokens` | `120000` | Skip compaction when the context is smaller than this |
+| `minGrowth` | `40000` | After a compaction, skip until the context has grown this much past its size after the compaction |
 | `dryRun` | `false` | Only report what would happen |
 | `instructions` | `""` | Optional focus for the compaction summary |
 | `announce` | `log,toast,notify` | Where to announce: `log`, `toast`, `notify` (push), `prompt` (a message in the chat) |
